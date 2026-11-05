@@ -512,7 +512,8 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
       skier.py = skier.ty = p.y;
     } else skier.x = -100;
     skier.facing = run ? run.dir : 1;
-    skier.angle = 0;
+    // Start at the resting lean for this spot to avoid a visible tilt on page load.
+    skier.angle = run ? Math.atan(slopeAt(ranges[run.li], skier.x)) * 0.35 : 0;
     setState('ready');
   }
   /**
@@ -1347,6 +1348,7 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
       state: skier.state,
       vx: skier.vx,
       dragging: skier.dragging,
+      angle: skier.angle,
     }),
     /** Where the skier could stand if pulled toward (x, y), or null, for the site's tests. */
     probe: (x: number, y: number) => onSlope(x, y),
