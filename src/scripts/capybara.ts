@@ -10,8 +10,8 @@ const H = 84;
 const SVG = `
 <svg viewBox="0 -6 132 101" width="${W}" height="${H}" aria-hidden="true">
   <g fill="#5e3b22">
-    <rect x="20" y="60" width="12" height="24" rx="6"/><rect x="36" y="62" width="12" height="23" rx="6"/>
-    <rect x="76" y="62" width="11" height="23" rx="5.5"/><rect x="90" y="60" width="11" height="24" rx="5.5"/>
+    <rect class="leg" x="20" y="60" width="12" height="24" rx="6"/><rect class="leg" x="36" y="62" width="12" height="23" rx="6"/>
+    <rect class="leg" x="76" y="62" width="11" height="23" rx="5.5"/><rect class="leg" x="90" y="60" width="11" height="24" rx="5.5"/>
   </g>
   <path d="M8 52C8 31 26 22 54 22c26 0 42 8 46 24 3 14-6 28-44 28C24 74 8 70 8 52Z" fill="#8a5a3a"/>
   <path d="M18 64c14 8 52 9 74 0" stroke="#6e4329" stroke-width="2.5" fill="none" opacity=".5" stroke-linecap="round"/>
@@ -49,7 +49,11 @@ function injectStyles() {
   styled = true;
   const s = document.createElement('style');
   s.textContent = `
-  .capy { position: fixed; z-index: 72; width: ${W}px; height: ${H}px; padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+  .capy { position: fixed; z-index: 72; width: ${W}px; height: ${H}px; padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+  .capy.held { cursor: grabbing; z-index: 74; }
+  .capy .leg { transform-box: fill-box; transform-origin: 50% 8%; }
+  .capy-shadow { transition: transform 200ms ease, opacity 200ms ease; }
+  .capy.held .capy-shadow { transform: translateY(10px) scale(.7); opacity: .45; }
   .capy:focus-visible { outline: 2px solid var(--color-blue-soft); outline-offset: 6px; border-radius: 12px; }
   .capy-shadow { position: absolute; left: 12%; right: 10%; bottom: -3px; height: 8px; border-radius: 50%; background: radial-gradient(closest-side, rgba(0,0,0,.45), transparent); }
   .capy-flip, .capy-act, .capy-dance, .capy-idle { position: absolute; inset: 0; }
@@ -64,6 +68,13 @@ function injectStyles() {
     .capy:hover .capy-act:not(.busy) { transform: translateY(-3px) rotate(-3deg); transition: transform 220ms cubic-bezier(.2,.8,.2,1); }
     .capy .capy-act { transition: transform 220ms cubic-bezier(.2,.8,.2,1); }
   }
+  .capy.held .capy-act { transform: translateY(-14px) rotate(-5deg) !important; transition: transform 160ms cubic-bezier(.2,.8,.2,1); }
+  @media (prefers-reduced-motion: no-preference) {
+    .capy.held .leg { animation: capy-kick 260ms ease-in-out infinite alternate; }
+    .capy.held .leg:nth-child(2n) { animation-delay: -130ms; }
+    .capy.held .capy-idle { animation: none; }
+  }
+  @keyframes capy-kick { from { transform: rotate(-22deg); } to { transform: rotate(22deg); } }
   @keyframes capy-breathe { 50% { transform: scaleY(1.03) scaleX(.99); } }
   @keyframes capy-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
   .capy-fx { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 73; pointer-events: none; }
@@ -297,7 +308,7 @@ function routine(role: number, crew: number): Keyframe[] {
 }
 
 function dance(layer: HTMLElement, role: number, crew: number, start: number) {
-  const a = layer.animate(routine(role, crew), { duration: BEAT * BEATS, iterations: Infinity });
+  const a = layer.animate(routine(role, crew), { duration: BEAT * BEATS, iterations: 2 });
   a.startTime = start;
   return a;
 }
@@ -453,17 +464,17 @@ function findSpot(avoid: Element | null | undefined, w: number): [number, number
 }
 
 /** Places a new capybara somewhere open on screen. Returns false when there are already too many. */
-export function spawnCapybara(avoid?: Element | null, at?: { x: number; y: number; dance?: { role: number; crew: number; start: number }; facingLeft?: boolean; delay?: number }): boolean {
+export function spawnCapybara(avoid?: Element | null, at?: { x: number; y: number; dance?: { role: number; crew: number; start: number; order: number }; facingLeft?: boolean; delay?: number }): boolean {
   if (document.querySelectorAll('.capy').length >= MAX) return false;
   injectStyles();
   const [x, y] = at ? [at.x, at.y] : findSpot(avoid, W);
 
-  const facingLeft = at?.facingLeft ?? (x > innerWidth / 2 ? Math.random() < 0.75 : Math.random() < 0.25);
+  const facingLeft = at?.facingLeft ?? Math.random() < 0.25;
   const el = document.createElement('button');
   el.type = 'button';
   el.className = 'capy';
-  el.setAttribute('aria-label', 'Capybara. Click it to see a trick.');
-  el.title = 'Click me';
+  el.setAttribute('aria-label', 'Capybara. Click it to send it off, or hold it to pick it up.');
+  el.title = 'Click me, or hold to pick me up';
   el.style.left = `${x}px`;
   el.style.top = `${y}px`;
   el.innerHTML = `<span class="capy-shadow"></span><span class="capy-flip${facingLeft ? ' left' : ''}"><span class="capy-act"><span class="capy-dance"><span class="capy-idle">${SVG}</span></span><span class="capy-pop">${POPPER}</span></span></span>`;
@@ -478,6 +489,13 @@ export function spawnCapybara(avoid?: Element | null, at?: { x: number; y: numbe
     el.classList.add('dancing');
     el.dataset.start = String(at.dance.start);
     grooving = dance(el.querySelector<HTMLElement>('.capy-dance')!, at.dance.role, at.dance.crew, at.dance.start);
+    // After two times through the routine, the crew takes its bows one by one: confetti, then gone.
+    grooving.finished
+      .then(() => {
+        el.classList.remove('dancing');
+        window.setTimeout(() => { if (!holding) sendOff(); }, 250 + at.dance!.order * 900);
+      })
+      .catch(() => {});
     startNotes();
   }
   if (reduced()) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300 });
@@ -492,21 +510,84 @@ export function spawnCapybara(avoid?: Element | null, at?: { x: number; y: numbe
       { duration: 620, delay, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'backwards' },
     );
 
+  const crewMember = !!at?.dance;
+  const stopDancing = () => {
+    el.classList.remove('dancing');
+    grooving?.cancel();
+  };
+
+  // Press: a single capybara does a trick first. Either way it blows its confetti and fades away.
   let busy = false;
-  el.addEventListener('click', async () => {
+  const sendOff = async () => {
     if (busy) return;
     busy = true;
     act.classList.add('busy');
-    el.setAttribute('aria-label', 'Capybara, mid-trick');
-    el.classList.remove('dancing');
-    grooving?.cancel();
+    el.setAttribute('aria-label', 'Capybara, saying goodbye');
+    stopDancing();
     if (!reduced()) {
-      const trick = Math.floor(Math.random() * 3);
-      if (trick === 0) await spin(act);
-      else if (trick === 1) await handstand(act);
-      else await party(act, popper);
+      if (!crewMember) await (Math.random() < 0.5 ? spin(act) : handstand(act));
+      await party(act, popper);
     }
     await dissolve(el);
+  };
+
+  // Hold (or press and drag): pick it up. Its legs wiggle until you set it down somewhere.
+  const HOLD_MS = 280;
+  let press: { id: number; x: number; y: number; dx: number; dy: number; timer: number } | null = null;
+  let holding = false;
+  let skipClick = false;
+  const pickUp = () => {
+    if (!press || holding) return;
+    holding = true;
+    skipClick = true;
+    stopDancing();
+    el.classList.add('held');
+  };
+  const place = (cx: number, cy: number) => {
+    const nx = Math.min(Math.max(cx - press!.dx, 0), innerWidth - W);
+    const ny = Math.min(Math.max(cy - press!.dy, 0), innerHeight - H);
+    el.style.left = `${nx}px`;
+    el.style.top = `${ny}px`;
+  };
+  el.addEventListener('pointerdown', (e) => {
+    if (busy || e.button > 0) return;
+    skipClick = false;
+    const r = el.getBoundingClientRect();
+    press = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: e.clientX - r.left, dy: e.clientY - r.top, timer: window.setTimeout(pickUp, HOLD_MS) };
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove', (e) => {
+    if (!press || e.pointerId !== press.id) return;
+    if (!holding && Math.hypot(e.clientX - press.x, e.clientY - press.y) > 6) pickUp();
+    if (holding) place(e.clientX, e.clientY);
+  });
+  const letGo = (e: PointerEvent) => {
+    if (!press || e.pointerId !== press.id) return;
+    clearTimeout(press.timer);
+    press = null;
+    if (!holding) return;
+    holding = false;
+    el.classList.remove('held');
+    // A crew member that was moved mid-dance still leaves on cue with the rest of the crew.
+    if (at?.dance && !busy) {
+      const end = at.dance.start + BEAT * BEATS * 2 + 250 + at.dance.order * 900;
+      window.setTimeout(() => { if (!holding) sendOff(); }, Math.max(600, end - (document.timeline.currentTime as number)));
+    }
+    if (!reduced())
+      act.animate(
+        [{ transform: 'translateY(-14px) rotate(-5deg)' }, { transform: 'translateY(0) scale(1.1, .86)', offset: 0.55 }, { transform: 'translateY(0) scale(1)' }],
+        { duration: 360, easing: 'cubic-bezier(.3,0,.3,1)' },
+      );
+  };
+  el.addEventListener('pointerup', letGo);
+  el.addEventListener('pointercancel', letGo);
+  el.addEventListener('contextmenu', (e) => e.preventDefault());
+  el.addEventListener('click', () => {
+    if (skipClick) {
+      skipClick = false;
+      return;
+    }
+    sendOff();
   });
   return true;
 }
@@ -527,7 +608,7 @@ export function spawnDanceCrew(avoid?: Element | null): number {
     // The outer two face the middle one.
     const facingLeft = n === 3 ? i === 2 : i === 1;
     const role = n === 3 ? i : n === 1 ? 1 : i * 2;
-    spawnCapybara(avoid, { x: x + i * step, y, dance: { role, crew: n, start }, facingLeft, delay: i * 120 });
+    spawnCapybara(avoid, { x: x + i * step, y, dance: { role, crew: n, start, order: i }, facingLeft, delay: i * 120 });
   }
   return n;
 }
