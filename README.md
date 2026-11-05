@@ -6,7 +6,7 @@ The source for my personal site and portfolio. **See it live at [griffinh.me](ht
 
 ## What's on it
 
-- **A mountain range you can play with.** The homepage hero is drawn on a canvas. Hover the sky to make it snow, push the snow around on the peaks, and drag the skier down the slopes. His tracks fade behind him, and when he reaches the bottom he skates over to the gondola and rides it back to the summit.
+- **A mountain range you can play with.** The homepage opens on a mountain scene drawn on a canvas. Hover the sky to make it snow, push the snow around on the peaks, and drag the skier down the slopes. His tracks fade behind him, and when he reaches the bottom he skates over to the gondola and rides it back to the summit.
 - **Projects you can use right on the page.** There are small playable versions of the three [GriffinGames](https://griffinhgames.xyz) games (a trivia round against a bot, a deck of Truth or Griddy cards, and Kings Dice), plus a working copy of DayONE's video library with its filters, search, and admin tools.
 - **Project pages** for GriffinGames and DayONE that cover how they work, what was tricky, and how they were tested and deployed.
 - **The usual portfolio sections.** Experience, a toolbox that shows where I've used each tool, a bit about me, and a contact form.
