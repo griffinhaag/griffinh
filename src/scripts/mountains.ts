@@ -34,7 +34,7 @@ const MAX_SNOW = 64;
 const EDGE = 14; // how close to the screen edge he can ski
 const TRACK_LIFE = 1500; // ski tracks fade shortly after they're carved
 const CHAIR_GAP = 96; // px between gondola cabins along the cable loop
-const CHAIR_SPEED = 1.05; // px per frame
+const CHAIR_SPEED = 0.8; // px per frame
 
 // Deterministic random so the ranges keep their shape when the window resizes.
 function rng(seed: number) {
