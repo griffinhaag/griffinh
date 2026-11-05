@@ -2,38 +2,41 @@
 // (a spin, a handstand, or a party popper), then fades away.
 
 const MAX = 8;
-const W = 104;
+const W = 110;
 const H = 84;
 
+// A capybara in profile, facing right: a barrel body, a big boxy head with a long blunt muzzle,
+// small eyes and ears set high and back, nostrils on top of the snout, and a yuzu on its head.
 const SVG = `
-<svg viewBox="0 0 120 96" width="${W}" height="${H}" aria-hidden="true">
-  <g class="legs" fill="#6b4529">
-    <rect x="24" y="62" width="11" height="22" rx="5.5"/>
-    <rect x="40" y="64" width="11" height="21" rx="5.5"/>
-    <rect x="66" y="64" width="11" height="21" rx="5.5"/>
-    <rect x="80" y="62" width="11" height="22" rx="5.5"/>
+<svg viewBox="0 -6 132 101" width="${W}" height="${H}" aria-hidden="true">
+  <g fill="#5e3b22">
+    <rect x="20" y="60" width="12" height="24" rx="6"/><rect x="36" y="62" width="12" height="23" rx="6"/>
+    <rect x="76" y="62" width="11" height="23" rx="5.5"/><rect x="90" y="60" width="11" height="24" rx="5.5"/>
   </g>
-  <path d="M12 52C12 32 32 25 58 25c24 0 38 9 38 27 0 17-14 23-38 23-25 0-46-5-46-23Z" fill="#94643f"/>
-  <path d="M24 60c10 9 50 10 64 0" fill="none" stroke="#7d5232" stroke-width="2" stroke-linecap="round" opacity=".55"/>
-  <path d="M30 37q6-4 12-3M46 33q6-3 12-2" fill="none" stroke="#a87650" stroke-width="2" stroke-linecap="round" opacity=".7"/>
-  <rect x="68" y="18" width="44" height="36" rx="15" fill="#a2704a"/>
-  <rect x="92" y="26" width="22" height="25" rx="10" fill="#b4825a"/>
-  <ellipse cx="77" cy="19" rx="5.5" ry="4.5" fill="#6b4529"/>
-  <rect x="105" y="27" width="8" height="5" rx="2.5" fill="#33200f"/>
-  <g class="eye"><circle cx="89" cy="29" r="2.7" fill="#1c120a"/><circle cx="90" cy="28" r=".9" fill="#fff"/></g>
-  <ellipse cx="95" cy="40" rx="4.5" ry="2.6" fill="#e8907e" opacity=".45"/>
-  <path d="M104 42q3.5 2.4 7 0" fill="none" stroke="#33200f" stroke-width="1.5" stroke-linecap="round"/>
-  <circle cx="86" cy="11" r="7" fill="#f0b03a"/>
-  <circle cx="84" cy="9" r="2" fill="#f7cd6e" opacity=".8"/>
-  <path d="M86 4.5q4.5-5 9-1.5-4.5 3.5-9 1.5Z" fill="#6aa84f"/>
+  <path d="M8 52C8 31 26 22 54 22c26 0 42 8 46 24 3 14-6 28-44 28C24 74 8 70 8 52Z" fill="#8a5a3a"/>
+  <path d="M18 64c14 8 52 9 74 0" stroke="#6e4329" stroke-width="2.5" fill="none" opacity=".5" stroke-linecap="round"/>
+  <path d="M22 34q8-6 18-6M44 28q9-3 18-2M64 28q8 0 14 3M16 46q4-5 9-7" stroke="#a06c47" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/>
+  <path d="M70 26C74 16 88 13 104 15c12 2 20 7 22 16 1.5 7 1 15-1 20-2 5-7 7-14 7H90c-12 0-22-8-21-20 0-4 0-8 1-12Z" fill="#94603d"/>
+  <path d="M112 16.5c8 2 13 7 14 14.5 1 7 1 14-1 20-2 5-6 7-12 7h-3c3-12 4-28 2-41.5Z" fill="#6e4329" opacity=".45"/>
+  <ellipse cx="121" cy="28.5" rx="2.6" ry="1.5" transform="rotate(-20 121 28.5)" fill="#2b1a0e"/>
+  <path d="M114 50q4.5 2 9.5-1" stroke="#2b1a0e" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M84 31q3-1 6 0M99 35q4-1 7 1" stroke="#6e4329" stroke-width="1.3" fill="none" opacity=".6" stroke-linecap="round"/>
+  <ellipse cx="80" cy="19" rx="5" ry="4.2" fill="#5e3b22"/><ellipse cx="80.6" cy="19.6" rx="2.4" ry="2" fill="#3a2414"/>
+  <g class="eye"><ellipse cx="94" cy="26" rx="2.6" ry="2.4" fill="#1a0f08"/><circle cx="95" cy="25.2" r=".85" fill="#fff"/></g>
+  <ellipse cx="101" cy="41" rx="5" ry="2.8" fill="#e8907e" opacity=".3"/>
+  <g class="yuzu"><circle cx="90" cy="8" r="7" fill="#f0b03a"/><circle cx="88" cy="6" r="2" fill="#f7cd6e" opacity=".8"/><path d="M90 1.5q4.5-5 9-1.5-4.5 3.5-9 1.5Z" fill="#6aa84f"/></g>
 </svg>`;
 
+// The capybara holds the popper in its mouth by the narrow end. Its base sits at its bottom left and the open mouth at its top right. The two
+// marker dots let the confetti start exactly at the mouth and fly the way it's pointing.
 const POPPER = `
-<svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true">
+<svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true" overflow="visible">
   <path d="M6 36 30 12l-2 22Z" fill="#7a1f2e"/>
   <path d="M6 36 30 12l-6 6Z" fill="#9b2b3e"/>
   <path d="M12 30l4 3M17 25l5 4M22 20l5 4" stroke="#f0b03a" stroke-width="2" stroke-linecap="round"/>
   <ellipse cx="29" cy="12.5" rx="5" ry="2.4" transform="rotate(-45 29 12.5)" fill="#e6e9f2"/>
+  <circle class="pop-base" cx="11" cy="31" r=".5" fill="none"/>
+  <circle class="pop-mouth" cx="30" cy="12" r=".5" fill="none"/>
 </svg>`;
 
 const CONFETTI = ['#7a1f2e', '#b8455a', '#9fb2cf', '#a9b8ff', '#e6e9f2', '#f0b03a'];
@@ -50,10 +53,10 @@ function injectStyles() {
   .capy:focus-visible { outline: 2px solid var(--color-blue-soft); outline-offset: 6px; border-radius: 12px; }
   .capy-shadow { position: absolute; left: 12%; right: 10%; bottom: -3px; height: 8px; border-radius: 50%; background: radial-gradient(closest-side, rgba(0,0,0,.45), transparent); }
   .capy-flip, .capy-act, .capy-dance, .capy-idle { position: absolute; inset: 0; }
-  .capy-dance { transform-origin: 50% 100%; }
+  .capy-dance { transform-origin: 50% 66%; }
   .capy-flip.left { transform: scaleX(-1); }
   .capy-idle { transform-origin: 50% 100%; }
-  .capy-pop { position: absolute; right: -14px; top: -10px; opacity: 0; transform-origin: 20% 90%; pointer-events: none; }
+  .capy-pop { position: absolute; left: 89px; top: 20px; width: 34px; height: 34px; opacity: 0; transform-origin: 27% 78%; pointer-events: none; }
   .capy .eye { transform-box: fill-box; transform-origin: center; }
   @media (prefers-reduced-motion: no-preference) {
     .capy-idle { animation: capy-breathe 2.6s ease-in-out infinite; }
@@ -63,7 +66,7 @@ function injectStyles() {
   }
   @keyframes capy-breathe { 50% { transform: scaleY(1.03) scaleX(.99); } }
   @keyframes capy-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
-  .capy-fx { position: fixed; inset: 0; z-index: 73; pointer-events: none; }
+  .capy-fx { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 73; pointer-events: none; }
   `;
   document.head.appendChild(s);
 }
@@ -114,11 +117,11 @@ function tick(t: number) {
     }
     p.x += p.vx * dt;
     p.y += p.vy * dt;
-    c.globalAlpha = p.kind === 'confetti' ? (k > 0.7 ? (1 - k) / 0.3 : 1) : Math.sin(Math.PI * k) * 0.8;
+    c.globalAlpha =
+      p.kind === 'confetti' ? (k > 0.7 ? (1 - k) / 0.3 : 1) : p.kind === 'note' ? Math.min(1, k * 8, (1 - k) * 2.5) : Math.sin(Math.PI * k) * 0.8;
     c.fillStyle = p.color;
     if (p.kind === 'note') {
-      c.font = `${p.r}px system-ui, sans-serif`;
-      c.fillText(p.w ? '♫' : '♪', p.x, p.y);
+      drawNote(c, p.x, p.y, p.r, p.w === 1, p.color);
     } else if (p.kind === 'confetti') {
       c.save();
       c.translate(p.x, p.y);
@@ -136,17 +139,58 @@ function tick(t: number) {
   if (parts.length) raf = requestAnimationFrame(tick);
   else { raf = 0; last = 0; }
 }
+/** A drawn music note (or two beamed together), so it looks the same everywhere and reads clearly. */
+function drawNote(c: CanvasRenderingContext2D, x: number, y: number, size: number, pair: boolean, color: string) {
+  const head = (hx: number, hy: number) => {
+    c.beginPath();
+    c.ellipse(hx, hy, size * 0.3, size * 0.22, -0.4, 0, Math.PI * 2);
+    c.fill();
+  };
+  const stemX = (hx: number) => hx + size * 0.26;
+  c.save();
+  c.fillStyle = color;
+  c.strokeStyle = color;
+  c.lineWidth = Math.max(1.6, size * 0.1);
+  c.lineCap = 'round';
+  c.shadowColor = color;
+  c.shadowBlur = 8;
+  if (pair) {
+    const x2 = x + size * 0.75;
+    head(x, y);
+    head(x2, y - size * 0.15);
+    c.beginPath();
+    c.moveTo(stemX(x), y - size * 0.05);
+    c.lineTo(stemX(x), y - size);
+    c.moveTo(stemX(x2), y - size * 0.2);
+    c.lineTo(stemX(x2), y - size * 1.15);
+    c.stroke();
+    c.lineWidth = size * 0.2;
+    c.beginPath();
+    c.moveTo(stemX(x), y - size);
+    c.lineTo(stemX(x2), y - size * 1.15);
+    c.stroke();
+  } else {
+    head(x, y);
+    c.beginPath();
+    c.moveTo(stemX(x), y - size * 0.05);
+    c.lineTo(stemX(x), y - size);
+    c.quadraticCurveTo(stemX(x) + size * 0.45, y - size * 0.7, stemX(x) + size * 0.3, y - size * 0.35);
+    c.stroke();
+  }
+  c.restore();
+}
 function kick() {
   if (!raf) raf = requestAnimationFrame(tick);
 }
 
-function confetti(x: number, y: number, dir: number) {
+/** A burst from (x, y) fanning out around `angle` (radians, screen space). */
+function confetti(x: number, y: number, angle: number) {
   ensureFx();
-  for (let i = 0; i < 70; i++) {
-    const a = -Math.PI / 2 + dir * 0.55 + (Math.random() - 0.5) * 1.3;
-    const v = 260 + Math.random() * 380;
+  for (let i = 0; i < 80; i++) {
+    const a = angle + (Math.random() - 0.5) * 0.9;
+    const v = 240 + Math.random() * 420;
     parts.push({
-      x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, r: 0, rot: Math.random() * 6, spin: (Math.random() - 0.5) * 14,
+      x: x + Math.cos(a) * 3, y: y + Math.sin(a) * 3, vx: Math.cos(a) * v, vy: Math.sin(a) * v, r: 0, rot: Math.random() * 6, spin: (Math.random() - 0.5) * 14,
       color: CONFETTI[i % CONFETTI.length], life: 1.6 + Math.random() * 1.1, age: 0, kind: 'confetti',
       w: 5 + Math.random() * 4, h: 3 + Math.random() * 3,
     });
@@ -166,39 +210,124 @@ function motes(rect: DOMRect) {
   kick();
 }
 
-// Music notes drift up from whoever is still dancing.
+// The dance crew moves to a shared beat. Each dancer has its own part in one 20-beat routine,
+// and all of them read the same clock, so they stay in step.
+const BEAT = 500; // 120 bpm
+const BEATS = 20;
+type Pose = { tx: number; ty: number; r: number; sx: number; sy: number };
+
+/** The routine for one dancer. Role 0 is on the left, 1 in the middle, 2 on the right. */
+function routine(role: number, crew: number): Keyframe[] {
+  const frames: [number, Pose][] = [];
+  let spun = 0; // full turns so far, so later rotations don't unwind a spin
+  const P = (beat: number, p: Partial<Pose> = {}) =>
+    frames.push([beat, { tx: 0, ty: 0, sx: 1, sy: 1, ...p, r: spun + (p.r ?? 0) }]);
+  const lead = crew === 1 || role === 1;
+  const out = role === 1 ? 0 : -18; // outer dancers face the middle, so negative x is "outward"
+
+  // 1. Bop: bounce on every beat, leaning one way and then the other.
+  for (let b = 0; b < 4; b++) {
+    P(b, { sx: 1.08, sy: 0.9 });
+    P(b + 0.5, { ty: -9, r: b % 2 ? 10 : -10, sx: 0.97, sy: 1.05 });
+  }
+  // 2. The wave: one after another, each takes a big hop.
+  P(4, { sx: 1.08, sy: 0.9 });
+  const w = 4.5 + role * 0.5;
+  P(w - 0.2);
+  P(w, { sx: 1.12, sy: 0.86 });
+  P(w + 0.25, { ty: -38, sx: 0.93, sy: 1.1 });
+  P(w + 0.5, { ty: -40, r: -8 });
+  P(w + 0.75, { sx: 1.12, sy: 0.86 });
+  P(w + 1);
+  P(7);
+  // 3. Everyone spins at once.
+  P(7.25, { sx: 1.12, sy: 0.86 });
+  P(7.75, { ty: -44, r: 190, sy: 1.06 });
+  P(8.25, { r: 360, sx: 1.14, sy: 0.84 });
+  spun += 360;
+  P(8.6);
+  P(9);
+  // 4. Solo. The middle one flops onto its back and kicks its legs; the other two shimmy,
+  //    then lean in for a good look.
+  if (lead) {
+    P(9.25, { sx: 1.1, sy: 0.88 });
+    P(9.6, { ty: -30, r: 110 });
+    P(10, { ty: 6, r: 180, sy: 0.95 });
+    for (let k = 0; k < 9; k++) P(10.25 + k * 0.25, { ty: 6, r: 180 + (k % 2 ? 9 : -9), sx: k % 2 ? 1.05 : 0.96 });
+    P(12.5, { ty: 6, r: 180 });
+    P(12.75, { ty: -26, r: 290 });
+    P(13, { r: 360, sx: 1.12, sy: 0.86 });
+    spun += 360;
+  } else {
+    for (let k = 0; k < 8; k++) P(9.25 + k * 0.25, { r: k % 2 ? 7 : -7, tx: k % 2 ? 2 : -2, sx: 1.03 });
+    P(11.25);
+    P(11.5, { r: 16, ty: -2 });
+    P(12, { r: 18, ty: -6 });
+    P(12.5, { r: 16, ty: -2 });
+    P(12.75, { r: 18 });
+    P(13);
+  }
+  // 5. Turn around and shake that rump.
+  P(13.25, { ty: -12, sx: 0.05 });
+  P(13.5, { sx: -1 });
+  for (let k = 0; k < 7; k++) P(13.75 + k * 0.2, { sx: -1, r: k % 2 ? 11 : -11, ty: k % 2 ? 0 : -3 });
+  P(15.25, { sx: -1 });
+  P(15.5, { ty: -12, sx: 0.05 });
+  P(15.75, { sx: 1 });
+  // 6. Freeze. A dramatic pause, standing tall.
+  P(16, { sx: 0.93, sy: 1.12, ty: -4 });
+  P(17, { sx: 0.93, sy: 1.12, ty: -4 });
+  // 7. Finale: a big jump outward, a squashy landing, and a bow.
+  P(17.25, { sx: 1.14, sy: 0.84 });
+  P(17.75, { tx: out, ty: lead ? -62 : -46, r: lead ? 0 : -14, sx: 0.92, sy: 1.1 });
+  P(18.25, { tx: out, sx: 1.16, sy: 0.82 });
+  P(18.5, { tx: out });
+  P(19, { tx: out, r: 24, ty: 2 });
+  P(19.5, { tx: out, r: 24, ty: 2 });
+  P(20);
+
+  frames.sort((x, y) => x[0] - y[0]);
+  return frames.map(([b, p]) => ({
+    offset: b / BEATS,
+    translate: `${p.tx}px ${p.ty}px`,
+    rotate: `${p.r}deg`,
+    scale: `${p.sx} ${p.sy}`,
+    easing: 'ease-in-out',
+  }));
+}
+
+function dance(layer: HTMLElement, role: number, crew: number, start: number) {
+  const a = layer.animate(routine(role, crew), { duration: BEAT * BEATS, iterations: Infinity });
+  a.startTime = start;
+  return a;
+}
+
+// Each dancer puffs out a music note from the top of its head on the beat (but not during the freeze).
+const NOTE_COLORS = ['#a9b8ff', '#9fb2cf', '#f0b03a', '#e6e9f2'];
 let noteTimer = 0;
 function startNotes() {
   if (noteTimer || reduced()) return;
   noteTimer = window.setInterval(() => {
     const dancers = [...document.querySelectorAll<HTMLElement>('.capy.dancing')];
     if (!dancers.length) { clearInterval(noteTimer); noteTimer = 0; return; }
-    ensureFx();
-    const r = dancers[Math.floor(Math.random() * dancers.length)].getBoundingClientRect();
-    parts.push({
-      x: r.left + r.width * (0.3 + Math.random() * 0.4), y: r.top - 4, vx: 0, vy: -38 - Math.random() * 20, r: 15 + Math.random() * 6,
-      rot: Math.random() * 6, spin: 0, color: Math.random() < 0.5 ? '#a9b8ff' : '#9fb2cf', life: 1.8, age: 0, kind: 'note', w: Math.random() < 0.4 ? 1 : 0, h: 0,
-    });
-    kick();
-  }, 380);
-}
-
-// One bar of a sway-and-bounce groove. Every capybara uses the same clock, so they stay in step.
-const BEAT = 1300;
-function dance(layer: HTMLElement) {
-  const a = layer.animate(
-    [
-      { transform: 'translateY(0) rotate(0deg) scale(1, 1)' },
-      { transform: 'translateY(-10px) rotate(-11deg) scale(.98, 1.03)', offset: 0.18 },
-      { transform: 'translateY(0) rotate(0deg) scale(1.07, .91)', offset: 0.36 },
-      { transform: 'translateY(-10px) rotate(11deg) scale(.98, 1.03)', offset: 0.6 },
-      { transform: 'translateY(0) rotate(0deg) scale(1.07, .91)', offset: 0.8 },
-      { transform: 'translateY(0) rotate(0deg) scale(1, 1)' },
-    ],
-    { duration: BEAT, iterations: Infinity, easing: 'ease-in-out' },
-  );
-  a.startTime = 0; // share the document timeline's phase
-  return a;
+    const now = document.timeline.currentTime as number;
+    for (const d of dancers) {
+      const t = now - Number(d.dataset.start);
+      if (t < 0) continue;
+      const beat = Math.floor(t / BEAT);
+      if (String(beat) === d.dataset.lastNote) continue;
+      d.dataset.lastNote = String(beat);
+      if (beat % BEATS === 16 || Math.random() < 0.15) continue;
+      const y = d.querySelector('.yuzu')!.getBoundingClientRect();
+      ensureFx();
+      parts.push({
+        x: y.left + y.width / 2 + (Math.random() - 0.5) * 10 - 6, y: y.top - 6, vx: 0, vy: -48 - Math.random() * 18,
+        r: 13 + Math.random() * 5, rot: Math.random() * 6, spin: 0, color: NOTE_COLORS[Math.floor(Math.random() * NOTE_COLORS.length)],
+        life: 1.7, age: 0, kind: 'note', w: Math.random() < 0.4 ? 1 : 0, h: 0,
+      });
+      kick();
+    }
+  }, 60);
 }
 
 const done = (a: Animation) => a.finished.catch(() => {});
@@ -251,7 +380,7 @@ async function handstand(act: HTMLElement) {
   act.getAnimations().forEach((a) => a.cancel());
 }
 
-async function party(act: HTMLElement, popper: HTMLElement, facingLeft: boolean) {
+async function party(act: HTMLElement, popper: HTMLElement) {
   await done(popper.animate(
     [
       { opacity: 0, transform: 'translateY(8px) rotate(20deg) scale(.6)' },
@@ -260,9 +389,11 @@ async function party(act: HTMLElement, popper: HTMLElement, facingLeft: boolean)
     { duration: 260, easing: 'cubic-bezier(.2,.8,.2,1.2)', fill: 'forwards' },
   ));
   await new Promise((r) => setTimeout(r, 250));
-  const r = popper.getBoundingClientRect();
-  const tipX = facingLeft ? r.left + r.width * 0.25 : r.right - r.width * 0.25;
-  confetti(tipX, r.top + r.height * 0.3, facingLeft ? -1 : 1);
+  // Read where the mouth and base really are on screen (after the flip and tilt), and fire along that line.
+  const c = (sel: string) => { const b = popper.querySelector(sel)!.getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; };
+  const mouth = c('.pop-mouth');
+  const base = c('.pop-base');
+  confetti(mouth.x, mouth.y, Math.atan2(mouth.y - base.y, mouth.x - base.x));
   popper.animate(
     [{ transform: 'rotate(-8deg)' }, { transform: 'rotate(14deg) translate(-3px, 3px)' }, { transform: 'rotate(-4deg)' }],
     { duration: 380, easing: 'ease-out', fill: 'forwards' },
@@ -322,7 +453,7 @@ function findSpot(avoid: Element | null | undefined, w: number): [number, number
 }
 
 /** Places a new capybara somewhere open on screen. Returns false when there are already too many. */
-export function spawnCapybara(avoid?: Element | null, at?: { x: number; y: number; dance?: boolean; facingLeft?: boolean; delay?: number }): boolean {
+export function spawnCapybara(avoid?: Element | null, at?: { x: number; y: number; dance?: { role: number; crew: number; start: number }; facingLeft?: boolean; delay?: number }): boolean {
   if (document.querySelectorAll('.capy').length >= MAX) return false;
   injectStyles();
   const [x, y] = at ? [at.x, at.y] : findSpot(avoid, W);
@@ -345,7 +476,8 @@ export function spawnCapybara(avoid?: Element | null, at?: { x: number; y: numbe
   let grooving: Animation | null = null;
   if (at?.dance && !reduced()) {
     el.classList.add('dancing');
-    grooving = dance(el.querySelector<HTMLElement>('.capy-dance')!);
+    el.dataset.start = String(at.dance.start);
+    grooving = dance(el.querySelector<HTMLElement>('.capy-dance')!, at.dance.role, at.dance.crew, at.dance.start);
     startNotes();
   }
   if (reduced()) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300 });
@@ -372,7 +504,7 @@ export function spawnCapybara(avoid?: Element | null, at?: { x: number; y: numbe
       const trick = Math.floor(Math.random() * 3);
       if (trick === 0) await spin(act);
       else if (trick === 1) await handstand(act);
-      else await party(act, popper, facingLeft);
+      else await party(act, popper);
     }
     await dissolve(el);
   });
@@ -389,10 +521,13 @@ export function spawnDanceCrew(avoid?: Element | null): number {
   let [x, y] = findSpot(avoid, Math.min(span, innerWidth - PAD * 2));
   if (span > innerWidth - PAD * 2) x = PAD;
   const step = Math.min(W + gap, (innerWidth - PAD * 2 - W) / Math.max(1, n - 1));
+  // Everyone starts the routine together, just after the last one pops in.
+  const start = (document.timeline.currentTime as number) + 900;
   for (let i = 0; i < n; i++) {
     // The outer two face the middle one.
     const facingLeft = n === 3 ? i === 2 : i === 1;
-    spawnCapybara(avoid, { x: x + i * step, y, dance: true, facingLeft, delay: i * 120 });
+    const role = n === 3 ? i : n === 1 ? 1 : i * 2;
+    spawnCapybara(avoid, { x: x + i * step, y, dance: { role, crew: n, start }, facingLeft, delay: i * 120 });
   }
   return n;
 }
