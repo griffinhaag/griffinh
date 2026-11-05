@@ -1,0 +1,183 @@
+---
+import '../styles/global.css';
+import Terminal from '../components/Terminal.astro';
+import { links } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Griffin Haag, full-stack developer',
+  description = 'Griffin Haag is a full-stack developer in Minneapolis building C#/.NET services, Azure infrastructure, and real-time web apps.',
+} = Astro.props;
+
+const nav = [
+  { href: '/#experience', label: 'Experience', id: 'experience' },
+  { href: '/#projects', label: 'Projects', id: 'projects' },
+  { href: '/#about', label: 'About', id: 'about' },
+  { href: '/#contact', label: 'Contact', id: 'contact' },
+];
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#0b1020" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL('/og.jpg', Astro.site)} />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body class="min-h-dvh">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-md focus:bg-slate focus:px-4 focus:py-2">Skip to content</a>
+
+    <header id="site-nav" class="fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 border-b border-transparent">
+      <nav class="wrap flex h-16 items-center justify-between gap-6" aria-label="Main">
+        <a href="/" class="font-display text-xl font-semibold tracking-tight" aria-label="Griffin Haag, home">
+          gh<span class="dot">.</span>
+        </a>
+        <ul class="hidden items-center gap-1 md:flex">
+          {nav.map((item) => (
+            <li>
+              <a href={item.href} data-nav={item.id} class="nav-link rounded-full px-3.5 py-2 text-[0.95rem] text-muted transition-colors">
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <div class="flex items-center gap-2">
+          <a href={links.resume} class="btn btn-ghost hidden !h-9 !px-4 text-sm sm:inline-flex" target="_blank" rel="noopener">Resume</a>
+          <button id="menu-btn" class="grid size-10 place-items-center rounded-full border border-line md:hidden" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+            <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 5h14M2 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg>
+          </button>
+        </div>
+      </nav>
+      <div id="mobile-menu" class="hidden border-t border-line bg-ink/95 backdrop-blur-md md:hidden">
+        <ul class="wrap flex flex-col py-3">
+          {nav.map((item) => (
+            <li><a href={item.href} class="block py-3 font-display text-2xl font-medium">{item.label}</a></li>
+          ))}
+          <li><a href={links.resume} class="block py-3 font-display text-2xl font-medium text-muted" target="_blank" rel="noopener">Resume</a></li>
+        </ul>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="border-t border-line">
+      <div class="wrap flex flex-col gap-4 py-10 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
+        <p>Designed and built by Griffin Haag. © {new Date().getFullYear()}</p>
+        <p>
+          There’s a terminal hidden on this site.{' '}
+          <button type="button" data-open-terminal class="link">Open it</button>
+          <span class="hidden md:inline">{' '}or press <kbd class="rounded border border-line px-1.5 py-0.5 font-mono text-xs text-text">`</kbd></span>
+        </p>
+      </div>
+    </footer>
+
+    <Terminal />
+
+    <dialog id="lightbox" class="m-auto max-h-[92svh] max-w-[min(94vw,1400px)] overflow-hidden rounded-xl border border-line bg-ink p-0 backdrop:bg-black/85" aria-label="Image viewer">
+      <form method="dialog">
+        <button class="absolute top-3 right-3 z-10 grid size-9 place-items-center rounded-full bg-ink/85 text-text" aria-label="Close image">
+          <svg width="12" height="12" viewBox="0 0 10 10" aria-hidden="true"><path d="m1 1 8 8M9 1 1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
+        </button>
+      </form>
+      <img id="lightbox-img" alt="" class="block h-auto max-h-[92svh] w-auto max-w-full" />
+    </dialog>
+
+    <style>
+      #lightbox[open] { animation: zoom 250ms var(--ease-out-quint); }
+      @keyframes zoom { from { opacity: 0; transform: scale(0.97); } }
+      @media (prefers-reduced-motion: reduce) { #lightbox[open] { animation: none; } }
+      #site-nav.scrolled {
+        background-color: color-mix(in oklab, var(--color-ink) 82%, transparent);
+        border-color: transparent;
+        border-image: linear-gradient(90deg, transparent, rgba(159, 178, 207, 0.35) 25%, rgba(122, 31, 46, 0.55) 75%, transparent) 1;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      .nav-link[aria-current='true'] { color: var(--color-text); }
+      .nav-link[aria-current='true']::after {
+        content: '';
+        display: inline-block;
+        width: 5px;
+        height: 5px;
+        margin-left: 6px;
+        border-radius: 50%;
+        background: var(--color-wine);
+        vertical-align: 0.15em;
+      }
+      @media (hover: hover) {
+        .nav-link:hover { color: var(--color-text); }
+      }
+    </style>
+
+    <script>
+      const header = document.getElementById('site-nav')!;
+      const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 24);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      // Shared image viewer. Any [data-zoom] button opens the image inside it.
+      const dialog = document.getElementById('lightbox') as HTMLDialogElement;
+      const lbImg = document.getElementById('lightbox-img') as HTMLImageElement;
+      const openLightbox = (src?: string, alt = '') => {
+        if (!src) return;
+        lbImg.src = src;
+        lbImg.alt = alt;
+        dialog.showModal();
+      };
+      (window as any).__lightbox = openLightbox;
+      document.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach((b) =>
+        b.addEventListener('click', () => {
+          const img = b.querySelector('img');
+          openLightbox(img?.src, img?.alt);
+        }),
+      );
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+
+      // Mobile menu
+      const btn = document.getElementById('menu-btn')!;
+      const menu = document.getElementById('mobile-menu')!;
+      const setMenu = (open: boolean) => {
+        menu.classList.toggle('hidden', !open);
+        btn.setAttribute('aria-expanded', String(open));
+        btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      };
+      btn.addEventListener('click', () => setMenu(menu.classList.contains('hidden')));
+      menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+
+      // Mark the section currently in view.
+      const navLinks = document.querySelectorAll<HTMLAnchorElement>('[data-nav]');
+      const sections = [...navLinks].map((a) => document.getElementById(a.dataset.nav!)).filter(Boolean) as HTMLElement[];
+      if (sections.length) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (!e.isIntersecting) return;
+              navLinks.forEach((a) => a.setAttribute('aria-current', String(a.dataset.nav === e.target.id)));
+            });
+          },
+          { rootMargin: '-45% 0px -50% 0px' },
+        );
+        sections.forEach((s) => io.observe(s));
+      }
+    </script>
+  </body>
+</html>

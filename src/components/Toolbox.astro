@@ -1,0 +1,59 @@
+---
+import Section from './Section.astro';
+import { toolbox } from '../data/site';
+---
+
+<Section id="toolbox" title="Toolbox" lede="Pick any tool to see where I’ve used it." attrs={{ 'data-toolbox': '' }}>
+  <div slot="aside" class="used panel panel-sm mt-6 min-h-[5.5rem]" aria-live="polite">
+    <p class="meta text-sm" data-used-label>Where I’ve used it</p>
+    <p class="mt-1 font-display text-lg leading-snug" data-used-list>Choose a tool on the right.</p>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    {toolbox.map((g) => (
+      <div class="panel panel-sm">
+        <h3 class="font-display text-xl font-medium">{g.group}</h3>
+        <ul class="mt-4 flex flex-wrap gap-2">
+          {g.tools.map((t) => (
+            <li>
+              <button type="button" class="tool rounded-lg border border-line px-3 py-2 text-[0.95rem] transition-colors" data-tool={t.name} data-used={t.used.join('|')} aria-pressed="false">
+                {t.name}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+</Section>
+
+<style>
+  .tool[aria-pressed='true'] {
+    border-color: var(--color-wine);
+    background: color-mix(in oklab, var(--color-wine) 12%, transparent);
+  }
+  @media (hover: hover) {
+    .tool:hover { border-color: var(--color-muted); }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-toolbox]');
+  if (root) {
+    const label = root.querySelector<HTMLElement>('[data-used-label]')!;
+    const list = root.querySelector<HTMLElement>('[data-used-list]')!;
+    const tools = root.querySelectorAll<HTMLButtonElement>('[data-tool]');
+    const select = (btn: HTMLButtonElement) => {
+      tools.forEach((t) => t.setAttribute('aria-pressed', String(t === btn)));
+      label.textContent = `Where I’ve used ${btn.dataset.tool}`;
+      list.textContent = btn.dataset.used!.split('|').join(', ');
+    };
+    tools.forEach((btn) => {
+      btn.addEventListener('click', () => select(btn));
+      btn.addEventListener('focus', () => select(btn));
+      btn.addEventListener('pointerenter', (e) => {
+        if (e.pointerType === 'mouse') select(btn);
+      });
+    });
+  }
+</script>

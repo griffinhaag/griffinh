@@ -1,0 +1,30 @@
+---
+// Shared frame for every home page section: a hairline rule, the title in the left
+// column, and the content in the right, keeping left edges and spacing uniform.
+interface Props {
+  id: string;
+  title: string;
+  lede?: string;
+  sticky?: boolean;
+  /** Use the lighter band background. */
+  band?: boolean;
+  attrs?: Record<string, string>;
+}
+const { id, title, lede, sticky = true, band = false, attrs = {} } = Astro.props;
+---
+
+<section id={id} class={`section ${band ? 'band' : ''}`} {...attrs}>
+  <div class="wrap">
+    <div class="split">
+      <header class={sticky ? 'lg:sticky lg:top-28 lg:self-start' : ''}>
+        <h2 class="section-title">{title}<span class="dot">.</span></h2>
+        {lede && <p class="mt-5 max-w-sm text-muted">{lede}</p>}
+        <slot name="aside" />
+      </header>
+      <div>
+        <slot />
+      </div>
+    </div>
+    <slot name="after" />
+  </div>
+</section>

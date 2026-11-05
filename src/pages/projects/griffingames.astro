@@ -1,0 +1,189 @@
+---
+import CaseStudy from '../../layouts/CaseStudy.astro';
+import BrowserFrame from '../../components/BrowserFrame.astro';
+import { links } from '../../data/site';
+
+const gallery = [
+  {
+    game: 'LOCKED IN',
+    about: 'Buzzer trivia. The host screen shows the question, the timer, and live standings. Players buzz in from their phones.',
+    shots: [
+      { src: 'locked-in-setup.jpg', alt: 'LOCKED IN setup: categories, question count and timer sliders, and game options' },
+      { src: 'locked-in.jpg', alt: 'A LOCKED IN question with timer, scoreboard, and answer progress' },
+      { src: 'locked-in-results.jpg', alt: 'LOCKED IN round results with the correct answer, an explanation, and updated standings' },
+    ],
+  },
+  {
+    game: 'Truth or Griddy',
+    about: 'Four themed decks of about 500 prompts each. Answer the question, or hit the griddy.',
+    shots: [
+      { src: 'truth-or-griddy-categories.jpg', alt: 'Truth or Griddy deck picker with four categories' },
+      { src: 'truth-or-griddy-question.jpg', alt: 'A Truth or Griddy question card' },
+      { src: 'truth-or-griddy-scoreboard.jpg', alt: 'Truth or Griddy group challenge with a live scoreboard' },
+    ],
+  },
+  {
+    game: 'Kings Dice',
+    about: 'Roll, and the total picks a rule. Rather not? Pump the balloon and hope it doesn’t pop.',
+    shots: [
+      { src: 'kings-dice.jpg', alt: 'The Kings Dice rules board and dice' },
+      { src: 'kings-dice-pop.jpg', alt: 'The Kings Dice balloon popping' },
+      { src: 'kings-dice-custom-rules.jpg', alt: 'The Kings Dice custom rules editor' },
+    ],
+  },
+];
+
+const hardParts = [
+  {
+    title: 'Deciding who buzzed first',
+    body: 'Phones can’t be trusted to agree on timing, so the server is the only source of truth. The first buzz event to reach it locks the question, and every screen gets the result from the same room state.',
+  },
+  {
+    title: 'Phones that drop off mid-game',
+    body: 'Screens lock and Wi‑Fi drops at every game night. Players can rejoin a game in progress with their score intact. If the host drops, control passes to another player in a consistent order and comes back when the host returns. Duplicate names are rejected instead of kicking the original player.',
+  },
+  {
+    title: 'Grading free-response answers',
+    body: 'In “Off the Dome” rounds, players type their answers. An LLM (Llama 3.1 on Groq) grades them, so typos, alternate spellings, and last names still count. A few hard rules run first, like rejecting acronyms with swapped letters, and grading times out after six seconds so a slow response never stalls the round.',
+  },
+  {
+    title: 'Adding new games',
+    body: 'Each game is a module that exports an id, a name, and a create() function. Room handling, sockets, and reconnects don’t change when a new game is added.',
+  },
+];
+---
+
+<CaseStudy
+  title="GriffinGames"
+  summary="Browser party games for game night. One person puts it on the TV, and everyone joins from their phone with a room code. Nothing to install, no accounts."
+  meta={[
+    { label: 'Role', value: 'Solo: design, frontend, backend, deployment' },
+    { label: 'Timeline', value: '2025 – present' },
+    { label: 'Stack', value: 'JavaScript, Node.js, Express, Socket.IO, Groq' },
+  ]}
+  links={[
+    { label: 'Play it live', href: links.games, primary: true },
+    { label: 'Frontend code', href: 'https://github.com/griffinhaag/griffinhgames' },
+    { label: 'Server code', href: 'https://github.com/griffinhaag/griffinhgames-server' },
+  ]}
+  next={{ label: 'DayONE', href: '/projects/dayone' }}
+>
+  <div class="wrap mt-16">
+    <BrowserFrame url="griffinhgames.xyz" tilt>
+      <img src="/images/griffingames/home.jpg" alt="The GriffinGames main menu with LOCKED IN, Truth or Griddy, and Kings Dice" width="1600" height="910" class="block w-full" />
+    </BrowserFrame>
+  </div>
+
+  <section class="wrap mt-24"><div class="row border-t border-line pt-16">
+    <h2 class="font-display text-3xl font-semibold tracking-tight">How it works</h2>
+    <div>
+      <p class="max-w-[62ch] text-lg text-muted">
+        The TV is the host screen. Every phone is a controller. A Node server holds each room’s state and pushes it to every screen over Socket.IO whenever
+        anything changes.
+      </p>
+      <figure class="mt-10 overflow-x-auto rounded-2xl border border-line bg-ink-2 p-5 md:p-8">
+        <svg viewBox="0 0 760 300" class="w-full min-w-[560px]" role="img" aria-labelledby="arch-title">
+          <title id="arch-title">Architecture: the host screen and phones connect to the Socket.IO server, which calls Groq to grade free-response answers.</title>
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#8a93ad" /></marker>
+          </defs>
+          <g font-family="Instrument Sans, sans-serif" font-size="14" fill="#e6e9f2">
+            <!-- Host -->
+            <rect x="20" y="30" width="190" height="110" rx="12" fill="#161d33" stroke="#2a3350" />
+            <text x="40" y="62" font-family="Jost Variable, sans-serif" font-size="18" font-weight="600">Host screen</text>
+            <text x="40" y="88" fill="#8a93ad">TV or laptop, Netlify</text>
+            <text x="40" y="110" fill="#8a93ad">Questions, timer, scores</text>
+            <!-- Phones -->
+            <rect x="20" y="170" width="190" height="110" rx="12" fill="#161d33" stroke="#2a3350" />
+            <text x="40" y="202" font-family="Jost Variable, sans-serif" font-size="18" font-weight="600">Phones</text>
+            <text x="40" y="228" fill="#8a93ad">Join with a room code</text>
+            <text x="40" y="250" fill="#8a93ad">Buzz in, answer</text>
+            <!-- Server -->
+            <rect x="290" y="60" width="220" height="190" rx="12" fill="#161d33" stroke="#7a1f2e" />
+            <text x="310" y="92" font-family="Jost Variable, sans-serif" font-size="18" font-weight="600">Game server</text>
+            <text x="310" y="116" fill="#8a93ad">Node, Express, Socket.IO</text>
+            <text x="310" y="150">RoomManager</text>
+            <text x="310" y="172">GameEngine</text>
+            <text x="310" y="194">Question banks</text>
+            <text x="310" y="226" fill="#8a93ad">Render</text>
+            <!-- Groq -->
+            <rect x="590" y="105" width="150" height="100" rx="12" fill="#161d33" stroke="#2a3350" />
+            <text x="610" y="137" font-family="Jost Variable, sans-serif" font-size="18" font-weight="600">Groq</text>
+            <text x="610" y="162" fill="#8a93ad">Llama 3.1</text>
+            <text x="610" y="184" fill="#8a93ad">Grades answers</text>
+          </g>
+          <g stroke="#8a93ad" stroke-width="1.5" fill="none">
+            <path d="M212 85 C250 85 250 120 288 120" marker-start="url(#ah)" marker-end="url(#ah)" />
+            <path d="M212 225 C250 225 250 190 288 190" marker-start="url(#ah)" marker-end="url(#ah)" />
+            <path d="M512 155 H588" marker-start="url(#ah)" marker-end="url(#ah)" stroke-dasharray="4 4" />
+          </g>
+          <g font-family="Instrument Sans, sans-serif" font-size="12" fill="#a9b8ff">
+            <text x="218" y="72">room state</text>
+            <text x="218" y="250">buzz, answers</text>
+            <text x="520" y="145">grading</text>
+          </g>
+        </svg>
+      </figure>
+    </div>
+  </div>
+  </section>
+
+  <section class="wrap mt-24"><div class="row border-t border-line pt-16">
+    <h2 class="font-display text-3xl font-semibold tracking-tight">What was tricky</h2>
+    <ol class="grid gap-x-10 gap-y-10 md:grid-cols-2">
+      {hardParts.map((p) => (
+        <li>
+          <h3 class="font-display text-xl font-medium">{p.title}</h3>
+          <p class="mt-2 text-muted">{p.body}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+  </section>
+
+  <section class="wrap mt-24">
+    <h2 class="font-display text-3xl font-semibold tracking-tight">The games</h2>
+    <div class="mt-10 space-y-16">
+      {gallery.map((g) => (
+        <div>
+          <div class="flex flex-col gap-2 md:flex-row md:items-baseline md:justify-between md:gap-8">
+            <h3 class="font-display text-2xl font-medium">{g.game}</h3>
+            <p class="max-w-xl text-muted">{g.about}</p>
+          </div>
+          <ul class="mt-6 grid gap-4 sm:grid-cols-3">
+            {g.shots.map((s) => (
+              <li>
+                <button type="button" data-zoom class="shot block w-full overflow-hidden rounded-lg border border-line" aria-label={`Enlarge: ${s.alt}`}>
+                  <img src={`/images/griffingames/${s.src}`} alt={s.alt} width="1600" height="908" loading="lazy" class="aspect-[16/10] w-full object-cover object-top" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap mt-24"><div class="row border-t border-line pt-16">
+    <h2 class="font-display text-3xl font-semibold tracking-tight">Testing and deploying</h2>
+    <div class="max-w-[62ch] space-y-4 text-lg text-muted">
+      <p>
+        The frontend is plain JavaScript on Netlify. The server runs on Render. Both deploy from <code class="text-text">main</code>, and all work happens on a
+        testing branch first.
+      </p>
+      <p>
+        GitHub Actions runs the server’s tests on every push, covering joining, host transfer, and reconnects. End-to-end browser tests start the site and
+        server together and play through LOCKED IN.
+      </p>
+    </div>
+  </div>
+  </section>
+</CaseStudy>
+
+<style>
+  .shot img { transition: transform 400ms var(--ease-out-quint); }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .shot:hover img { transform: scale(1.03); }
+  }
+  .shot { cursor: zoom-in; }
+</style>
