@@ -5,6 +5,13 @@
 [build.environment]
   NODE_VERSION = "22"
 
+# Send the default Netlify address to the real domain, so search engines only list griffinh.me.
+[[redirects]]
+  from = "https://griffinh.netlify.app/*"
+  to = "https://griffinh.me/:splat"
+  status = 301
+  force = true
+
 # Fingerprinted build assets never change, so browsers can keep them for a year.
 [[headers]]
   for = "/_astro/*"
