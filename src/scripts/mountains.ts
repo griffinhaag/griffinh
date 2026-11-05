@@ -1178,11 +1178,13 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
   /* ------------------------------------------------------------------ input */
 
   const canControl = () => skier.state === 'ready' || skier.state === 'skiing';
-  const nearSkier = (x: number, y: number) => {
+  // Fingers are less precise than a cursor, so touches get a bigger grab area.
+  const nearSkier = (x: number, y: number, radius = 24) => {
     if (!run || !canControl()) return false;
     const p = skierPos();
-    return Math.hypot(x - p.x, y - (p.y - 12)) < 24;
+    return Math.hypot(x - p.x, y - (p.y - 12)) < radius;
   };
+  const TOUCH_GRAB = 40;
   /** Reduced motion skips the ride: reaching the bottom puts him straight back at the top. */
   function finishInstantly() {
     if (reduced && reachedFloor()) resetSkier();
@@ -1243,7 +1245,7 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
     const r = canvas.getBoundingClientRect();
     const x = e.clientX - r.left;
     const y = e.clientY - r.top;
-    if (nearSkier(x, y)) {
+    if (nearSkier(x, y, e.pointerType === 'mouse' ? 24 : TOUCH_GRAB)) {
       const p = skierPos();
       skier.dragging = true;
       skier.grab = p.x - x;
@@ -1263,6 +1265,18 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
     skier.idleSince = now;
     host.style.cursor = '';
   };
+  // The hero allows vertical scrolling on touch screens. When a finger lands on the skier, stop
+  // that gesture from scrolling the page, or the browser cancels the drag a few pixels in.
+  host.addEventListener(
+    'touchstart',
+    (e) => {
+      const t = e.touches[0];
+      if (e.touches.length !== 1 || !t) return;
+      const r = canvas.getBoundingClientRect();
+      if (nearSkier(t.clientX - r.left, t.clientY - r.top, TOUCH_GRAB)) e.preventDefault();
+    },
+    { passive: false },
+  );
   host.addEventListener('pointerup', release);
   host.addEventListener('pointercancel', release);
 

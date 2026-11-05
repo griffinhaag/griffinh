@@ -6,7 +6,7 @@ import { toolbox } from '../data/site';
 <Section id="toolbox" title="Toolbox" lede="Pick any tool to see where I’ve used it." attrs={{ 'data-toolbox': '' }}>
   <div slot="aside" class="used panel panel-sm mt-6 min-h-[5.5rem]" aria-live="polite">
     <p class="meta text-sm" data-used-label>Where I’ve used it</p>
-    <p class="mt-1 font-display text-lg leading-snug" data-used-list>Choose a tool on the right.</p>
+    <p class="mt-1 font-display text-lg leading-snug" data-used-list>Nothing picked yet.</p>
   </div>
 
   <div class="grid gap-4 sm:grid-cols-2">
@@ -34,6 +34,14 @@ import { toolbox } from '../data/site';
   }
   @media (hover: hover) {
     .tool:hover { border-color: var(--color-muted); }
+  }
+  /* Below the two-column layout the panel sits above the tools, so tapping one near the bottom
+     would update it off-screen. Let it stick under the nav while you browse instead. */
+  @media (max-width: 1023px) {
+    :global([data-toolbox] .split) { row-gap: 0; }
+    :global([data-toolbox] .split > header) { display: contents; }
+    :global([data-toolbox] .split > div) { margin-top: 1rem; }
+    .used { position: sticky; top: 4.75rem; z-index: 5; align-self: start; }
   }
 </style>
 

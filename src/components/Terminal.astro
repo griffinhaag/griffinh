@@ -34,6 +34,8 @@ import { links } from '../data/site';
   #term-out :global(.g) { color: #7ee2a8; }
   #term-out :global(pre) { white-space: pre-wrap; font: inherit; margin: 0; }
   #term-out :global(a) { color: var(--color-blue-soft); text-decoration: underline; }
+  /* 16px keeps iPhones from zooming the page when the input is focused. */
+  @media (pointer: coarse) { #term-in { font-size: 16px; } }
 </style>
 
 <script>
@@ -167,6 +169,13 @@ import { links } from '../data/site';
         } catch {
           print(`<a href="mailto:${L.email}">${L.email}</a>`);
         }
+      },
+    },
+    '404': {
+      help: 'get lost on purpose',
+      run: () => {
+        print('Wandering off the trail map… <a href="/capy" target="_blank" rel="noopener">griffinh.me/capy</a>');
+        window.open('/capy', '_blank', 'noopener');
       },
     },
     clear: { help: 'clear the screen', run: () => (out.innerHTML = '') },

@@ -13,7 +13,7 @@ import { links } from '../data/site';
     </h1>
     <p class="intro mt-8 max-w-[36rem] text-lg text-muted md:text-xl">
       <span class="text-text">I’m a full-stack developer in Minneapolis.</span> By day I work on C# services and cloud infrastructure at
-      KorTerra. The rest of the time I’m studying computer science at the U of M or adding something new to the party games I built for my friends.
+      KorTerra. The rest of the time I’m studying computer science at the U&nbsp;of&nbsp;M or adding something new to the party games I built for my friends.
     </p>
     <div class="actions mt-9 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
       <div class="flex flex-wrap gap-3">
@@ -80,6 +80,17 @@ import { links } from '../data/site';
     hero.removeEventListener('pointermove', onMove);
   };
   hero.addEventListener('pointermove', onMove);
+  // Only offer the hint when this screen actually has a skier (narrow screens don't), and word it for touch.
+  const syncHint = () => {
+    hintEl.textContent = matchMedia('(pointer: coarse)').matches ? 'Drag the skier down the mountain.' : 'Hover over the mountains or ski them.';
+    hintEl.style.visibility = scene.runInfo() ? '' : 'hidden';
+  };
+  requestAnimationFrame(syncHint);
+  let hintTimer = 0;
+  addEventListener('resize', () => {
+    clearTimeout(hintTimer);
+    hintTimer = window.setTimeout(syncHint, 300);
+  });
   // Measure the period again once the name has finished rising into place.
   document.querySelector('.name')?.addEventListener('animationend', () => scene.remeasure());
 </script>

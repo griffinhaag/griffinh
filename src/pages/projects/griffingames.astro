@@ -15,7 +15,7 @@ const gallery = [
   },
   {
     game: 'Truth or Griddy',
-    about: 'Four themed decks of about 500 prompts each. Answer the question, or hit the griddy.',
+    about: 'Four themed decks of about 600 prompts each. Answer the question, or hit the griddy.',
     shots: [
       { src: 'truth-or-griddy-categories.jpg', alt: 'Truth or Griddy deck picker with four categories' },
       { src: 'truth-or-griddy-question.jpg', alt: 'A Truth or Griddy question card' },
@@ -81,8 +81,46 @@ const hardParts = [
         The TV is the host screen. Every phone is a controller. A Node server holds each room’s state and pushes it to every screen over Socket.IO whenever
         anything changes.
       </p>
-      <figure class="mt-10 overflow-x-auto rounded-2xl border border-line bg-ink-2 p-5 md:p-8">
-        <svg viewBox="0 0 760 300" class="w-full min-w-[560px]" role="img" aria-labelledby="arch-title">
+      <figure class="mt-10 rounded-2xl border border-line bg-ink-2 p-5 md:p-8">
+        <!-- Phones get a stacked version of the same diagram, so nothing is cut off. -->
+        <svg viewBox="0 0 340 510" class="mx-auto w-full max-w-[22rem] sm:hidden" role="img" aria-labelledby="arch-title-m">
+          <title id="arch-title-m">Architecture: the host screen and phones connect to the Socket.IO server, which calls Groq to grade free-response answers.</title>
+          <defs>
+            <marker id="ahm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#8a93ad" /></marker>
+          </defs>
+          <g font-family="Instrument Sans, sans-serif" font-size="13" fill="#e6e9f2">
+            <rect x="8" y="8" width="152" height="98" rx="12" fill="#161d33" stroke="#2a3350" />
+            <text x="22" y="38" font-family="Jost Variable, sans-serif" font-size="17" font-weight="600">Host screen</text>
+            <text x="22" y="62" fill="#8a93ad">TV or laptop</text>
+            <text x="22" y="82" fill="#8a93ad">Questions, scores</text>
+            <rect x="180" y="8" width="152" height="98" rx="12" fill="#161d33" stroke="#2a3350" />
+            <text x="194" y="38" font-family="Jost Variable, sans-serif" font-size="17" font-weight="600">Phones</text>
+            <text x="194" y="62" fill="#8a93ad">Join with a code</text>
+            <text x="194" y="82" fill="#8a93ad">Buzz in, answer</text>
+            <rect x="60" y="172" width="220" height="170" rx="12" fill="#161d33" stroke="#7a1f2e" />
+            <text x="80" y="202" font-family="Jost Variable, sans-serif" font-size="17" font-weight="600">Game server</text>
+            <text x="80" y="225" fill="#8a93ad">Node, Express, Socket.IO</text>
+            <text x="80" y="256">RoomManager</text>
+            <text x="80" y="277">GameEngine</text>
+            <text x="80" y="298">Question banks</text>
+            <text x="80" y="326" fill="#8a93ad">Render</text>
+            <rect x="95" y="408" width="150" height="92" rx="12" fill="#161d33" stroke="#2a3350" />
+            <text x="115" y="438" font-family="Jost Variable, sans-serif" font-size="17" font-weight="600">Groq</text>
+            <text x="115" y="461" fill="#8a93ad">Llama 3.1</text>
+            <text x="115" y="482" fill="#8a93ad">Grades answers</text>
+          </g>
+          <g stroke="#8a93ad" stroke-width="1.5" fill="none">
+            <path d="M84 108 C84 140 130 140 130 170" marker-start="url(#ahm)" marker-end="url(#ahm)" />
+            <path d="M256 108 C256 140 210 140 210 170" marker-start="url(#ahm)" marker-end="url(#ahm)" />
+            <path d="M170 344 V406" marker-start="url(#ahm)" marker-end="url(#ahm)" stroke-dasharray="4 4" />
+          </g>
+          <g font-family="Instrument Sans, sans-serif" font-size="12" fill="#a9b8ff">
+            <text x="14" y="146">room state</text>
+            <text x="248" y="146">buzz, answers</text>
+            <text x="180" y="380">grading</text>
+          </g>
+        </svg>
+        <svg viewBox="0 0 760 300" class="hidden w-full sm:block" role="img" aria-labelledby="arch-title">
           <title id="arch-title">Architecture: the host screen and phones connect to the Socket.IO server, which calls Groq to grade free-response answers.</title>
           <defs>
             <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#8a93ad" /></marker>
@@ -119,7 +157,7 @@ const hardParts = [
           </g>
           <g font-family="Instrument Sans, sans-serif" font-size="12" fill="#a9b8ff">
             <text x="218" y="72">room state</text>
-            <text x="218" y="250">buzz, answers</text>
+            <text x="218" y="268">buzz, answers</text>
             <text x="520" y="145">grading</text>
           </g>
         </svg>
