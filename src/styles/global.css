@@ -1,0 +1,197 @@
+@import "tailwindcss";
+@import "@fontsource-variable/jost";
+@import "@fontsource/instrument-sans/400.css";
+@import "@fontsource/instrument-sans/500.css";
+@import "@fontsource/instrument-sans/600.css";
+@import "@fontsource-variable/jetbrains-mono";
+
+@theme {
+  --color-ink: #0b1020;
+  --color-ink-2: #10172b;
+  --color-slate: #161d33;
+  --color-line: #2a3350;
+  --color-text: #e6e9f2;
+  --color-muted: #8a93ad;
+  --color-wine: #7a1f2e;
+  --color-frost: #b9c3dc;
+  --color-blue: #6e8bff;
+  --color-blue-soft: #a9b8ff;
+  --color-mist: #9fb2cf; /* light blue-grey accent for labels, dates, and markers */
+
+  --font-display: "Jost Variable", "Futura", "Century Gothic", sans-serif;
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+  body {
+    background: var(--color-ink);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--color-wine) 70%, transparent);
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-blue);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; }
+  /* A whisper of film grain over everything, so the dark navy never looks flat. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 65;
+    pointer-events: none;
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  /* Let grid items shrink, so wide content (chip rows, diagrams) scrolls inside them instead of widening the page. */
+  .grid > * { min-width: 0; }
+  p { text-wrap: pretty; }
+}
+
+@layer components {
+  .wrap {
+    width: 100%;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .wrap { padding-inline: 2rem; }
+  }
+
+  /* One rhythm for every section: the same rule, the same spacing, the same two columns. */
+  /* Decorative glows can reach past a section's edges; clip them so the page never scrolls sideways. */
+  .section { padding-block: 3rem; overflow-x: clip; }
+  .hero + .section { padding-top: 0; }
+  .section .split,
+  .section .row {
+    padding-top: 4rem;
+  }
+  .split,
+  .row {
+    display: grid;
+    gap: 2.5rem;
+  }
+  .split > *,
+  .row > * { min-width: 0; }
+  @media (min-width: 1024px) {
+    .section { padding-block: 4rem; }
+    .section .split,
+    .section .row { padding-top: 5rem; }
+    .split,
+    .row {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+      gap: 4rem;
+    }
+  }
+  /* Alternate sections sit on a slightly lighter band, so the page reads in clear chapters. */
+  .section.band {
+    background:
+      radial-gradient(55% 45% at 0% 0%, rgba(122, 31, 46, 0.16), transparent 70%),
+      radial-gradient(50% 50% at 100% 100%, rgba(110, 139, 255, 0.09), transparent 70%),
+      linear-gradient(180deg, #0f172c 0%, #172241 50%, #0f172c 100%);
+    border-block: 1px solid color-mix(in oklab, var(--color-line) 80%, transparent);
+  }
+
+  /* Panels give the things worth reading first a little lift off the page. */
+  /* The border is a gradient: blue-grey light catching one corner, maroon the other. */
+  .panel {
+    border-radius: 1.25rem;
+    border: 1px solid transparent;
+    background:
+      linear-gradient(180deg, #172039, #121a30) padding-box,
+      linear-gradient(140deg, rgba(159, 178, 207, 0.42), rgba(42, 51, 80, 0.7) 30%, rgba(42, 51, 80, 0.7) 70%, rgba(122, 31, 46, 0.6)) border-box;
+    box-shadow: 0 30px 60px -40px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    padding: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    .panel { padding: 2rem; }
+  }
+  .panel-sm { padding: 1.25rem; }
+  .meta { color: var(--color-mist); }
+
+  /* Rows inside a section keep the two columns but drop the rule. */
+  .section .row.plain { border-top: 0; padding-top: 0; }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2.25rem, 4.6vw, 3.5rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  /* The maroon period is the site's signature mark. */
+  .dot { color: var(--color-wine); transition: color 300ms, text-shadow 300ms; }
+  .konami .dot { text-shadow: 0 0 22px color-mix(in oklab, var(--color-wine) 80%, white); }
+
+  .link {
+    color: var(--color-blue-soft);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklab, var(--color-blue) 45%, transparent);
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+    transition: color 150ms, text-decoration-color 150ms;
+  }
+  .link:hover { color: #fff; text-decoration-color: var(--color-wine); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 2.875rem;
+    padding-inline: 1.25rem;
+    border-radius: 999px;
+    font-weight: 500;
+    font-size: 0.975rem;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: transform 160ms var(--ease-out-quint), background-color 160ms, border-color 160ms, color 160ms;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary {
+    background: linear-gradient(180deg, #8a2536, var(--color-wine));
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 8px 24px -12px rgba(122, 31, 46, 0.9);
+  }
+  .btn-ghost { border: 1px solid var(--color-line); color: var(--color-text); }
+  @media (hover: hover) {
+    .btn-primary:hover { background: linear-gradient(180deg, #9a2b3e, #8c2636); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 10px 30px -10px rgba(140, 38, 54, 0.95); }
+    .btn-ghost:hover { border-color: var(--color-muted); background: var(--color-slate); }
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 0.8125rem;
+    line-height: 1;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid color-mix(in oklab, var(--color-mist) 28%, transparent);
+    background: color-mix(in oklab, var(--color-mist) 7%, transparent);
+    color: var(--color-mist);
+  }
+}

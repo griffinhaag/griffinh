@@ -1,0 +1,62 @@
+---
+import CaseStudy from '../../layouts/CaseStudy.astro';
+import DayOneDemo from '../../components/DayOneDemo.astro';
+
+const built = [
+  {
+    title: 'A filterable video library',
+    body: 'Students filter by platform (Windows, Mac, Linux) and topic, or search by title. Titles and descriptions come from the YouTube Data API, so the list only stores video IDs.',
+  },
+  {
+    title: 'Accounts',
+    body: 'Students can register and log in. Passwords are hashed in the browser with SHA-256 before they’re stored.',
+  },
+  {
+    title: 'An admin dashboard',
+    body: 'Admins add videos by pasting a YouTube URL, and manage the list of platforms and categories without touching code.',
+  },
+  {
+    title: 'Fully static',
+    body: 'The brief called for a static site, so it runs from an S3 bucket or straight from index.html. Because of that, login is simulated on the client. It demonstrates the flow, but it isn’t real authentication.',
+  },
+];
+---
+
+<CaseStudy
+  title="DayONE"
+  summary="A help site for new Dunwoody College students. Short video tutorials for fixing common setup problems on the first day, sorted by platform and topic."
+  meta={[
+    { label: 'Role', value: 'Programming, on a team of two. Lucas Kells handled the AWS deployment.' },
+    { label: 'Timeline', value: 'Capstone, 2025' },
+    { label: 'Stack', value: 'JavaScript, Bootstrap, YouTube Data API, AWS S3' },
+  ]}
+  links={[{ label: 'View the code', href: 'https://github.com/griffinhaag/dayone', primary: true }]}
+  next={{ label: 'GriffinGames', href: '/projects/griffingames' }}
+>
+  <div class="wrap mt-16">
+    <DayOneDemo tall />
+    <p class="mt-3 text-sm text-muted">This is a working copy with the real video list. Log in to try the admin tools.</p>
+  </div>
+
+  <section class="wrap mt-24"><div class="row border-t border-line pt-16">
+    <h2 class="font-display text-3xl font-semibold tracking-tight">The problem</h2>
+    <p class="max-w-[62ch] text-lg text-muted">
+      New students can lose their first day to setup problems: lockdown browsers, unfamiliar operating systems, and tools they’ve never used. DayONE
+      collects short video fixes in one place and filters them to the computer each student is using.
+    </p>
+  </div>
+  </section>
+
+  <section class="wrap mt-24"><div class="row border-t border-line pt-16">
+    <h2 class="font-display text-3xl font-semibold tracking-tight">What I built</h2>
+    <ul class="grid gap-x-10 gap-y-10 md:grid-cols-2">
+      {built.map((p) => (
+        <li>
+          <h3 class="font-display text-xl font-medium">{p.title}</h3>
+          <p class="mt-2 text-muted">{p.body}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+  </section>
+</CaseStudy>

@@ -1,0 +1,53 @@
+---
+// A minimal browser window used to frame project previews.
+// `tilt` leans static images slightly toward the pointer. Interactive previews stay flat,
+// because transforms throw off native popups and make click targets drift.
+interface Props {
+  url: string;
+  tilt?: boolean;
+  class?: string;
+}
+const { url, tilt = false, class: className = '' } = Astro.props;
+---
+
+<div class={`frame-wrap ${className}`} data-tilt={tilt ? '' : undefined}>
+  <div class="frame overflow-hidden rounded-xl border border-line bg-ink-2 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.8)]">
+    <div class="flex h-9 items-center gap-3 border-b border-line px-3.5">
+      <span class="flex gap-1.5" aria-hidden="true">
+        <i class="size-2.5 rounded-full bg-line"></i><i class="size-2.5 rounded-full bg-line"></i><i class="size-2.5 rounded-full bg-line"></i>
+      </span>
+      <span class="truncate rounded-md bg-ink px-2.5 py-0.5 text-xs text-muted">{url}</span>
+      <slot name="toolbar" />
+    </div>
+    <div class="relative">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<style>
+  [data-tilt] { perspective: 1200px; }
+  [data-tilt] .frame {
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 500ms var(--ease-out-quint);
+  }
+</style>
+
+<script>
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (!reduced && fine) {
+    document.querySelectorAll<HTMLElement>('[data-tilt]').forEach((el) => {
+      const frame = el.querySelector<HTMLElement>('.frame')!;
+      el.addEventListener('pointermove', (e) => {
+        const r = el.getBoundingClientRect();
+        frame.style.setProperty('--ry', `${((e.clientX - r.left) / r.width - 0.5) * 4}deg`);
+        frame.style.setProperty('--rx', `${(0.5 - (e.clientY - r.top) / r.height) * 3}deg`);
+      });
+      el.addEventListener('pointerleave', () => {
+        frame.style.setProperty('--rx', '0deg');
+        frame.style.setProperty('--ry', '0deg');
+      });
+    });
+  }
+</script>

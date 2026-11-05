@@ -1,0 +1,171 @@
+---
+import Section from './Section.astro';
+import GamesPreview from './GamesPreview.astro';
+import DayOneDemo from './DayOneDemo.astro';
+import { builds, clients, links } from '../data/site';
+---
+
+<Section id="projects" title="Things I’ve built" sticky={false} band>
+  <p class="max-w-[38rem] text-lg text-muted lg:pt-3 lg:text-xl">
+    <span class="text-text">The two I’m proudest of come first, and both are playable right on this page.</span> After those are smaller
+    projects from school and teaching, and the websites I’ve built for clients.
+  </p>
+
+  <Fragment slot="after">
+    <!-- Featured projects: one card each, the story on the left and the working preview on the right. -->
+    <article class="feature panel mt-14">
+      <div class="feature-grid">
+        <div>
+          <p class="meta text-sm">Side project, 2025 – present</p>
+          <h3 class="mt-2 font-display text-4xl font-semibold tracking-tight">GriffinGames</h3>
+          <p class="mt-4 text-lg">
+            Party games I made for game nights with my friends. One person puts it on the TV, and everyone else joins from their phone with a room code.
+          </p>
+          <ul class="mt-6 space-y-3 text-muted">
+            <li class="fact">LOCKED IN is a buzzer trivia game with about 6,000 questions across 11 categories.</li>
+            <li class="fact">A Node and Socket.IO server keeps every screen in sync, decides who buzzed first, and lets people rejoin when their phone drops off Wi‑Fi.</li>
+            <li class="fact">Typed answers are graded by an LLM, so a typo or a last name alone still counts.</li>
+          </ul>
+          <div class="feature-foot">
+            <p class="flex flex-wrap gap-2">
+              {['JavaScript', 'Node.js', 'Socket.IO', 'Express', 'Groq', 'Render', 'Netlify'].map((t) => <span class="tag">{t}</span>)}
+            </p>
+            <div class="flex flex-wrap gap-3">
+              <a href="/projects/griffingames" class="btn btn-primary">How I built it</a>
+              <a href={links.games} class="btn btn-ghost" target="_blank" rel="noopener">Play the real thing</a>
+            </div>
+          </div>
+        </div>
+        <div>
+          <GamesPreview />
+        </div>
+      </div>
+    </article>
+
+    <article class="feature panel mt-8">
+      <div class="feature-grid">
+        <div>
+          <p class="meta text-sm">Dunwoody capstone, 2025</p>
+          <h3 class="mt-2 font-display text-4xl font-semibold tracking-tight">DayONE</h3>
+          <p class="mt-4 text-lg">
+            A help site for new Dunwoody students. It collects short videos that walk you through common setup problems, sorted by platform and topic.
+          </p>
+          <ul class="mt-6 space-y-3 text-muted">
+            <li class="fact">I wrote the application, and my teammate Lucas Kells deployed it on AWS S3.</li>
+            <li class="fact">Video titles come from the YouTube Data API. You can filter by platform and topic, or search.</li>
+            <li class="fact">Students can register and log in, and admins get a dashboard for managing videos and categories.</li>
+          </ul>
+          <p class="meta mt-6 text-sm">Go ahead and use it. Log in to try the admin tools.</p>
+          <div class="feature-foot">
+            <p class="flex flex-wrap gap-2">
+              {['JavaScript', 'Bootstrap', 'YouTube Data API', 'AWS S3'].map((t) => <span class="tag">{t}</span>)}
+            </p>
+            <div class="flex flex-wrap gap-3">
+              <a href="/projects/dayone" class="btn btn-primary">How I built it</a>
+              <a href="https://github.com/griffinhaag/dayone" class="btn btn-ghost" target="_blank" rel="noopener">View the code</a>
+            </div>
+          </div>
+        </div>
+        <div>
+          <DayOneDemo />
+        </div>
+      </div>
+    </article>
+
+    <!-- Everything else -->
+    <div class="row plain mt-24">
+      <div class="lg:sticky lg:top-28 lg:self-start">
+        <h3 class="font-display text-3xl font-semibold tracking-tight">More projects</h3>
+        <p class="mt-4 max-w-sm text-muted">Smaller things I’ve built, mostly for classes and while teaching.</p>
+      </div>
+      <ul class="border-t border-line">
+        {builds.map((b) => {
+          const Tag = b.href ? 'a' : 'div';
+          return (
+            <li class="border-b border-line">
+              <Tag
+                {...(b.href ? { href: b.href, target: '_blank', rel: 'noopener' } : {})}
+                class={`build grid gap-x-8 gap-y-2 py-5 md:grid-cols-[1fr_auto] ${b.href ? 'is-link' : ''}`}
+              >
+                <div>
+                  <p class="flex items-center gap-2.5 font-display text-xl font-medium tracking-tight">
+                    {b.name}
+                    {b.href && (
+                      <svg class="arrow text-muted" width="14" height="14" viewBox="0 0 14 14" aria-label="(GitHub)"><path d="M4 10 10 4M5 4h5v5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                    )}
+                  </p>
+                  <p class="mt-1.5 max-w-[60ch] text-muted">{b.blurb}</p>
+                </div>
+                <p class="text-sm text-muted md:max-w-[14rem] md:pt-1.5 md:text-right">{b.stack.join(', ')}</p>
+              </Tag>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+
+    <div class="row plain mt-20">
+      <div>
+        <h3 class="font-display text-3xl font-semibold tracking-tight">Client work</h3>
+        <p class="mt-4 max-w-sm text-muted">Sites I’ve designed and built for local businesses since 2023.</p>
+      </div>
+      <ul class="grid gap-4 sm:grid-cols-3">
+        {clients.map((c) => (
+          <li class="rounded-xl border border-line p-5">
+            <p class="font-display text-xl font-medium tracking-tight">
+              {c.href ? <a href={c.href} class="link !text-text" target="_blank" rel="noopener">{c.name}</a> : c.name}
+            </p>
+            <p class="mt-1 text-muted">{c.what}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </Fragment>
+</Section>
+
+<style>
+  .feature { padding: 1.5rem; }
+  @media (min-width: 768px) { .feature { padding: 2.25rem; } }
+  .feature-grid { display: grid; gap: 2rem; }
+  .feature-grid > * { min-width: 0; }
+  @media (min-width: 1024px) {
+    .feature-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 3rem; align-items: center; }
+  }
+  .feature-foot {
+    margin-top: 1.75rem;
+    display: grid;
+    gap: 1.25rem;
+  }
+  .fact { position: relative; padding-left: 1.1rem; }
+  .fact::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.68em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-mist);
+  }
+  .build { position: relative; transition: padding 250ms var(--ease-out-quint); }
+  .arrow { transition: transform 200ms var(--ease-out-quint), color 200ms; }
+  @media (hover: hover) {
+    .build.is-link:hover { padding-left: 0.75rem; }
+    .build.is-link:hover .arrow { transform: translate(2px, -2px); color: var(--color-text); }
+    .build.is-link::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 1.5rem;
+      bottom: 1.5rem;
+      width: 2px;
+      background: var(--color-wine);
+      transform: scaleY(0);
+      transition: transform 250ms var(--ease-out-quint);
+    }
+    .build.is-link:hover::before { transform: scaleY(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .build, .arrow, .build::before { transition: none !important; }
+  }
+</style>

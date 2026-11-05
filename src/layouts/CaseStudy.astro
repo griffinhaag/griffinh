@@ -1,0 +1,58 @@
+---
+import Layout from './Layout.astro';
+
+interface Props {
+  title: string;
+  summary: string;
+  meta: { label: string; value: string }[];
+  links: { label: string; href: string; primary?: boolean }[];
+  next: { label: string; href: string };
+}
+const { title, summary, meta, links, next } = Astro.props;
+---
+
+<Layout title={`${title}, a project by Griffin Haag`} description={summary}>
+  <article class="pt-28 md:pt-36">
+    <header class="wrap">
+      <a href="/#projects" class="back inline-flex items-center gap-2 text-sm text-muted hover:text-text">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M9 3 5 7l4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        All projects
+      </a>
+      <h1 class="mt-6 font-display text-[clamp(3.25rem,10vw,7.5rem)] leading-[0.9] font-semibold tracking-[-0.04em]">
+        {title}<span class="dot">.</span>
+      </h1>
+      <p class="mt-6 max-w-2xl text-xl text-muted">{summary}</p>
+
+      <dl class="mt-10 grid gap-6 border-y border-line py-6 sm:grid-cols-3">
+        {meta.map((m) => (
+          <div>
+            <dt class="text-sm text-muted">{m.label}</dt>
+            <dd class="mt-1">{m.value}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        {links.map((l) => (
+          <a href={l.href} class={`btn ${l.primary ? 'btn-primary' : 'btn-ghost'}`} target="_blank" rel="noopener">{l.label}</a>
+        ))}
+      </div>
+    </header>
+
+    <slot />
+
+    <nav class="wrap mt-24 mb-8 border-t border-line pt-10" aria-label="Next project">
+      <p class="text-sm text-muted">Next project</p>
+      <a href={next.href} class="next mt-2 inline-block font-display text-4xl font-semibold tracking-tight md:text-6xl">
+        {next.label}<span class="dot">.</span>
+      </a>
+    </nav>
+  </article>
+
+</Layout>
+
+<style>
+  .next { transition: color 200ms; }
+  @media (hover: hover) { .next:hover { color: var(--color-blue-soft); } }
+</style>
+

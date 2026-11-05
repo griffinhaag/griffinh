@@ -1,0 +1,118 @@
+---
+import Section from './Section.astro';
+import { links } from '../data/site';
+// Get a free access key at web3forms.com and put it in .env as PUBLIC_WEB3FORMS_KEY.
+// Without a key, the form opens a pre-filled email instead.
+const formKey = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
+---
+
+<Section id="contact" title="Let’s talk" lede="I’m looking for software engineering roles and internships, and I still take on freelance websites. Email is the fastest way to reach me." sticky={false}>
+  <div slot="aside">
+      <div class="mt-8 flex flex-col items-start gap-3">
+        <button type="button" class="btn btn-primary" data-copy={links.email}>
+          <span data-copy-label>Copy my email</span>
+        </button>
+        <a class="link" href={`mailto:${links.email}`}>{links.email}</a>
+      </div>
+
+      <ul class="mt-8 space-y-2.5">
+        <li><a class="link" href={links.linkedin} target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a class="link" href={links.github} target="_blank" rel="noopener">GitHub</a></li>
+        <li><a class="link" href={links.resume} target="_blank" rel="noopener">Resume (PDF)</a></li>
+      </ul>
+  </div>
+
+    <form id="contact-form" class="panel grid gap-5" data-key={formKey} novalidate>
+      <input type="checkbox" name="botcheck" class="hidden" tabindex="-1" autocomplete="off" />
+      <div class="grid gap-5 sm:grid-cols-2">
+        <label class="field">
+          <span>Name</span>
+          <input name="name" required autocomplete="name" />
+        </label>
+        <label class="field">
+          <span>Email</span>
+          <input name="email" type="email" required autocomplete="email" />
+        </label>
+      </div>
+      <label class="field">
+        <span>Message</span>
+        <textarea name="message" rows="6" required></textarea>
+      </label>
+      <div class="flex flex-wrap items-center gap-4">
+        <button type="submit" class="btn btn-primary">Send message</button>
+        <p class="text-sm text-muted" data-status role="status"></p>
+      </div>
+    </form>
+</Section>
+
+<style>
+  .field { display: grid; gap: 0.5rem; font-size: 0.95rem; }
+  .field span { color: var(--color-muted); }
+  .field input, .field textarea {
+    width: 100%;
+    border-radius: 0.6rem;
+    border: 1px solid var(--color-line);
+    background: var(--color-ink);
+    padding: 0.75rem 0.9rem;
+    font-size: 1rem; /* 16px keeps iOS from zooming in */
+    color: var(--color-text);
+    transition: border-color 150ms;
+  }
+  .field textarea { resize: vertical; min-height: 8rem; }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--color-blue); }
+  .field [aria-invalid='true'] { border-color: var(--color-wine); }
+</style>
+
+<script>
+  const copyBtn = document.querySelector<HTMLButtonElement>('[data-copy]');
+  const copyLabel = copyBtn?.querySelector('[data-copy-label]');
+  copyBtn?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(copyBtn.dataset.copy!);
+      if (copyLabel) copyLabel.textContent = 'Copied to clipboard';
+    } catch {
+      window.location.href = `mailto:${copyBtn.dataset.copy}`;
+    }
+    setTimeout(() => copyLabel && (copyLabel.textContent = 'Copy my email'), 2200);
+  });
+
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const status = form?.querySelector<HTMLElement>('[data-status]');
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fields = [...form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input[required], textarea[required]')];
+    let firstBad: HTMLElement | null = null;
+    fields.forEach((f) => {
+      const ok = f.checkValidity() && f.value.trim() !== '';
+      f.setAttribute('aria-invalid', String(!ok));
+      if (!ok && !firstBad) firstBad = f;
+    });
+    if (firstBad) {
+      (firstBad as HTMLElement).focus();
+      status!.textContent = 'Add your name, a valid email, and a message.';
+      return;
+    }
+
+    const data = new FormData(form);
+    const key = form.dataset.key;
+    if (!key) {
+      const body = `${data.get('message')}\n\n${data.get('name')} (${data.get('email')})`;
+      window.location.href = `mailto:griffinhaag00@gmail.com?subject=${encodeURIComponent('Hello from griffinh.me')}&body=${encodeURIComponent(body)}`;
+      status!.textContent = 'Opening your email app…';
+      return;
+    }
+
+    data.append('access_key', key);
+    data.append('subject', `New message from ${data.get('name')} via griffinh.me`);
+    status!.textContent = 'Sending…';
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: data });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.message);
+      form.reset();
+      status!.textContent = 'Message sent. I’ll get back to you soon.';
+    } catch {
+      status!.textContent = 'That didn’t send. Email me directly at griffinhaag00@gmail.com.';
+    }
+  });
+</script>

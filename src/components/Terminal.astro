@@ -1,0 +1,289 @@
+---
+// The hidden terminal. Opens with the ` key, by typing "griffin", or from the footer.
+import questions from '../data/lockin.json';
+import { links } from '../data/site';
+---
+
+<div id="term" class="term fixed inset-x-3 bottom-3 z-[70] hidden sm:inset-x-auto sm:right-5 sm:bottom-5 sm:w-[34rem]" role="dialog" aria-label="Terminal" data-questions={JSON.stringify(questions)} data-links={JSON.stringify(links)}>
+  <div class="overflow-hidden rounded-xl border border-line bg-[#070b17]/95 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)] backdrop-blur-md">
+    <div class="flex h-9 items-center justify-between border-b border-line px-3.5">
+      <span class="font-mono text-xs text-muted">guest@griffinh.me</span>
+      <button type="button" id="term-close" class="grid size-6 place-items-center rounded text-muted hover:text-text" aria-label="Close terminal">
+        <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="m1 1 8 8M9 1 1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
+      </button>
+    </div>
+    <div id="term-out" class="h-[min(22rem,55svh)] overflow-y-auto px-4 pt-3 pb-1 font-mono text-[0.8rem] leading-relaxed" aria-live="polite"></div>
+    <form id="term-form" class="flex items-center gap-2 px-4 pb-3.5 font-mono text-[0.8rem]" autocomplete="off">
+      <label for="term-in" class="text-wine">❯</label>
+      <input id="term-in" class="min-w-0 flex-1 bg-transparent text-text caret-wine outline-none" spellcheck="false" autocapitalize="off" aria-label="Command" />
+    </form>
+  </div>
+</div>
+
+<div id="toast" class="pointer-events-none fixed top-20 left-1/2 z-[80] -translate-x-1/2 rounded-full border border-line bg-slate px-4 py-2 text-sm opacity-0 transition-opacity duration-300" role="status"></div>
+
+<style>
+  .term.open { display: block; }
+  @media (prefers-reduced-motion: no-preference) {
+    .term.open { animation: term-in 260ms var(--ease-out-quint); }
+  }
+  @keyframes term-in { from { opacity: 0; transform: translateY(12px) scale(0.98); } }
+  #term-out :global(.c) { color: var(--color-blue-soft); }
+  #term-out :global(.r) { color: var(--color-frost); }
+  #term-out :global(.m) { color: var(--color-muted); }
+  #term-out :global(.g) { color: #7ee2a8; }
+  #term-out :global(pre) { white-space: pre-wrap; font: inherit; margin: 0; }
+  #term-out :global(a) { color: var(--color-blue-soft); text-decoration: underline; }
+</style>
+
+<script>
+  type Q = { cat: string; q: string; a: string; c: string[] };
+  const term = document.getElementById('term')!;
+  const out = document.getElementById('term-out')!;
+  const form = document.getElementById('term-form') as HTMLFormElement;
+  const input = document.getElementById('term-in') as HTMLInputElement;
+  const questions: Q[] = JSON.parse(term.dataset.questions!);
+  const L = JSON.parse(term.dataset.links!);
+  const toast = document.getElementById('toast')!;
+
+  let lastFocus: Element | null = null;
+  let booted = false;
+  const history: string[] = [];
+  let hIndex = 0;
+  let pending: { q: Q; choices: string[] } | null = null;
+
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+  const print = (html: string) => {
+    const pre = document.createElement('pre');
+    pre.innerHTML = html;
+    out.appendChild(pre);
+    out.scrollTop = out.scrollHeight;
+  };
+  const showToast = (msg: string) => {
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    setTimeout(() => (toast.style.opacity = '0'), 2600);
+  };
+  const burst = () => (window as any).__scene?.burst();
+  const goTo = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    else window.location.href = `/#${id}`;
+  };
+
+  const sections = ['experience', 'projects', 'toolbox', 'about', 'contact'];
+
+  const commands: Record<string, { help?: string; run: (args: string[]) => void }> = {
+    help: {
+      help: 'list commands',
+      run: () => {
+        const rows = Object.entries(commands)
+          .filter(([, c]) => c.help)
+          .map(([k, c]) => `  <span class="c">${k.padEnd(11)}</span><span class="m">${c.help}</span>`);
+        print(rows.join('\n') + `\n<span class="m">  There are a few more if you go looking.</span>`);
+      },
+    },
+    whoami: {
+      help: 'who runs this site',
+      run: () => print(`Griffin Haag. Full-stack developer in Minneapolis.\nSoftware Developer at KorTerra, CS student at the University of Minnesota.`),
+    },
+    neofetch: {
+      help: 'system info, sort of',
+      run: () =>
+        print(
+          `<span class="r">   ●●●     </span><span class="c">griffin</span>@<span class="c">griffinh.me</span>
+<span class="r">  ●   ●    </span>-------------------
+<span class="r">  ●   ●    </span><span class="c">OS</span>        Astro + Tailwind
+<span class="r">   ●●●  ●  </span><span class="c">Uptime</span>    coding since 2013
+<span class="r">           </span><span class="c">Work</span>      C#, .NET, Azure, Terraform, Kubernetes
+<span class="r">           </span><span class="c">Web</span>       JavaScript, Node, React, PHP, Socket.IO
+<span class="r">           </span><span class="c">Certs</span>     AWS Certified Cloud Practitioner
+<span class="r">           </span><span class="c">Languages</span> English, Español
+<span class="r">           </span><span class="c">Rank</span>      Eagle Scout`,
+        ),
+    },
+    ls: {
+      help: 'list sections',
+      run: () => print(sections.map((s) => `<span class="c">${s}/</span>`).join('  ') + `  <span class="c">projects/griffingames</span>  <span class="c">projects/dayone</span>`),
+    },
+    cd: {
+      help: 'jump to a section, e.g. cd about',
+      run: ([to]) => {
+        const t = (to || '').replace(/\/$/, '').replace(/^~?\/?/, '');
+        if (!t || t === '~' || t === '..') return goTo('top');
+        if (t.startsWith('projects/')) return commands.open.run([t.split('/')[1]]);
+        if (sections.includes(t)) return goTo(t);
+        print(`<span class="r">cd: no such section: ${esc(t)}</span>`);
+      },
+    },
+    open: {
+      help: 'open a project page: griffingames, dayone',
+      run: ([p]) => {
+        if (p === 'griffingames' || p === 'dayone') window.location.href = `/projects/${p}`;
+        else print(`<span class="m">Try</span> open griffingames <span class="m">or</span> open dayone`);
+      },
+    },
+    play: {
+      help: 'play GriffinGames in a new tab',
+      run: () => {
+        print(`Starting GriffinGames… <a href="${L.games}" target="_blank" rel="noopener">griffinhgames.xyz</a>`);
+        window.open(L.games, '_blank', 'noopener');
+      },
+    },
+    lockin: {
+      help: 'one LOCKED IN trivia question',
+      run: () => {
+        const q = questions[Math.floor(Math.random() * questions.length)];
+        const choices = [...q.c].sort(() => Math.random() - 0.5);
+        pending = { q, choices };
+        print(
+          `<span class="r">LOCKED IN</span> <span class="m">${esc(q.cat === 'movies-tv' ? 'movies & tv' : q.cat.replace('-', ' '))}</span>\n${esc(q.q)}\n` +
+            choices.map((c, i) => `  <span class="c">${i + 1}</span> ${esc(c)}`).join('\n') +
+            `\n<span class="m">Type 1 to 4 to lock in.</span>`,
+        );
+      },
+    },
+    resume: { help: 'open my resume', run: () => (print('Opening resume…'), window.open(L.resume, '_blank', 'noopener')) },
+    github: { help: 'open my GitHub', run: () => (print('Opening GitHub…'), window.open(L.github, '_blank', 'noopener')) },
+    linkedin: { help: 'open my LinkedIn', run: () => (print('Opening LinkedIn…'), window.open(L.linkedin, '_blank', 'noopener')) },
+    email: {
+      help: 'copy my email address',
+      run: async () => {
+        try {
+          await navigator.clipboard.writeText(L.email);
+          print(`<span class="g">Copied</span> ${L.email}`);
+        } catch {
+          print(`<a href="mailto:${L.email}">${L.email}</a>`);
+        }
+      },
+    },
+    clear: { help: 'clear the screen', run: () => (out.innerHTML = '') },
+    exit: { help: 'close the terminal', run: () => close() },
+
+    // Unlisted
+    sudo: {
+      run: (args) => {
+        if (args.join(' ').toLowerCase() === 'hire griffin') {
+          print(`[sudo] password for recruiter: ********\n<span class="g">Access granted.</span> Opening a new email to Griffin…`);
+          burst();
+          setTimeout(() => (window.location.href = `mailto:${L.email}?subject=${encodeURIComponent("Let's talk")}`), 900);
+        } else print(`<span class="r">guest is not in the sudoers file.</span> <span class="m">Maybe try</span> sudo hire griffin`);
+      },
+    },
+    hola: { run: () => print('¡Hola! Sí, hablo español. ¿En qué te puedo ayudar?') },
+    eagle: { run: () => print('Be Prepared. <span class="m">Eagle Scout, Boy Scouts of America.</span>') },
+    hello: { run: () => print('Hey! Type <span class="c">help</span> to see what I can do.') },
+    secret: { run: () => print('<span class="m">Close the terminal and try</span> ↑ ↑ ↓ ↓ ← → ← → B A') },
+    rm: { run: () => print('<span class="r">Nice try.</span> This site is static. There’s nothing to delete.') },
+    vim: { run: () => print('You can’t exit vim, but you can exit this. Type <span class="c">exit</span>.') },
+    gribble: { run: () => print('Gribble the virtual pet is feeling <span class="g">playful</span>. GET /pet/mood to confirm.') },
+    date: { run: () => print(new Date().toString()) },
+    echo: { run: (a) => print(esc(a.join(' '))) },
+    history: { run: () => print(history.map((h, i) => `  ${i + 1}  ${esc(h)}`).join('\n')) },
+  };
+  commands.español = commands.hola;
+  commands.espanol = commands.hola;
+  commands['?'] = commands.help;
+
+  function run(raw: string) {
+    const line = raw.trim();
+    print(`<span class="r">❯</span> ${esc(line)}`);
+    if (!line) return;
+    history.push(line);
+    hIndex = history.length;
+
+    if (pending && /^[1-4]$/.test(line)) {
+      const pick = pending.choices[Number(line) - 1];
+      if (pick === pending.q.a) {
+        print(`<span class="g">Correct.</span> Locked in. Type <span class="c">lockin</span> for another.`);
+        burst();
+      } else print(`<span class="r">Not quite.</span> It was ${esc(pending.q.a)}.`);
+      pending = null;
+      return;
+    }
+    pending = null;
+
+    const [name, ...args] = line.split(/\s+/);
+    const cmd = commands[name.toLowerCase()];
+    if (cmd) cmd.run(args);
+    else print(`<span class="r">command not found:</span> ${esc(name)}. <span class="m">Type</span> help`);
+  }
+
+  function open() {
+    if (term.classList.contains('open')) return input.focus();
+    lastFocus = document.activeElement;
+    term.classList.add('open');
+    if (!booted) {
+      booted = true;
+      print(`<span class="m">griffinh.me terminal. Type</span> <span class="c">help</span> <span class="m">to get started.</span>`);
+    }
+    input.focus();
+  }
+  function close() {
+    term.classList.remove('open');
+    (lastFocus as HTMLElement | null)?.focus?.();
+  }
+  (window as any).__terminal = { open, close };
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    run(input.value);
+    input.value = '';
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowUp' && history.length) {
+      e.preventDefault();
+      hIndex = Math.max(0, hIndex - 1);
+      input.value = history[hIndex];
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      hIndex = Math.min(history.length, hIndex + 1);
+      input.value = history[hIndex] ?? '';
+    } else if (e.key === 'Tab') {
+      const v = input.value.trim().toLowerCase();
+      const match = Object.keys(commands).filter((k) => commands[k].help && k.startsWith(v));
+      if (v && match.length === 1) {
+        e.preventDefault();
+        input.value = match[0] + ' ';
+      }
+    } else if (e.key === 'Escape') close();
+  });
+  document.getElementById('term-close')!.addEventListener('click', close);
+  document.querySelectorAll('[data-open-terminal]').forEach((b) => b.addEventListener('click', open));
+
+  // Global shortcuts: ` toggles, typing "griffin" opens, and the Konami code fires a burst.
+  const konami = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+  let kPos = 0;
+  let typed = '';
+  document.addEventListener('keydown', (e) => {
+    const t = e.target as HTMLElement;
+    const inField = t.closest('input, textarea, select, [contenteditable]');
+    if (e.key === 'Escape' && term.classList.contains('open')) return close();
+    if (inField || e.metaKey || e.ctrlKey || e.altKey) return;
+
+    if (e.key === '`') {
+      e.preventDefault();
+      return term.classList.contains('open') ? close() : open();
+    }
+
+    const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    kPos = k === konami[kPos] ? kPos + 1 : k === konami[0] ? 1 : 0;
+    if (kPos === konami.length) {
+      kPos = 0;
+      burst();
+      document.documentElement.classList.add('konami');
+      setTimeout(() => document.documentElement.classList.remove('konami'), 2400);
+      showToast('Cheat code accepted. Fresh powder.');
+      if (!document.getElementById('mountains')) window.location.href = '/#top';
+    }
+
+    if (e.key.length === 1) {
+      typed = (typed + e.key.toLowerCase()).slice(-7);
+      if (typed === 'griffin') {
+        e.preventDefault();
+        typed = '';
+        open();
+      }
+    }
+  });
+</script>

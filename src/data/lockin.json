@@ -1,0 +1,542 @@
+[
+ {
+  "cat": "geography",
+  "q": "Which strait connects the Atlantic and Pacific oceans?",
+  "a": "Strait of Magellan",
+  "c": [
+   "Drake Passage",
+   "Strait of Gibraltar",
+   "Bering Strait",
+   "Strait of Magellan"
+  ],
+  "e": "The Strait of Magellan, at the southern tip of South America, connects the Atlantic and Pacific oceans through Chilean waters."
+ },
+ {
+  "cat": "geography",
+  "q": "What is the capital of Finland?",
+  "a": "Helsinki",
+  "c": [
+   "Tampere",
+   "Espoo",
+   "Turku",
+   "Helsinki"
+  ],
+  "e": "Helsinki is the capital and largest city of Finland, located on the southern coast of the country by the Gulf of Finland."
+ },
+ {
+  "cat": "geography",
+  "q": "What is the most spoken language in the world?",
+  "a": "Mandarin Chinese",
+  "c": [
+   "Mandarin Chinese",
+   "English",
+   "Spanish",
+   "Hindi"
+  ],
+  "e": "Mandarin Chinese is the most spoken language by number of native speakers (about 920 million)."
+ },
+ {
+  "cat": "geography",
+  "q": "What is the name of the sea between Greece and Turkey?",
+  "a": "Aegean Sea",
+  "c": [
+   "Aegean Sea",
+   "Ionian Sea",
+   "Black Sea",
+   "Mediterranean Sea"
+  ],
+  "e": "The Aegean Sea is part of the Mediterranean, bounded by Greece to the west and north and Turkey to the east."
+ },
+ {
+  "cat": "geography",
+  "q": "Which sea is surrounded by Turkey, Romania, Ukraine, and Russia?",
+  "a": "Black Sea",
+  "c": [
+   "Caspian Sea",
+   "Aegean Sea",
+   "Marmara Sea",
+   "Black Sea"
+  ],
+  "e": "The Black Sea is bordered by Turkey, Romania, Bulgaria, Ukraine, Russia, and Georgia."
+ },
+ {
+  "cat": "science",
+  "q": "What is the name of the layer of skin where new cells are produced?",
+  "a": "Epidermis (basal layer)",
+  "c": [
+   "Epidermis (basal layer)",
+   "Dermis",
+   "Hypodermis",
+   "Stratum corneum"
+  ],
+  "e": "New skin cells are produced in the basal layer of the epidermis (stratum basale) and migrate upward as they mature."
+ },
+ {
+  "cat": "science",
+  "q": "What is the name of the brain region responsible for balance and coordination?",
+  "a": "Cerebellum",
+  "c": [
+   "Cerebellum",
+   "Cerebrum",
+   "Brain stem",
+   "Hypothalamus"
+  ],
+  "e": "The cerebellum is the part of the brain located at the back and bottom, responsible for coordinating movement, balance, and posture."
+ },
+ {
+  "cat": "science",
+  "q": "What is the phenomenon when light bends around obstacles?",
+  "a": "Diffraction",
+  "c": [
+   "Diffraction",
+   "Refraction",
+   "Reflection",
+   "Dispersion"
+  ],
+  "e": "Diffraction is the bending of waves around obstacles or through openings, observed with light, sound, and water waves."
+ },
+ {
+  "cat": "science",
+  "q": "What is the name of the force that causes objects to resist changes in their motion?",
+  "a": "Inertia",
+  "c": [
+   "Inertia",
+   "Momentum",
+   "Friction",
+   "Gravity"
+  ],
+  "e": "Inertia is the tendency of an object to remain in its current state of motion unless acted upon by an external force (Newton's First Law)."
+ },
+ {
+  "cat": "science",
+  "q": "What is the scientific name for the human species?",
+  "a": "Homo sapiens",
+  "c": [
+   "Homo sapiens",
+   "Homo erectus",
+   "Homo habilis",
+   "Australopithecus"
+  ],
+  "e": "Modern humans belong to the species Homo sapiens, which means 'wise man' in Latin."
+ },
+ {
+  "cat": "sports",
+  "q": "In the NFL, which team has the longest active losing streak in playoff history (as of 2024)?",
+  "a": "Detroit Lions",
+  "c": [
+   "Detroit Lions",
+   "Miami Dolphins",
+   "Cleveland Browns",
+   "Minnesota Vikings"
+  ],
+  "e": "The Lions held a 32-year streak without a playoff win until their 2024 run."
+ },
+ {
+  "cat": "sports",
+  "q": "Which city or metro area is associated with the NFL team Indianapolis Colts?",
+  "a": "Indianapolis",
+  "c": [
+   "Philadelphia",
+   "San Antonio",
+   "Jacksonville",
+   "Indianapolis"
+  ],
+  "e": "The Colts are Indianapolis's NFL team, so Indianapolis is the city in question."
+ },
+ {
+  "cat": "sports",
+  "q": "Which city is home to the MLB team Milwaukee Brewers?",
+  "a": "Milwaukee",
+  "c": [
+   "Boston",
+   "Vancouver",
+   "Milwaukee",
+   "New York City"
+  ],
+  "e": "The Brewers are Milwaukee's MLB club, so Milwaukee is the city this clue points to."
+ },
+ {
+  "cat": "sports",
+  "q": "Which NBA team plays its home games at the Rocket Mortgage FieldHouse?",
+  "a": "Cleveland Cavaliers",
+  "c": [
+   "Detroit Pistons",
+   "Cleveland Cavaliers",
+   "Indiana Pacers",
+   "Chicago Bulls"
+  ],
+  "e": "Cleveland Cavaliers is the franchise or venue tied to the clue, and it anchors the team's home identity."
+ },
+ {
+  "cat": "sports",
+  "q": "Which runner won the women's marathon at the 2020 Tokyo Olympics?",
+  "a": "Peres Jepchirchir",
+  "c": [
+   "Brigid Kosgei",
+   "Hellen Obiri",
+   "Sifan Hassan",
+   "Peres Jepchirchir"
+  ],
+  "e": "Peres Jepchirchir won the title or tournament."
+ },
+ {
+  "cat": "movies-tv",
+  "q": "What film features Clarice Starling as an FBI trainee?",
+  "a": "The Silence of the Lambs",
+  "c": [
+   "The Silence of the Lambs",
+   "Hannibal",
+   "Red Dragon",
+   "Manhunter"
+  ],
+  "e": "Clarice Starling is the protagonist of The Silence of the Lambs (1991), played by Jodie Foster."
+ },
+ {
+  "cat": "movies-tv",
+  "q": "Which HBO show features the Dutton family running a large Montana ranch?",
+  "a": "Yellowstone",
+  "c": [
+   "Yellowstone",
+   "Longmire",
+   "The Son",
+   "Outer Range"
+  ],
+  "e": "Yellowstone (2018–) follows John Dutton (Kevin Costner) and his family fighting to maintain control of their ranch."
+ },
+ {
+  "cat": "movies-tv",
+  "q": "What is the name of the coffee shop in Friends?",
+  "a": "Central Perk",
+  "c": [
+   "Central Perk",
+   "The Coffee Bean",
+   "Java Hut",
+   "Perks"
+  ],
+  "e": "Central Perk is the fictional coffeehouse in New York City where the Friends characters frequently hang out."
+ },
+ {
+  "cat": "movies-tv",
+  "q": "Which actress played Elsa in the Disney animated film 'Frozen'?",
+  "a": "Idina Menzel",
+  "c": [
+   "Idina Menzel",
+   "Kristen Bell",
+   "Mandy Moore",
+   "Cate Blanchett"
+  ],
+  "e": "Idina Menzel voiced Queen Elsa in Frozen (2013), including the iconic song 'Let It Go'."
+ },
+ {
+  "cat": "movies-tv",
+  "q": "What is the name of the theme park island in Jurassic World?",
+  "a": "Isla Nublar",
+  "c": [
+   "Isla Nublar",
+   "Isla Sorna",
+   "Isla Tacaño",
+   "Isla del Muerto"
+  ],
+  "e": "Both the original Jurassic Park and Jurassic World are set on Isla Nublar."
+ },
+ {
+  "cat": "history",
+  "q": "What was the name of the British queen who ruled for 63 years in the 1800s?",
+  "a": "Queen Victoria",
+  "c": [
+   "Queen Victoria",
+   "Queen Elizabeth I",
+   "Queen Mary I",
+   "Queen Anne"
+  ],
+  "e": "Queen Victoria reigned from 1837 to 1901, the second-longest reign in British history, giving her name to the Victorian Era."
+ },
+ {
+  "cat": "history",
+  "q": "The English Civil War began is most closely associated with which person, place, or idea?",
+  "a": "Parliament vs. King Charles I",
+  "c": [
+   "Bastille",
+   "Great Depression",
+   "Parliament vs. King Charles I",
+   "Northern Ireland"
+  ],
+  "e": "The English Civil War began is closely associated with Parliament vs."
+ },
+ {
+  "cat": "history",
+  "q": "The Cultural Revolution in China was launched by which leader?",
+  "a": "Mao Zedong",
+  "c": [
+   "Mao Zedong",
+   "Deng Xiaoping",
+   "Zhou Enlai",
+   "Jiang Zemin"
+  ],
+  "e": "Mao Zedong launched the Cultural Revolution in 1966 to reassert communist ideology and eliminate political rivals."
+ },
+ {
+  "cat": "history",
+  "q": "Which medieval Islamic scholar is considered the father of sociology?",
+  "a": "Ibn Khaldun",
+  "c": [
+   "Ibn Khaldun",
+   "Avicenna",
+   "Al-Ghazali",
+   "Ibn Rushd"
+  ],
+  "e": "Ibn Khaldun (1332–1406) wrote the Muqaddimah, pioneering the study of social cohesion and historical analysis."
+ },
+ {
+  "cat": "history",
+  "q": "Who built the Taj Mahal?",
+  "a": "Shah Jahan",
+  "c": [
+   "Shah Jahan",
+   "Akbar the Great",
+   "Aurangzeb",
+   "Humayun"
+  ],
+  "e": "Mughal Emperor Shah Jahan commissioned the Taj Mahal as a mausoleum for his wife Mumtaz Mahal, completed in 1643."
+ },
+ {
+  "cat": "games",
+  "q": "What is the name of the iconic orange-haired Fortnite character?",
+  "a": "Brite Bomber / various skins",
+  "c": [
+   "Brite Bomber / various skins",
+   "Default Skin",
+   "Peely",
+   "Drift"
+  ],
+  "e": "Brite Bomber (rainbow unicorn skin) and Peely (banana character) are among Fortnite's most iconic cosmetic characters."
+ },
+ {
+  "cat": "games",
+  "q": "What is the highest rank in Counter-Strike: Global Offensive?",
+  "a": "Global Elite",
+  "c": [
+   "Global Elite",
+   "Supreme Master First Class",
+   "Distinguished Master Guardian",
+   "Legendary Eagle Master"
+  ],
+  "e": "Global Elite is the highest competitive rank in Counter-Strike: Global Offensive."
+ },
+ {
+  "cat": "games",
+  "q": "What Nintendo franchise features kart racing with items?",
+  "a": "Mario Kart",
+  "c": [
+   "Mario Kart",
+   "F-Zero",
+   "Sonic Racing",
+   "Diddy Kong Racing"
+  ],
+  "e": "Mario Kart launched in 1992 on SNES and remains Nintendo's most popular multiplayer racing franchise."
+ },
+ {
+  "cat": "games",
+  "q": "In the game Diablo II, what is the final act?",
+  "a": "Act V",
+  "c": [
+   "Act IV",
+   "Act V",
+   "Act III",
+   "Act VI"
+  ],
+  "e": "Diablo II: Lord of Destruction added Act V, the expansion's content."
+ },
+ {
+  "cat": "games",
+  "q": "What is the best hand in poker?",
+  "a": "Royal Flush",
+  "c": [
+   "Four of a Kind",
+   "Straight Flush",
+   "Royal Flush",
+   "Full House"
+  ],
+  "e": "A Royal Flush is the best hand in standard poker, consisting of Ace, King, Queen, Jack, and Ten of the same suit."
+ },
+ {
+  "cat": "music",
+  "q": "What is the name of the first Beatles album released in the US?",
+  "a": "Meet the Beatles!",
+  "c": [
+   "Meet the Beatles!",
+   "Please Please Me",
+   "Introducing... The Beatles",
+   "With the Beatles"
+  ],
+  "e": "'Meet the Beatles!' was the first Capitol Records Beatles album released in the US in January 1964."
+ },
+ {
+  "cat": "music",
+  "q": "What is the name of the music term for a note that is held for its full length?",
+  "a": "Tenuto",
+  "c": [
+   "Tenuto",
+   "Staccato",
+   "Legato",
+   "Marcato"
+  ],
+  "e": "Tenuto indicates a note should be held for its full value, often with slight emphasis."
+ },
+ {
+  "cat": "music",
+  "q": "Which artist released 'Bad' and 'Billie Jean'?",
+  "a": "Michael Jackson",
+  "c": [
+   "Michael Jackson",
+   "Prince",
+   "James Brown",
+   "Rick James"
+  ],
+  "e": "Both 'Bad' (1987) and 'Billie Jean' (1982) are iconic Michael Jackson singles from his best-selling albums."
+ },
+ {
+  "cat": "music",
+  "q": "What key musical innovation did Les Paul contribute to rock music?",
+  "a": "The solid body electric guitar",
+  "c": [
+   "The solid body electric guitar",
+   "Multi-track recording",
+   "The whammy bar",
+   "Distortion pedal"
+  ],
+  "e": "Les Paul is credited with developing the solid body electric guitar and pioneering multitrack recording."
+ },
+ {
+  "cat": "music",
+  "q": "Who released 'Shape of You' which became a massive global hit?",
+  "a": "Ed Sheeran",
+  "c": [
+   "Ed Sheeran",
+   "Sam Smith",
+   "Harry Styles",
+   "Niall Horan"
+  ],
+  "e": "Ed Sheeran's 'Shape of You' from his 2017 album '÷' became one of the best-selling singles of all time."
+ },
+ {
+  "cat": "general-knowledge",
+  "q": "Which currency is the official money of Vietnam?",
+  "a": "dong",
+  "c": [
+   "dong",
+   "won",
+   "yuan",
+   "baht"
+  ],
+  "e": "dong is the official currency of Vietnam."
+ },
+ {
+  "cat": "general-knowledge",
+  "q": "Which currency is the official money of India?",
+  "a": "rupee",
+  "c": [
+   "rupee",
+   "taka",
+   "ringgit",
+   "riel"
+  ],
+  "e": "rupee is the official currency of India."
+ },
+ {
+  "cat": "general-knowledge",
+  "q": "Which planet has an orbital period of about 29 Earth years?",
+  "a": "Saturn",
+  "c": [
+   "Saturn",
+   "Venus",
+   "Mercury",
+   "Neptune"
+  ],
+  "e": "Saturn takes about 29 Earth years to complete one orbit, so its seasons last for decades."
+ },
+ {
+  "cat": "general-knowledge",
+  "q": "Which scientific law states that voltage equals current times resistance?",
+  "a": "Ohm's law",
+  "c": [
+   "law of conservation of energy",
+   "Ohm's law",
+   "Newton's second law",
+   "Archimedes' principle"
+  ],
+  "e": "Ohm's law is a foundational law used to describe force, motion, or electricity in science."
+ },
+ {
+  "cat": "general-knowledge",
+  "q": "The Pulitzer Prize is administered by which American university?",
+  "a": "Columbia University",
+  "c": [
+   "Harvard University",
+   "Yale University",
+   "Columbia University",
+   "Princeton University"
+  ],
+  "e": "The Pulitzer Prize has been administered by Columbia University in New York City since its establishment in 1917, per the wishes of newspaper publisher."
+ },
+ {
+  "cat": "pop-culture",
+  "q": "Who plays Thor in the Marvel Cinematic Universe?",
+  "a": "Chris Hemsworth",
+  "c": [
+   "Chris Evans",
+   "Chris Hemsworth",
+   "Tom Hiddleston",
+   "Oscar Isaac"
+  ],
+  "e": "Australian actor Chris Hemsworth has portrayed Thor, the Asgardian god of thunder, across multiple MCU films since 'Thor' in 2011."
+ },
+ {
+  "cat": "pop-culture",
+  "q": "Who played Star-Lord in the 'Guardians of the Galaxy' movies?",
+  "a": "Chris Pratt",
+  "c": [
+   "Chris Hemsworth",
+   "Chris Pratt",
+   "Chris Evans",
+   "Zachary Levi"
+  ],
+  "e": "Chris Pratt plays Peter Quill, aka Star-Lord, the half-human, half-alien leader of the Guardians of the Galaxy across multiple MCU films."
+ },
+ {
+  "cat": "pop-culture",
+  "q": "Who plays the Joker in the 2019 standalone film 'Joker'?",
+  "a": "Joaquin Phoenix",
+  "c": [
+   "Heath Ledger",
+   "Jared Leto",
+   "Joaquin Phoenix",
+   "Jack Nicholson"
+  ],
+  "e": "Joaquin Phoenix portrayed Arthur Fleck/Joker in the 2019 film directed by Todd Phillips, a performance that earned him the Academy Award for Best Actor."
+ },
+ {
+  "cat": "pop-culture",
+  "q": "What is the name of the famous meme featuring a dog sitting in a burning room?",
+  "a": "This is Fine",
+  "c": [
+   "This is Fine",
+   "Doge",
+   "Distracted Boyfriend",
+   "Side-Eye Chloe"
+  ],
+  "e": "The 'This is Fine' meme features a dog calmly sipping coffee while its house burns, created by KC Green in 2013."
+ },
+ {
+  "cat": "pop-culture",
+  "q": "Who played the title character in the 2023 film 'Oppenheimer'?",
+  "a": "Cillian Murphy",
+  "c": [
+   "Robert Downey Jr.",
+   "Cillian Murphy",
+   "Matt Damon",
+   "Florence Pugh"
+  ],
+  "e": "Irish actor Cillian Murphy portrayed J."
+ }
+]

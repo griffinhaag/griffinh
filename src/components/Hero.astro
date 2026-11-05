@@ -1,0 +1,85 @@
+---
+import { links } from '../data/site';
+---
+
+<section id="top" class="hero relative isolate flex touch-pan-y min-h-[100svh] flex-col justify-center overflow-hidden pt-28 pb-16 md:pt-32 md:pb-20">
+  <canvas id="mountains" class="absolute inset-0 -z-10 h-full w-full" aria-hidden="true"></canvas>
+  <div class="hero-fade pointer-events-none absolute inset-0 -z-10" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <h1 class="name font-display font-semibold">
+      <span class="line"><span>Griffin</span></span>
+      <span class="line"><span>Haag<span id="hub-dot" class="dot">.</span></span></span>
+    </h1>
+    <p class="intro mt-8 max-w-[36rem] text-lg text-muted md:text-xl">
+      <span class="text-text">I’m a full-stack developer in Minneapolis.</span> By day I work on C# services and cloud infrastructure at
+      KorTerra. The rest of the time I’m studying computer science at the U of M or adding something new to the party games I built for my friends.
+    </p>
+    <div class="actions mt-9 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
+      <div class="flex flex-wrap gap-3">
+        <a href="#projects" class="btn btn-primary">See my work</a>
+        <a href={links.resume} class="btn btn-ghost" target="_blank" rel="noopener">Resume (PDF)</a>
+      </div>
+      <p class="hint hidden text-xs text-muted/60 md:block" aria-hidden="true">Hover over the mountains or ski them.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-fade {
+    background: linear-gradient(to bottom, transparent 80%, color-mix(in oklab, var(--color-ink) 60%, transparent) 92%, var(--color-ink));
+  }
+  .name {
+    /* Scales with height too, so the name fits under the nav on short windows. */
+    font-size: clamp(4rem, min(14.5vw, 22svh), 11.25rem);
+    line-height: 0.84;
+    letter-spacing: -0.045em;
+  }
+  /* Extra padding so ascenders and the g's descender aren't clipped by the reveal mask. */
+  .line { display: block; overflow: hidden; padding: 0.1em 0.12em 0.2em 0; margin-bottom: -0.3em; }
+  .line:first-child { margin-top: -0.1em; }
+  .line:last-child { margin-bottom: -0.05em; }
+  /* A cool snow white instead of pure white, so the name sits in the night scene. */
+  .line > span { display: inline-block; color: #dfe5f1; text-shadow: 0 2px 28px rgba(11, 16, 32, 0.55); }
+  #hub-dot { cursor: pointer; }
+  .hint { transition: opacity 600ms ease; }
+  .hint.done { opacity: 0; }
+  /* Keeps the intro readable where it crosses the ridge, without a visible box. */
+  .intro, .actions { text-shadow: 0 1px 14px rgba(11, 16, 32, 0.95), 0 0 2px rgba(11, 16, 32, 0.8); }
+
+  /* One entrance: the name rises into place, then the scene and everything else fade in. */
+  @media (prefers-reduced-motion: no-preference) {
+    .line > span { animation: rise 900ms var(--ease-out-quint) both; }
+    .line:nth-child(2) > span { animation-delay: 90ms; }
+    .intro, .actions { animation: fade 700ms ease-out 800ms both; }
+    #mountains { animation: fade 1400ms ease-out 400ms both; }
+  }
+  @keyframes rise { from { transform: translateY(105%); } }
+  @keyframes fade { from { opacity: 0; } }
+</style>
+
+<script>
+  import { initMountains } from '../scripts/mountains';
+  const canvas = document.getElementById('mountains') as HTMLCanvasElement;
+  const dot = document.getElementById('hub-dot')!;
+  const intro = document.querySelector<HTMLElement>('.intro')!;
+  const actions = document.querySelector<HTMLElement>('.actions > div')!;
+  // The letters themselves, not the full-width heading box.
+  const nameLines = [...document.querySelectorAll<HTMLElement>('.name .line > span')];
+  const hintEl = document.querySelector<HTMLElement>('.hint')!;
+  const scene = initMountains(canvas, dot, { clear: [intro, actions, hintEl], avoid: nameLines });
+  (window as any).__scene = scene;
+  dot.addEventListener('click', () => scene.dropFromHub());
+  // The hint steps aside once someone has played with the scene for a moment.
+  const hint = document.querySelector('.hint');
+  let moved = 0;
+  const hero = document.getElementById('top')!;
+  const onMove = () => {
+    if (++moved < 40) return;
+    hint?.classList.add('done');
+    hero.removeEventListener('pointermove', onMove);
+  };
+  hero.addEventListener('pointermove', onMove);
+  // Measure the period again once the name has finished rising into place.
+  document.querySelector('.name')?.addEventListener('animationend', () => scene.remeasure());
+</script>

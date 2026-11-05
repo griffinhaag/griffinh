@@ -1,0 +1,627 @@
+---
+// Playable miniatures of the three GriffinGames games.
+// They use the real LOCKED IN questions and real Truth or Griddy prompts.
+import BrowserFrame from './BrowserFrame.astro';
+import lockin from '../data/lockin.json';
+import griddy from '../data/griddy.json';
+
+const tabs = [
+  { id: 'lockin', name: 'LOCKED IN', shot: '/images/griffingames/locked-in.jpg', alt: 'A LOCKED IN question on the real host screen' },
+  { id: 'griddy', name: 'Truth or Griddy', shot: '/images/griffingames/truth-or-griddy-question.jpg', alt: 'A Truth or Griddy card in the real game' },
+  { id: 'dice', name: 'Kings Dice', shot: '/images/griffingames/kings-dice.jpg', alt: 'The real Kings Dice board' },
+];
+
+const decks = [
+  { id: 'beach', name: 'Walk on the Beach', accent: '#c9a27e', btn: '#c9a27e', open: true },
+  { id: 'wildin', name: 'Wildin’ Categories', accent: '#86abc9', btn: '#86abc9', open: true },
+  { id: 'nhb', name: 'No Holdin’ Back', accent: '#9a8ab5', btn: '#9a8ab5', open: false },
+  { id: 'aiow', name: 'All In or What?', accent: '#a8606c', btn: '#a8606c', open: false },
+];
+
+// Kings Dice has a Custom mode where players write their own rules. These are a clean example set.
+const rules: Record<number, string> = {
+  2: 'Everyone swaps seats',
+  3: 'Pick someone for a trivia question',
+  4: 'Last to touch the floor loses the round',
+  5: 'Do your best impression of someone here',
+  6: 'Rhyme time: pick a word, go around',
+  7: 'Last to point up loses the round',
+  8: 'Pick a buddy who shares your fate',
+  9: 'Name a category, go around',
+  10: 'You’re the thumb master',
+  11: 'Make a new rule',
+  12: 'You’re the question master',
+};
+---
+
+<div class="gp" data-games data-lockin={JSON.stringify(lockin)} data-griddy={JSON.stringify(griddy)} data-rules={JSON.stringify(rules)} data-decks={JSON.stringify(decks)}>
+  <BrowserFrame url="griffinhgames.xyz">
+    <button slot="toolbar" type="button" class="ml-auto shrink-0 rounded-md px-2 py-0.5 text-xs text-muted hover:text-text" data-shot-btn>Real screenshot</button>
+
+    <div class="stage relative h-[31rem] overflow-hidden sm:h-[26.5rem]">
+      <!-- LOCKED IN -->
+      <section data-panel="lockin" class="panel li" aria-label="LOCKED IN, playable preview">
+        <div class="flex items-center justify-between gap-3">
+          <span class="li-logo">LOCKED IN</span>
+          <span class="li-timer" data-li-timer>15s</span>
+          <span class="text-xs font-semibold text-white/60" data-li-count>Q 1/5</span>
+        </div>
+        <div class="li-bar mt-3"><i data-li-bar></i></div>
+        <div class="li-card mt-3">
+          <p class="li-cat" data-li-cat>Category</p>
+          <p class="li-q" data-li-q>Question</p>
+        </div>
+        <div class="mt-3 grid grid-cols-2 gap-2" data-li-answers></div>
+        <div class="li-foot mt-auto flex items-end justify-between gap-3 pt-3">
+          <p class="li-note text-[0.78rem] leading-snug text-white/70" data-li-note aria-live="polite"></p>
+          <ul class="li-board shrink-0">
+            <li><span>You</span><b data-li-you>0</b></li>
+            <li><span>Gribble</span><b data-li-bot>0</b></li>
+          </ul>
+        </div>
+        <div class="li-overlay" data-li-overlay>
+          <p class="li-logo text-2xl">LOCKED IN</p>
+          <p class="mt-2 max-w-[17rem] text-center text-sm text-white/75" data-li-overlay-text>Five questions against Gribble, the house bot. Fastest correct answer wins the bonus.</p>
+          <button type="button" class="li-go mt-5" data-li-start>Start round</button>
+        </div>
+      </section>
+
+      <!-- Truth or Griddy -->
+      <section data-panel="griddy" class="panel tg" aria-label="Truth or Griddy, playable preview" hidden>
+        <div class="tg-decks" role="group" aria-label="Choose a deck">
+          {decks.map((d, i) => (
+            <button type="button" class="tg-deck" data-deck={d.id} aria-pressed={i === 0 ? 'true' : 'false'} style={`--deck:${d.accent}`}>
+              {!d.open && <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><rect x="1.5" y="4.5" width="7" height="5" rx="1" fill="currentColor" /><path d="M3 4.5V3a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.2" /></svg>}
+              {d.name}
+            </button>
+          ))}
+        </div>
+        <div class="tg-cardwrap">
+          <article class="tg-card" data-tg-card>
+            <p class="tg-deckname" data-tg-deckname>Walk on the Beach</p>
+            <p class="tg-prompt" data-tg-prompt></p>
+          </article>
+        </div>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex gap-2">
+            <button type="button" class="tg-btn tg-main" data-tg="answered">Answered</button>
+            <button type="button" class="tg-btn" data-tg="shuffle">Shuffle</button>
+            <button type="button" class="tg-btn tg-griddy" data-tg="griddy">Griddy</button>
+          </div>
+          <p class="text-xs text-white/70"><b class="text-white" data-tg-a>0</b> answered, <b class="text-white" data-tg-g>0</b> griddys</p>
+        </div>
+      </section>
+
+      <!-- Kings Dice -->
+      <section data-panel="dice" class="panel kd" aria-label="Kings Dice, playable preview" hidden>
+        <div class="grid h-full grid-cols-[1fr_auto] gap-4 sm:grid-cols-[1fr_9rem]">
+          <div class="flex min-w-0 flex-col">
+            <p class="kd-title">Kings Dice <span>Custom rules</span></p>
+            <div class="mt-4 flex items-center gap-3">
+              <div class="kd-die" data-die></div>
+              <div class="kd-die" data-die></div>
+              <p class="kd-total" data-kd-total aria-hidden="true">?</p>
+            </div>
+            <p class="kd-rule mt-3" data-kd-rule aria-live="polite">Roll to pick a rule from the board.</p>
+            <button type="button" class="kd-roll mt-3 self-start" data-kd-roll>Roll dice</button>
+            <ol class="kd-board mt-auto hidden sm:grid">
+              {Object.entries(rules).map(([n, r]) => (
+                <li data-rule={n}><b>{n}</b><span>{r}</span></li>
+              ))}
+            </ol>
+          </div>
+          <div class="flex flex-col items-center justify-end gap-2.5">
+            <div class="kd-balloon-area">
+              <div class="kd-balloon" data-balloon><i></i></div>
+              <p class="kd-pop" data-pop hidden>POP!</p>
+            </div>
+            <p class="text-center text-[0.72rem] text-white/70" data-pumps>0 pumps</p>
+            <button type="button" class="kd-pump" data-kd-pump>Pump</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </BrowserFrame>
+
+  <div class="mt-4 flex flex-wrap items-center gap-2" role="group" aria-label="Choose a game">
+    {tabs.map((t, i) => (
+      <button type="button" data-pick={t.id} data-shot={t.shot} data-alt={t.alt} aria-pressed={i === 0 ? 'true' : 'false'} class="pick rounded-full border border-line px-3.5 py-1.5 text-sm text-muted transition-colors">
+        {t.name}
+      </button>
+    ))}
+  </div>
+</div>
+
+<style>
+  .pick[aria-pressed='true'] { color: var(--color-text); border-color: var(--color-wine); background: color-mix(in oklab, var(--color-wine) 14%, transparent); }
+  @media (hover: hover) { .pick:hover { color: var(--color-text); } }
+
+  .panel { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 1rem; color: #fff; font-family: var(--font-display); }
+  .panel[hidden] { display: none; }
+  @media (min-width: 640px) { .panel { padding: 1.15rem 1.25rem; } }
+  @media (prefers-reduced-motion: no-preference) {
+    .panel:not([hidden]) { animation: panel-in 350ms var(--ease-out-quint); }
+  }
+  @keyframes panel-in { from { opacity: 0; transform: translateY(6px); } }
+
+  /* ---------- LOCKED IN ---------- */
+  .li { background: linear-gradient(160deg, #141b31, #0d1326); }
+  .li-logo { font-weight: 800; letter-spacing: 0.04em; color: var(--color-text); font-size: 0.9rem; }
+  .li-timer { min-width: 3.4rem; text-align: center; border-radius: 0.5rem; background: #0b1020; padding: 0.2rem 0.6rem; font-weight: 700; color: #a9b8ff; font-variant-numeric: tabular-nums; }
+  .li-timer.low { color: #d98b95; }
+  .li-bar { height: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+  .li-bar i { display: block; height: 100%; width: 100%; background: #a9b8ff; transform-origin: left; }
+  .li-card { border-radius: 0.75rem; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); padding: 0.75rem 1rem; text-align: center; }
+  .li-cat { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: #a9b8ff; }
+  .li-q { margin-top: 0.3rem; font-size: 1rem; line-height: 1.3; font-weight: 500; }
+  :global(.li-ans) {
+    position: relative;
+    min-height: 2.6rem;
+    border-radius: 0.65rem;
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.07);
+    padding: 0.45rem 0.75rem;
+    font-weight: 600;
+    font-size: 0.88rem;
+    line-height: 1.2;
+    transition: background-color 150ms, border-color 150ms, transform 120ms;
+  }
+  :global(.li-ans:not(:disabled):hover) { background: rgba(255, 255, 255, 0.13); border-color: rgba(255, 255, 255, 0.5); }
+  :global(.li-ans:not(:disabled):active) { transform: scale(0.98); }
+  :global(.li-ans.mine) { border-color: #a9b8ff; background: rgba(169, 184, 255, 0.12); }
+  :global(.li-ans.right) { border-color: #7fb59a; background: rgba(127, 181, 154, 0.16); }
+  :global(.li-ans.wrong) { border-color: #8c2636; background: rgba(122, 31, 46, 0.3); }
+  :global(.li-ans:disabled) { cursor: default; }
+  :global(.li-ans .who) { position: absolute; top: -0.55rem; right: 0.5rem; font-size: 0.6rem; font-weight: 700; padding: 0.05rem 0.35rem; border-radius: 0.3rem; background: #0b1020; border: 1px solid currentColor; }
+  .li-board { display: grid; gap: 0.25rem; min-width: 8.5rem; border-radius: 0.6rem; background: rgba(0, 0, 0, 0.25); padding: 0.5rem 0.7rem; font-size: 0.8rem; }
+  .li-board li { display: flex; justify-content: space-between; gap: 1rem; }
+  .li-board b { color: #a9b8ff; font-variant-numeric: tabular-nums; }
+  .li-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; background: rgba(15, 15, 30, 0.88); backdrop-filter: blur(4px); }
+  .li-overlay[hidden] { display: none; }
+  .li-go, :global(.li-next) { border-radius: 999px; background: #7a1f2e; padding: 0.55rem 1.3rem; font-weight: 700; font-size: 0.9rem; transition: transform 120ms, background-color 150ms; }
+  .li-go:hover, :global(.li-next:hover) { background: #8c2636; }
+  .li-go:active, :global(.li-next:active) { transform: scale(0.97); }
+
+  /* ---------- Truth or Griddy ---------- */
+  .tg { --deck: #c9a27e; --btn: #c9a27e; gap: 0.85rem; background: radial-gradient(120% 90% at 50% 0%, color-mix(in oklab, var(--deck) 14%, #121a30), #0d1326 70%); transition: background 400ms; }
+  .tg-decks { display: flex; gap: 0.4rem; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .tg-decks::-webkit-scrollbar { display: none; }
+  .tg-deck { flex: none; display: inline-flex; align-items: center; gap: 0.35rem; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.18); padding: 0.3rem 0.7rem; font-size: 0.74rem; font-weight: 600; color: rgba(255, 255, 255, 0.75); transition: border-color 150ms, background-color 150ms, color 150ms; }
+  .tg-deck:hover { color: #fff; border-color: rgba(255, 255, 255, 0.4); }
+  .tg-deck[aria-pressed='true'] { color: #0b0b10; background: var(--deck); border-color: var(--deck); }
+  .tg-cardwrap { flex: 1; min-height: 0; display: grid; place-items: center; perspective: 900px; }
+  .tg-card {
+    width: min(100%, 26rem);
+    min-height: 11rem;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.6rem;
+    border-radius: 1rem;
+    border: 1px solid color-mix(in oklab, var(--deck) 60%, transparent);
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.02));
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3), 0 20px 50px -20px color-mix(in oklab, var(--deck) 55%, transparent);
+    padding: 1.1rem 1.25rem;
+    text-align: center;
+  }
+  .tg-deckname { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--deck); font-weight: 700; }
+  .tg-prompt { font-size: 1.05rem; line-height: 1.35; font-weight: 500; overflow-wrap: anywhere; }
+  .tg-btn { border-radius: 0.6rem; border: 1px solid rgba(255, 255, 255, 0.2); padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 700; transition: transform 120ms, filter 150ms, background-color 150ms; }
+  .tg-btn:hover { background: rgba(255, 255, 255, 0.08); }
+  .tg-btn:active { transform: scale(0.96); }
+  .tg-main { background: var(--btn); border-color: var(--btn); color: #111; }
+  .tg-main:hover { background: var(--btn); filter: brightness(1.08); }
+  .tg-griddy { border-color: var(--deck); color: var(--deck); }
+  @media (prefers-reduced-motion: no-preference) {
+    .tg-card.flip { animation: flip 420ms var(--ease-out-quint); }
+    .tg-card.dance { animation: griddy 640ms ease-in-out; }
+  }
+  @keyframes flip { from { transform: rotateY(-70deg) translateX(-12px); opacity: 0; } }
+  @keyframes griddy {
+    0%, 100% { transform: none; }
+    20% { transform: translateX(-8px) rotate(-3deg); }
+    40% { transform: translateX(8px) rotate(3deg) translateY(-4px); }
+    60% { transform: translateX(-6px) rotate(-2deg); }
+    80% { transform: translateX(5px) rotate(2deg) translateY(-2px); }
+  }
+
+  /* ---------- Kings Dice ---------- */
+  .kd { background: linear-gradient(160deg, #141b31, #0d1326); }
+  .kd-title { font-weight: 700; font-size: 1.05rem; color: var(--color-text); }
+  .kd-title span { margin-left: 0.35rem; font-weight: 500; font-size: 0.72rem; color: rgba(255, 255, 255, 0.55); }
+  .kd-die { position: relative; width: 3.25rem; height: 3.25rem; border-radius: 0.7rem; background: #f8fafc; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.15), 0 8px 20px -8px rgba(0, 0, 0, 0.7); }
+  .kd-die :global(i) { position: absolute; width: 0.55rem; height: 0.55rem; margin: -0.275rem 0 0 -0.275rem; border-radius: 50%; background: #1e1b2e; }
+  .kd-die.rolling { animation: tumble 120ms linear infinite; }
+  @keyframes tumble { 50% { transform: rotate(14deg) translateY(-3px); } }
+  .kd-total { margin-left: 0.25rem; font-size: 2rem; font-weight: 700; color: #a9b8ff; font-variant-numeric: tabular-nums; }
+  .kd-rule { font-size: 1rem; font-weight: 600; min-height: 2.6em; line-height: 1.3; }
+  .kd-roll, .kd-pump { border-radius: 999px; padding: 0.5rem 1.15rem; font-weight: 700; font-size: 0.85rem; transition: transform 120ms, filter 150ms; }
+  .kd-roll { background: #7a1f2e; }
+  .kd-pump { background: #2a3350; width: 100%; }
+  .kd-roll:hover, .kd-pump:hover { filter: brightness(1.12); }
+  .kd-roll:active, .kd-pump:active { transform: scale(0.96); }
+  .kd-roll:disabled, .kd-pump:disabled { opacity: 0.5; cursor: default; }
+  .kd-board { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.2rem 0.75rem; font-size: 0.7rem; color: rgba(255, 255, 255, 0.55); font-family: var(--font-sans); }
+  .kd-board li { display: flex; gap: 0.4rem; align-items: baseline; border-radius: 0.3rem; padding: 0.1rem 0.3rem; transition: background-color 200ms, color 200ms; }
+  .kd-board b { color: #a9b8ff; min-width: 1.1rem; }
+  .kd-board span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .kd-board li.on { background: rgba(169, 184, 255, 0.14); color: #fff; }
+  .kd-balloon-area { position: relative; flex: 1; width: 100%; display: grid; place-items: end center; min-height: 9rem; }
+  .kd-balloon {
+    position: relative;
+    width: 3.6rem;
+    height: 4.3rem;
+    border-radius: 50% 50% 48% 48% / 55% 55% 45% 45%;
+    background: radial-gradient(circle at 35% 35%, #b5475a, #7a1f2e 60%, #561422);
+    transform-origin: 50% 100%;
+    transform: scale(var(--s, 1));
+    transition: transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    margin-bottom: 0.6rem;
+  }
+  .kd-balloon i { position: absolute; left: 50%; bottom: -0.5rem; width: 0.6rem; height: 0.5rem; margin-left: -0.3rem; background: #561422; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+  .kd-balloon.popped { animation: burst 260ms ease-out forwards; }
+  @keyframes burst { to { transform: scale(calc(var(--s) * 1.5)); opacity: 0; } }
+  .kd-pop { position: absolute; inset: 0; display: grid; place-items: center; font-size: 1.8rem; font-weight: 700; color: var(--color-text); }
+  .kd-pop[hidden] { display: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .kd-die.rolling, .kd-balloon.popped { animation: none; }
+  }
+</style>
+
+<script>
+  type Q = { cat: string; q: string; a: string; c: string[]; e: string };
+  type Deck = { id: string; name: string; accent: string; btn: string; open: boolean };
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const shuffle = <T,>(a: T[]) => {
+    const b = [...a];
+    for (let i = b.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [b[i], b[j]] = [b[j], b[i]];
+    }
+    return b;
+  };
+  const pretty = (c: string) => (c === 'movies-tv' ? 'Movies & TV' : c.replace(/-/g, ' '));
+
+  document.querySelectorAll<HTMLElement>('[data-games]').forEach((root) => {
+    const $ = <T extends Element = HTMLElement>(s: string) => root.querySelector<T>(s)!;
+
+    /* ---------- Tabs ---------- */
+    const picks = root.querySelectorAll<HTMLButtonElement>('[data-pick]');
+    const panels = root.querySelectorAll<HTMLElement>('[data-panel]');
+    let current = 'lockin';
+    const show = (id: string) => {
+      current = id;
+      panels.forEach((p) => (p.hidden = p.dataset.panel !== id));
+      picks.forEach((p) => p.setAttribute('aria-pressed', String(p.dataset.pick === id)));
+      if (id !== 'lockin') LI.pause();
+    };
+    picks.forEach((p) => p.addEventListener('click', () => show(p.dataset.pick!)));
+    $('[data-shot-btn]').addEventListener('click', () => {
+      const p = root.querySelector<HTMLButtonElement>(`[data-pick="${current}"]`)!;
+      (window as any).__lightbox?.(p.dataset.shot, p.dataset.alt);
+    });
+
+    /* ---------- LOCKED IN ---------- */
+    const bank: Q[] = JSON.parse(root.dataset.lockin!);
+    const LI = (() => {
+      const ROUND = 5;
+      const TIME = 15;
+      const answersEl = $('[data-li-answers]');
+      const overlay = $('[data-li-overlay]');
+      const overlayText = $('[data-li-overlay-text]');
+      const startBtn = $<HTMLButtonElement>('[data-li-start]');
+      const timerEl = $('[data-li-timer]');
+      const bar = $('[data-li-bar]');
+      const note = $('[data-li-note]');
+      let qs: Q[] = [];
+      let idx = 0;
+      let you = 0;
+      let bot = 0;
+      let left = TIME;
+      let tick = 0;
+      let botTimer = 0;
+      let start = 0;
+      let mine: { pick: string; at: number } | null = null;
+      let theirs: { pick: string; at: number } | null = null;
+      let revealed = false;
+
+      const setScores = () => {
+        $('[data-li-you]').textContent = String(you);
+        $('[data-li-bot]').textContent = String(bot);
+      };
+      const stopClocks = () => {
+        clearInterval(tick);
+        clearTimeout(botTimer);
+      };
+
+      function render() {
+        const q = qs[idx];
+        $('[data-li-count]').textContent = `Q ${idx + 1}/${ROUND}`;
+        $('[data-li-cat]').textContent = pretty(q.cat);
+        $('[data-li-q]').textContent = q.q;
+        answersEl.innerHTML = '';
+        shuffle(q.c).forEach((c) => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'li-ans';
+          b.textContent = c;
+          b.dataset.choice = c;
+          b.addEventListener('click', () => lockIn(c));
+          answersEl.appendChild(b);
+        });
+        note.textContent = 'Pick an answer to lock in.';
+      }
+
+      function startQuestion() {
+        mine = theirs = null;
+        revealed = false;
+        left = TIME;
+        start = performance.now();
+        render();
+        timerEl.textContent = `${left}s`;
+        timerEl.classList.remove('low');
+        bar.style.transition = 'none';
+        bar.style.transform = 'scaleX(1)';
+        requestAnimationFrame(() => {
+          bar.style.transition = reduced ? 'none' : `transform ${TIME}s linear`;
+          bar.style.transform = 'scaleX(0)';
+        });
+        tick = window.setInterval(() => {
+          left--;
+          timerEl.textContent = `${Math.max(left, 0)}s`;
+          timerEl.classList.toggle('low', left <= 5);
+          if (left <= 0) reveal();
+        }, 1000);
+        // Gribble buzzes in somewhere between 2.5 and 9 seconds and is right about 60% of the time.
+        botTimer = window.setTimeout(() => {
+          const q = qs[idx];
+          const pick = Math.random() < 0.6 ? q.a : shuffle(q.c.filter((c) => c !== q.a))[0];
+          theirs = { pick, at: performance.now() - start };
+          note.textContent = mine ? 'Gribble locked in too.' : 'Gribble locked in. Your move.';
+          if (mine) reveal();
+        }, 2500 + Math.random() * 6500);
+      }
+
+      function lockIn(choice: string) {
+        if (mine || revealed) return;
+        mine = { pick: choice, at: performance.now() - start };
+        answersEl.querySelectorAll<HTMLButtonElement>('.li-ans').forEach((b) => {
+          b.disabled = true;
+          if (b.dataset.choice === choice) b.classList.add('mine');
+        });
+        if (theirs) reveal();
+        else note.textContent = 'Locked in. Waiting on Gribble…';
+      }
+
+      function reveal() {
+        if (revealed) return;
+        revealed = true;
+        stopClocks();
+        bar.style.transition = 'none';
+        const q = qs[idx];
+        const youRight = mine?.pick === q.a;
+        const botRight = theirs?.pick === q.a;
+        // 100 for a correct answer, plus 50 for whoever was right first.
+        if (youRight) you += 100;
+        if (botRight) bot += 100;
+        if (youRight && (!botRight || (mine && theirs && mine.at < theirs.at))) you += 50;
+        else if (botRight) bot += 50;
+        setScores();
+
+        answersEl.querySelectorAll<HTMLButtonElement>('.li-ans').forEach((b) => {
+          b.disabled = true;
+          const c = b.dataset.choice!;
+          if (c === q.a) b.classList.add('right');
+          else if (c === mine?.pick) b.classList.add('wrong');
+          const tags = [c === mine?.pick ? 'You' : '', c === theirs?.pick ? 'Gribble' : ''].filter(Boolean);
+          if (tags.length) {
+            const t = document.createElement('span');
+            t.className = 'who';
+            t.textContent = tags.join(' + ');
+            b.appendChild(t);
+          }
+        });
+
+        note.innerHTML = '';
+        const msg = document.createElement('span');
+        msg.textContent = `${!mine ? 'Time’s up. ' : youRight ? 'Correct. ' : 'Not quite. '}${q.e}`;
+        note.appendChild(msg);
+        const next = document.createElement('button');
+        next.type = 'button';
+        next.className = 'li-next mt-2 block';
+        next.textContent = idx < ROUND - 1 ? 'Next question' : 'See results';
+        next.addEventListener('click', () => {
+          if (idx < ROUND - 1) {
+            idx++;
+            startQuestion();
+          } else end();
+        });
+        note.appendChild(next);
+      }
+
+      function end() {
+        active = false;
+        const result = you > bot ? 'You beat Gribble.' : you === bot ? 'Tied with Gribble.' : 'Gribble wins this one.';
+        overlayText.textContent = `${result} Final score: you ${you}, Gribble ${bot}.`;
+        startBtn.textContent = 'Play again';
+        overlay.hidden = false;
+        startBtn.focus();
+      }
+
+      let active = false;
+      let mode: 'start' | 'resume' = 'start';
+      function begin() {
+        qs = shuffle(bank).slice(0, ROUND);
+        idx = you = bot = 0;
+        setScores();
+        overlay.hidden = true;
+        active = true;
+        startQuestion();
+      }
+      startBtn.addEventListener('click', () => {
+        if (mode === 'resume') {
+          mode = 'start';
+          overlay.hidden = true;
+          startQuestion(); // a paused question restarts with a fresh timer
+        } else begin();
+      });
+
+      // Show a real question behind the start screen.
+      qs = shuffle(bank).slice(0, ROUND);
+      render();
+      answersEl.querySelectorAll<HTMLButtonElement>('.li-ans').forEach((b) => (b.disabled = true));
+      note.textContent = '';
+
+      return {
+        // Leaving the tab mid-question pauses the round instead of letting the timer run out.
+        pause() {
+          if (!active || revealed || !overlay.hidden) return;
+          stopClocks();
+          overlayText.textContent = `Paused on question ${idx + 1}. It restarts with a fresh timer.`;
+          startBtn.textContent = 'Resume';
+          mode = 'resume';
+          overlay.hidden = false;
+        },
+      };
+    })();
+
+    /* ---------- Truth or Griddy ---------- */
+    (() => {
+      const prompts: Record<string, string[]> = JSON.parse(root.dataset.griddy!);
+      const decks: Deck[] = JSON.parse(root.dataset.decks!);
+      const panel = $('[data-panel="griddy"]');
+      const card = $('[data-tg-card]');
+      const promptEl = $('[data-tg-prompt]');
+      const nameEl = $('[data-tg-deckname]');
+      const buttons = panel.querySelectorAll<HTMLButtonElement>('[data-tg]');
+      let deck = decks[0];
+      let order: string[] = [];
+      let pos = 0;
+      let answered = 0;
+      let griddys = 0;
+
+      const animate = (cls: string) => {
+        card.classList.remove('flip', 'dance');
+        void card.offsetWidth;
+        card.classList.add(cls);
+      };
+      const draw = (anim = true) => {
+        if (!deck.open) {
+          promptEl.textContent = 'This deck is for game night. Play it at griffinhgames.xyz.';
+          buttons.forEach((b) => (b.disabled = true));
+        } else {
+          if (pos >= order.length) {
+            order = shuffle(prompts[deck.id]);
+            pos = 0;
+          }
+          promptEl.textContent = order[pos++];
+          buttons.forEach((b) => (b.disabled = false));
+        }
+        if (anim) animate('flip');
+      };
+      const setDeck = (d: Deck) => {
+        deck = d;
+        order = [];
+        panel.style.setProperty('--deck', d.accent);
+        panel.style.setProperty('--btn', d.btn);
+        nameEl.textContent = d.name;
+        panel.querySelectorAll<HTMLButtonElement>('[data-deck]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.deck === d.id)));
+        draw();
+      };
+      panel.querySelectorAll<HTMLButtonElement>('[data-deck]').forEach((b) =>
+        b.addEventListener('click', () => setDeck(decks.find((d) => d.id === b.dataset.deck)!)),
+      );
+      buttons.forEach((b) =>
+        b.addEventListener('click', () => {
+          const kind = b.dataset.tg;
+          if (kind === 'answered') {
+            answered++;
+            draw();
+          } else if (kind === 'griddy') {
+            griddys++;
+            animate('dance');
+            setTimeout(() => draw(), reduced ? 0 : 650);
+          } else draw();
+          $('[data-tg-a]').textContent = String(answered);
+          $('[data-tg-g]').textContent = String(griddys);
+        }),
+      );
+      draw(false);
+    })();
+
+    /* ---------- Kings Dice ---------- */
+    (() => {
+      const rules: Record<string, string> = JSON.parse(root.dataset.rules!);
+      const dice = root.querySelectorAll<HTMLElement>('[data-die]');
+      const rollBtn = $<HTMLButtonElement>('[data-kd-roll]');
+      const pumpBtn = $<HTMLButtonElement>('[data-kd-pump]');
+      const balloon = $('[data-balloon]');
+      const popEl = $('[data-pop]');
+      const pumpsEl = $('[data-pumps]');
+      const PIPS: Record<number, [number, number][]> = {
+        1: [[50, 50]],
+        2: [[28, 28], [72, 72]],
+        3: [[28, 28], [50, 50], [72, 72]],
+        4: [[28, 28], [72, 28], [28, 72], [72, 72]],
+        5: [[28, 28], [72, 28], [50, 50], [28, 72], [72, 72]],
+        6: [[28, 24], [72, 24], [28, 50], [72, 50], [28, 76], [72, 76]],
+      };
+      const face = (el: HTMLElement, n: number) => {
+        el.innerHTML = PIPS[n].map(([x, y]) => `<i style="left:${x}%;top:${y}%"></i>`).join('');
+        el.setAttribute('aria-label', `Die showing ${n}`);
+      };
+      const d6 = () => 1 + Math.floor(Math.random() * 6);
+      dice.forEach((d) => face(d, d6()));
+
+      rollBtn.addEventListener('click', () => {
+        rollBtn.disabled = true;
+        root.querySelectorAll('.kd-board li.on').forEach((l) => l.classList.remove('on'));
+        dice.forEach((d) => d.classList.add('rolling'));
+        let n = 0;
+        const spin = setInterval(() => {
+          dice.forEach((d) => face(d, d6()));
+          if (++n >= (reduced ? 1 : 8)) {
+            clearInterval(spin);
+            const a = d6();
+            const b = d6();
+            face(dice[0], a);
+            face(dice[1], b);
+            dice.forEach((d) => d.classList.remove('rolling'));
+            const total = a + b;
+            $('[data-kd-total]').textContent = String(total);
+            $('[data-kd-rule]').textContent = `${total}: ${rules[total]}`;
+            root.querySelector(`.kd-board li[data-rule="${total}"]`)?.classList.add('on');
+            rollBtn.disabled = false;
+          }
+        }, 70);
+      });
+
+      // The balloon pops at a random pump between 10 and 18, like the real game.
+      let pumps = 0;
+      let limit = 10 + Math.floor(Math.random() * 9);
+      const reset = () => {
+        pumps = 0;
+        limit = 10 + Math.floor(Math.random() * 9);
+        balloon.classList.remove('popped');
+        balloon.style.setProperty('--s', '1');
+        popEl.hidden = true;
+        pumpBtn.textContent = 'Pump';
+        pumpsEl.textContent = '0 pumps';
+      };
+      pumpBtn.addEventListener('click', () => {
+        if (balloon.classList.contains('popped')) return reset();
+        pumps++;
+        pumpsEl.textContent = `${pumps} pump${pumps === 1 ? '' : 's'}`;
+        if (pumps >= limit) {
+          balloon.classList.add('popped');
+          popEl.hidden = false;
+          pumpsEl.textContent = `Popped on pump ${pumps}`;
+          pumpBtn.textContent = 'New balloon';
+          return;
+        }
+        balloon.style.setProperty('--s', String(1 + pumps * 0.075));
+      });
+    })();
+  });
+</script>
