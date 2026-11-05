@@ -52,7 +52,6 @@ export const experience: Job[] = [
     org: 'Client work',
     points: [
       'Designed and built the websites for SheShuttle, a private taxi service, and SendMeAPostcard, a travel agency.',
-      'Currently building a site for a real estate business.',
     ],
   },
   {
@@ -144,7 +143,6 @@ export const builds: Build[] = [
 export const clients = [
   { name: 'SendMeAPostcard', what: 'Travel agency', href: 'https://sendmeapostcardmn.com' },
   { name: 'SheShuttle', what: 'Private taxi service' },
-  { name: 'Real estate site', what: 'In progress' },
 ];
 
 // Each tool lists where it was used, so the toolbox can show it.
