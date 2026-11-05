@@ -1,59 +1,24 @@
 # griffinh.me
 
-My personal site and portfolio. **Live at [griffinh.me](https://griffinh.me)**
+The source for my personal site and portfolio. **See it live at [griffinh.me](https://griffinh.me).**
 
-![The griffinh.me hero: my name over a night mountain scene with a moon, a gondola, and a small skier on the summit](public/og.jpg)
+![The griffinh.me homepage: my name over a night mountain range with a moon, a gondola, and a small skier on the summit](docs/homepage.jpg)
 
 ## What's on it
 
-- **A mountain scene you can play with.** The hero is drawn on a canvas. Hover the sky to make it snow, drag the skier anywhere across the range, and bring him all the way down to ride the gondola back up. His tracks fade behind him.
-- **Projects you can use on the page.** Small playable versions of the three [GriffinGames](https://griffinhgames.xyz) games, and a working copy of DayONE's video library, filters, and admin tools.
-- **Project pages** for GriffinGames and DayONE: how they work, what was tricky, and screenshots.
-- **The usual portfolio bits.** Experience, a toolbox that shows where I've used each tool, a bit about me, and a contact form.
-- **A hidden terminal.** Press `` ` `` anywhere (or use the link in the footer) and type `help`.
+- **A mountain range you can play with.** The homepage hero is drawn on a canvas. Hover the sky to make it snow, push the snow around on the peaks, and drag the skier down the slopes. His tracks fade behind him, and when he reaches the bottom he skates over to the gondola and rides it back to the summit.
+- **Projects you can use right on the page.** There are small playable versions of the three [GriffinGames](https://griffinhgames.xyz) games (a trivia round against a bot, a deck of Truth or Griddy cards, and Kings Dice), plus a working copy of DayONE's video library with its filters, search, and admin tools.
+- **Project pages** for GriffinGames and DayONE that cover how they work, what was tricky, and how they were tested and deployed.
+- **The usual portfolio sections.** Experience, a toolbox that shows where I've used each tool, a bit about me, and a contact form.
+- **A hidden terminal** with a few easter eggs. Press `` ` `` anywhere on the site and type `help`.
 
-## Built with
+## How it's built
 
-[Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com), written in TypeScript. There's no UI framework; the interactive pieces are small scripts and one canvas. The site builds to plain static files.
+- **[Astro](https://astro.build) with [Tailwind CSS](https://tailwindcss.com), written in TypeScript.** There's no UI framework. Each interactive piece is a small script, and the site builds to plain static files.
+- **The mountain scene** is one canvas and no libraries. The ridgelines are generated, the snow is simulated in columns so it can pile up and be pushed around, and the skier runs on a small state machine (ready, skiing, stopping, skating to the lift, riding, unloading). It works with a mouse, touch, or the arrow keys, and it respects reduced motion.
+- **The game previews** recreate each game's core loop in the browser, using a sample of the real trivia questions and cards. The DayONE demo uses the real video list, and adding a video looks up its real YouTube title.
+- **The contact form** sends through [Web3Forms](https://web3forms.com), and if a message can't be sent it points people to my email instead.
+- **Images** are converted to WebP and served at several sizes, so each device downloads only what its screen needs.
+- **Hosted on [Netlify](https://www.netlify.com)**, deployed from `main`. Changes go to a testing branch first and are checked across phones, tablets, and desktops before they're merged.
 
-## Running it locally
-
-Requires Node 22 or newer.
-
-```bash
-npm install
-npm run dev       # http://localhost:4321
-npm run build     # static site in dist/
-npm run preview   # serve the built site
-```
-
-## Contact form
-
-The form sends through [Web3Forms](https://web3forms.com). Put the access key in a `.env` file at the project root:
-
-```
-PUBLIC_WEB3FORMS_KEY=your-access-key
-```
-
-The key only lets the form deliver messages to my inbox, so it's safe in a public site. Without one, the form opens a pre-filled email instead. `.env` is gitignored, so set the same variable in the hosting provider's settings.
-
-## Editing content
-
-Most of the words live in `src/data/site.ts`: experience, smaller projects, client work, the toolbox, and quick facts. The project pages are in `src/pages/projects/`.
-
-## Layout
-
-```
-src/
-  components/   Page sections (Hero, Experience, Projects, Toolbox, About, Contact),
-                the game and DayONE previews, and the hidden terminal
-  scripts/      mountains.ts: the hero scene, skier, snow, and gondola
-  data/         Site content, DayONE's video list, trivia questions, and card prompts
-  layouts/      The page shell and the project page layout
-  pages/        Home, project pages, and the 404
-public/         Images, resume PDF, favicon, and the social share image
-```
-
-## Branches
-
-`main` is what's live. Work happens on `griffinh-testing` first and moves to `main` once it's been checked.
+The layouts are built for every screen size, from a folded phone to a 1440p monitor, with touch targets sized for fingers and a reduced-motion version of every animation.
