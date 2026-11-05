@@ -1,15 +1,15 @@
 [
  {
   "cat": "geography",
-  "q": "Which strait connects the Atlantic and Pacific oceans?",
+  "q": "Which strait near the tip of South America is named after a Portuguese explorer?",
   "a": "Strait of Magellan",
   "c": [
-   "Drake Passage",
+   "Strait of Hormuz",
    "Strait of Gibraltar",
    "Bering Strait",
    "Strait of Magellan"
   ],
-  "e": "The Strait of Magellan, at the southern tip of South America, connects the Atlantic and Pacific oceans through Chilean waters."
+  "e": "Named after Ferdinand Magellan, the strait cuts through southern Chile and links the Atlantic and Pacific oceans."
  },
  {
   "cat": "geography",
@@ -25,7 +25,7 @@
  },
  {
   "cat": "geography",
-  "q": "What is the most spoken language in the world?",
+  "q": "Which language has the most native speakers in the world?",
   "a": "Mandarin Chinese",
   "c": [
    "Mandarin Chinese",
@@ -54,22 +54,22 @@
   "c": [
    "Caspian Sea",
    "Aegean Sea",
-   "Marmara Sea",
+   "Sea of Marmara",
    "Black Sea"
   ],
   "e": "The Black Sea is bordered by Turkey, Romania, Bulgaria, Ukraine, Russia, and Georgia."
  },
  {
   "cat": "science",
-  "q": "What is the name of the layer of skin where new cells are produced?",
-  "a": "Epidermis (basal layer)",
+  "q": "What is the outermost layer of human skin called?",
+  "a": "Epidermis",
   "c": [
-   "Epidermis (basal layer)",
+   "Epidermis",
    "Dermis",
    "Hypodermis",
-   "Stratum corneum"
+   "Periosteum"
   ],
-  "e": "New skin cells are produced in the basal layer of the epidermis (stratum basale) and migrate upward as they mature."
+  "e": "The epidermis is the outermost layer of skin. The dermis and the hypodermis sit beneath it."
  },
  {
   "cat": "science",
@@ -121,39 +121,39 @@
  },
  {
   "cat": "sports",
-  "q": "In the NFL, which team has the longest active losing streak in playoff history (as of 2024)?",
-  "a": "Detroit Lions",
+  "q": "Which NFL team plays its home games at U.S. Bank Stadium?",
+  "a": "Minnesota Vikings",
   "c": [
-   "Detroit Lions",
-   "Miami Dolphins",
-   "Cleveland Browns",
-   "Minnesota Vikings"
+   "Minnesota Vikings",
+   "Green Bay Packers",
+   "Chicago Bears",
+   "Detroit Lions"
   ],
-  "e": "The Lions held a 32-year streak without a playoff win until their 2024 run."
+  "e": "U.S. Bank Stadium in downtown Minneapolis has been the Vikings' home since 2016."
  },
  {
   "cat": "sports",
-  "q": "Which city or metro area is associated with the NFL team Indianapolis Colts?",
-  "a": "Indianapolis",
+  "q": "Before moving to Indianapolis in 1984, the Colts played in which city?",
+  "a": "Baltimore",
   "c": [
-   "Philadelphia",
-   "San Antonio",
-   "Jacksonville",
-   "Indianapolis"
+   "Cleveland",
+   "St. Louis",
+   "Houston",
+   "Baltimore"
   ],
-  "e": "The Colts are Indianapolis's NFL team, so Indianapolis is the city in question."
+  "e": "The Colts moved from Baltimore to Indianapolis in March 1984."
  },
  {
   "cat": "sports",
-  "q": "Which city is home to the MLB team Milwaukee Brewers?",
-  "a": "Milwaukee",
+  "q": "Which MLB team plays its home games at Target Field?",
+  "a": "Minnesota Twins",
   "c": [
-   "Boston",
-   "Vancouver",
-   "Milwaukee",
-   "New York City"
+   "Milwaukee Brewers",
+   "Chicago White Sox",
+   "Minnesota Twins",
+   "Kansas City Royals"
   ],
-  "e": "The Brewers are Milwaukee's MLB club, so Milwaukee is the city this clue points to."
+  "e": "Target Field in downtown Minneapolis has been the Twins' home since 2010."
  },
  {
   "cat": "sports",
@@ -165,7 +165,7 @@
    "Indiana Pacers",
    "Chicago Bulls"
   ],
-  "e": "Cleveland Cavaliers is the franchise or venue tied to the clue, and it anchors the team's home identity."
+  "e": "Rocket Mortgage FieldHouse in downtown Cleveland is the home arena of the Cavaliers."
  },
  {
   "cat": "sports",
@@ -177,7 +177,7 @@
    "Sifan Hassan",
    "Peres Jepchirchir"
   ],
-  "e": "Peres Jepchirchir won the title or tournament."
+  "e": "Kenya's Peres Jepchirchir won gold in the Tokyo Olympics marathon, which was run in Sapporo in 2021."
  },
  {
   "cat": "movies-tv",
@@ -193,7 +193,7 @@
  },
  {
   "cat": "movies-tv",
-  "q": "Which HBO show features the Dutton family running a large Montana ranch?",
+  "q": "Which TV show follows the Dutton family and their Montana ranch?",
   "a": "Yellowstone",
   "c": [
    "Yellowstone",
@@ -201,7 +201,7 @@
    "The Son",
    "Outer Range"
   ],
-  "e": "Yellowstone (2018–) follows John Dutton (Kevin Costner) and his family fighting to maintain control of their ranch."
+  "e": "Yellowstone (2018–2024) follows John Dutton (Kevin Costner) and his family as they fight to keep their Montana ranch."
  },
  {
   "cat": "movies-tv",
@@ -217,7 +217,7 @@
  },
  {
   "cat": "movies-tv",
-  "q": "Which actress played Elsa in the Disney animated film 'Frozen'?",
+  "q": "Who voices Elsa in Disney's 'Frozen'?",
   "a": "Idina Menzel",
   "c": [
    "Idina Menzel",
@@ -253,15 +253,15 @@
  },
  {
   "cat": "history",
-  "q": "The English Civil War began is most closely associated with which person, place, or idea?",
-  "a": "Parliament vs. King Charles I",
+  "q": "The English Civil War was fought mainly between which two sides?",
+  "a": "Parliament and King Charles I",
   "c": [
-   "Bastille",
-   "Great Depression",
-   "Parliament vs. King Charles I",
-   "Northern Ireland"
+   "England and France",
+   "Parliament and King Charles I",
+   "The Houses of York and Lancaster",
+   "The Crown and the Pope"
   ],
-  "e": "The English Civil War began is closely associated with Parliament vs."
+  "e": "Parliamentarians, or Roundheads, fought Royalists loyal to King Charles I from 1642 to 1651."
  },
  {
   "cat": "history",
@@ -301,15 +301,15 @@
  },
  {
   "cat": "games",
-  "q": "What is the name of the iconic orange-haired Fortnite character?",
-  "a": "Brite Bomber / various skins",
+  "q": "What is the name of the walking banana character in Fortnite?",
+  "a": "Peely",
   "c": [
-   "Brite Bomber / various skins",
-   "Default Skin",
+   "Jonesy",
    "Peely",
-   "Drift"
+   "Fishstick",
+   "Midas"
   ],
-  "e": "Brite Bomber (rainbow unicorn skin) and Peely (banana character) are among Fortnite's most iconic cosmetic characters."
+  "e": "Peely, the walking banana, has been one of Fortnite's best-known skins since 2019."
  },
  {
   "cat": "games",
@@ -337,15 +337,15 @@
  },
  {
   "cat": "games",
-  "q": "In the game Diablo II, what is the final act?",
-  "a": "Act V",
+  "q": "Who is the final boss of Diablo II: Lord of Destruction?",
+  "a": "Baal",
   "c": [
-   "Act IV",
-   "Act V",
-   "Act III",
-   "Act VI"
+   "Diablo",
+   "Mephisto",
+   "Baal",
+   "Andariel"
   ],
-  "e": "Diablo II: Lord of Destruction added Act V, the expansion's content."
+  "e": "Baal, the Lord of Destruction, is the final boss of Act V, the act the expansion added."
  },
  {
   "cat": "games",
@@ -362,14 +362,14 @@
  {
   "cat": "music",
   "q": "What is the name of the first Beatles album released in the US?",
-  "a": "Meet the Beatles!",
+  "a": "Introducing... The Beatles",
   "c": [
    "Meet the Beatles!",
    "Please Please Me",
    "Introducing... The Beatles",
    "With the Beatles"
   ],
-  "e": "'Meet the Beatles!' was the first Capitol Records Beatles album released in the US in January 1964."
+  "e": "Vee-Jay Records released Introducing... The Beatles in January 1964, ten days before Capitol's Meet the Beatles!"
  },
  {
   "cat": "music",
@@ -397,15 +397,15 @@
  },
  {
   "cat": "music",
-  "q": "What key musical innovation did Les Paul contribute to rock music?",
-  "a": "The solid body electric guitar",
+  "q": "Les Paul is best known for pioneering which instrument?",
+  "a": "The solid-body electric guitar",
   "c": [
-   "The solid body electric guitar",
-   "Multi-track recording",
-   "The whammy bar",
-   "Distortion pedal"
+   "The solid-body electric guitar",
+   "The synthesizer",
+   "The pedal steel guitar",
+   "The electric organ"
   ],
-  "e": "Les Paul is credited with developing the solid body electric guitar and pioneering multitrack recording."
+  "e": "Les Paul built one of the first solid-body electric guitars, nicknamed 'the Log,' around 1941. Gibson's Les Paul model is named after him."
  },
  {
   "cat": "music",
@@ -422,26 +422,26 @@
  {
   "cat": "general-knowledge",
   "q": "Which currency is the official money of Vietnam?",
-  "a": "dong",
+  "a": "Dong",
   "c": [
-   "dong",
-   "won",
-   "yuan",
-   "baht"
+   "Dong",
+   "Won",
+   "Yuan",
+   "Baht"
   ],
-  "e": "dong is the official currency of Vietnam."
+  "e": "The dong is the official currency of Vietnam."
  },
  {
   "cat": "general-knowledge",
   "q": "Which currency is the official money of India?",
-  "a": "rupee",
+  "a": "Rupee",
   "c": [
-   "rupee",
-   "taka",
-   "ringgit",
-   "riel"
+   "Rupee",
+   "Taka",
+   "Ringgit",
+   "Riel"
   ],
-  "e": "rupee is the official currency of India."
+  "e": "The rupee is the official currency of India."
  },
  {
   "cat": "general-knowledge",
@@ -460,12 +460,12 @@
   "q": "Which scientific law states that voltage equals current times resistance?",
   "a": "Ohm's law",
   "c": [
-   "law of conservation of energy",
+   "Law of conservation of energy",
    "Ohm's law",
    "Newton's second law",
    "Archimedes' principle"
   ],
-  "e": "Ohm's law is a foundational law used to describe force, motion, or electricity in science."
+  "e": "Ohm's law, named after Georg Ohm, says voltage equals current times resistance (V = IR)."
  },
  {
   "cat": "general-knowledge",
@@ -477,7 +477,7 @@
    "Columbia University",
    "Princeton University"
   ],
-  "e": "The Pulitzer Prize has been administered by Columbia University in New York City since its establishment in 1917, per the wishes of newspaper publisher."
+  "e": "Columbia University in New York City has administered the Pulitzer Prize since 1917, as Joseph Pulitzer asked in his will."
  },
  {
   "cat": "pop-culture",
@@ -537,6 +537,6 @@
    "Matt Damon",
    "Florence Pugh"
   ],
-  "e": "Irish actor Cillian Murphy portrayed J."
+  "e": "Irish actor Cillian Murphy played J. Robert Oppenheimer and won the Academy Award for Best Actor for the role."
  }
 ]
