@@ -82,8 +82,13 @@ import { links } from '../data/site';
     help: {
       help: 'list commands',
       run: () => {
-        const rows = Object.entries(commands)
-          .filter(([, c]) => c.help)
+        // JavaScript lists number-like keys such as "404" first, so place it just before clear.
+        // Aliases like "?" stay out of the list.
+        const names = Object.keys(commands).filter((k) => commands[k].help && commands[k] !== commands.help || k === 'help');
+        names.splice(names.indexOf('404'), 1);
+        names.splice(names.indexOf('clear'), 0, '404');
+        const rows = names
+          .map((k) => [k, commands[k]] as const)
           .map(([k, c]) => `  <span class="c">${k.padEnd(11)}</span><span class="m">${c.help}</span>`);
         print(rows.join('\n') + `\n<span class="m">  There are a few more if you go looking.</span>`);
       },
@@ -157,6 +162,14 @@ import { links } from '../data/site';
         print(lines[Math.floor(Math.random() * lines.length)]);
       },
     },
+    capy: {
+      help: 'hm I wonder what this does?',
+      run: () => {
+        const n = spawnDanceCrew(term);
+        if (!n) return print(`<span class="m">That’s plenty of capybaras. Click a few first.</span>`);
+        print(n === 3 ? '<span class="g">♪</span> The capy crew is here. Click one to send it off.' : 'Only room for some of the crew.');
+      },
+    },
     resume: { help: 'open my resume', run: () => (print('Opening resume…'), window.open(L.resume, '_blank', 'noopener')) },
     github: { help: 'open my GitHub', run: () => (print('Opening GitHub…'), window.open(L.github, '_blank', 'noopener')) },
     linkedin: { help: 'open my LinkedIn', run: () => (print('Opening LinkedIn…'), window.open(L.linkedin, '_blank', 'noopener')) },
@@ -200,13 +213,6 @@ import { links } from '../data/site';
     gribble: { run: () => print('Gribble the virtual pet is feeling <span class="g">playful</span>. GET /pet/mood to confirm.') },
     date: { run: () => print(new Date().toString()) },
     echo: { run: (a) => print(esc(a.join(' '))) },
-    capy: {
-      run: () => {
-        const n = spawnDanceCrew(term);
-        if (!n) return print(`<span class="m">That’s plenty of capybaras. Click a few first.</span>`);
-        print(n === 3 ? '<span class="g">♪</span> The capy crew is here. Click one to send it off.' : 'Only room for some of the crew.');
-      },
-    },
     history: { run: () => print(history.map((h, i) => `  ${i + 1}  ${esc(h)}`).join('\n')) },
   };
   commands.español = commands.hola;
