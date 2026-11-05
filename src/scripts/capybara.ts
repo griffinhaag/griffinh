@@ -469,7 +469,8 @@ export function spawnCapybara(avoid?: Element | null, at?: { x: number; y: numbe
   injectStyles();
   const [x, y] = at ? [at.x, at.y] : findSpot(avoid, W);
 
-  const facingLeft = at?.facingLeft ?? Math.random() < 0.25;
+  // Singles face right a hair more often than left (51 / 49).
+  const facingLeft = at?.facingLeft ?? Math.random() < 0.49;
   const el = document.createElement('button');
   el.type = 'button';
   el.className = 'capy';
