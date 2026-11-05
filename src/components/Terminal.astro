@@ -37,6 +37,7 @@ import { links } from '../data/site';
 </style>
 
 <script>
+  import { spawnCapybara, spawnDanceCrew } from '../scripts/capybara';
   type Q = { cat: string; q: string; a: string; c: string[] };
   const term = document.getElementById('term')!;
   const out = document.getElementById('term-out')!;
@@ -59,10 +60,12 @@ import { links } from '../data/site';
     out.appendChild(pre);
     out.scrollTop = out.scrollHeight;
   };
+  let toastTimer = 0;
   const showToast = (msg: string) => {
     toast.textContent = msg;
     toast.style.opacity = '1';
-    setTimeout(() => (toast.style.opacity = '0'), 2600);
+    clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => (toast.style.opacity = '0'), 2600);
   };
   const burst = () => (window as any).__scene?.burst();
   const goTo = (id: string) => {
@@ -109,8 +112,8 @@ import { links } from '../data/site';
     cd: {
       help: 'jump to a section, e.g. cd about',
       run: ([to]) => {
-        const t = (to || '').replace(/\/$/, '').replace(/^~?\/?/, '');
-        if (!t || t === '~' || t === '..') return goTo('top');
+        const t = (to || '').toLowerCase().replace(/\/$/, '').replace(/^~?\/?/, '');
+        if (!t || ['~', '..', 'top', 'home'].includes(t)) return goTo('top');
         if (t.startsWith('projects/')) return commands.open.run([t.split('/')[1]]);
         if (sections.includes(t)) return goTo(t);
         print(`<span class="r">cd: no such section: ${esc(t)}</span>`);
@@ -118,7 +121,8 @@ import { links } from '../data/site';
     },
     open: {
       help: 'open a project page: griffingames, dayone',
-      run: ([p]) => {
+      run: ([raw]) => {
+        const p = (raw || '').toLowerCase();
         if (p === 'griffingames' || p === 'dayone') window.location.href = `/projects/${p}`;
         else print(`<span class="m">Try</span> open griffingames <span class="m">or</span> open dayone`);
       },
@@ -141,6 +145,14 @@ import { links } from '../data/site';
             choices.map((c, i) => `  <span class="c">${i + 1}</span> ${esc(c)}`).join('\n') +
             `\n<span class="m">Type 1 to 4 to lock in.</span>`,
         );
+      },
+    },
+    capybara: {
+      help: 'summon a capybara',
+      run: () => {
+        if (!spawnCapybara(term)) return print(`<span class="m">That’s plenty of capybaras. Click a few first.</span>`);
+        const lines = ['A capybara wandered in. Click it.', 'A capybara showed up. Give it a click.', 'Another capybara. It wants you to click it.'];
+        print(lines[Math.floor(Math.random() * lines.length)]);
       },
     },
     resume: { help: 'open my resume', run: () => (print('Opening resume…'), window.open(L.resume, '_blank', 'noopener')) },
@@ -179,6 +191,13 @@ import { links } from '../data/site';
     gribble: { run: () => print('Gribble the virtual pet is feeling <span class="g">playful</span>. GET /pet/mood to confirm.') },
     date: { run: () => print(new Date().toString()) },
     echo: { run: (a) => print(esc(a.join(' '))) },
+    capy: {
+      run: () => {
+        const n = spawnDanceCrew(term);
+        if (!n) return print(`<span class="m">That’s plenty of capybaras. Click a few first.</span>`);
+        print(n === 3 ? '<span class="g">♪</span> The capy crew is here. Click one to send it off.' : 'Only room for some of the crew.');
+      },
+    },
     history: { run: () => print(history.map((h, i) => `  ${i + 1}  ${esc(h)}`).join('\n')) },
   };
   commands.español = commands.hola;
@@ -192,6 +211,7 @@ import { links } from '../data/site';
     history.push(line);
     hIndex = history.length;
 
+    if (pending && /^\d+$/.test(line) && !/^[1-4]$/.test(line)) return print(`<span class="m">Pick 1 to 4.</span>`);
     if (pending && /^[1-4]$/.test(line)) {
       const pick = pending.choices[Number(line) - 1];
       if (pick === pending.q.a) {
@@ -204,7 +224,8 @@ import { links } from '../data/site';
     pending = null;
 
     const [name, ...args] = line.split(/\s+/);
-    const cmd = commands[name.toLowerCase()];
+    const key = name.toLowerCase();
+    const cmd = Object.hasOwn(commands, key) ? commands[key] : undefined;
     if (cmd) cmd.run(args);
     else print(`<span class="r">command not found:</span> ${esc(name)}. <span class="m">Type</span> help`);
   }
@@ -221,7 +242,9 @@ import { links } from '../data/site';
   }
   function close() {
     term.classList.remove('open');
-    (lastFocus as HTMLElement | null)?.focus?.();
+    // Drop focus from the hidden input first, or the global shortcuts think you're still typing in it.
+    input.blur();
+    if (lastFocus instanceof HTMLElement && lastFocus !== document.body && lastFocus.isConnected) lastFocus.focus({ preventScroll: true });
   }
   (window as any).__terminal = { open, close };
 
@@ -240,13 +263,18 @@ import { links } from '../data/site';
       hIndex = Math.min(history.length, hIndex + 1);
       input.value = history[hIndex] ?? '';
     } else if (e.key === 'Tab') {
+      // Keep Tab inside the terminal while there's something to complete.
       const v = input.value.trim().toLowerCase();
+      if (!v || v.includes(' ')) return;
+      e.preventDefault();
       const match = Object.keys(commands).filter((k) => commands[k].help && k.startsWith(v));
-      if (v && match.length === 1) {
-        e.preventDefault();
-        input.value = match[0] + ' ';
-      }
+      if (match.length === 1) input.value = match[0] + ' ';
+      else if (match.length > 1) print(match.map((m) => `<span class="c">${m}</span>`).join('  '));
     } else if (e.key === 'Escape') close();
+    else if (e.key === '`' && !input.value) {
+      e.preventDefault();
+      close();
+    }
   });
   document.getElementById('term-close')!.addEventListener('click', close);
   document.querySelectorAll('[data-open-terminal]').forEach((b) => b.addEventListener('click', open));
