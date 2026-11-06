@@ -29,8 +29,22 @@ const rules: Record<number, string> = {
   8: 'Pick a buddy who shares your fate',
   9: 'Name a category, go around',
   10: 'You’re the thumb master',
-  11: 'Make a new rule',
+  11: 'New rule',
   12: 'You’re the question master',
+};
+// Shorter labels for the board, so each one fits on a single line without being cut off.
+const board: Record<number, string> = {
+  2: 'Swap seats',
+  3: 'Trivia question',
+  4: 'Touch the floor',
+  5: 'Impressions',
+  6: 'Rhyme time',
+  7: 'Last to point up',
+  8: 'Pick a buddy',
+  9: 'Categories',
+  10: 'Thumb master',
+  11: 'Make a new rule',
+  12: 'Question master',
 };
 ---
 
@@ -94,8 +108,9 @@ const rules: Record<number, string> = {
 
       <!-- Kings Dice -->
       <section data-panel="dice" class="panel kd" aria-label="Kings Dice, playable preview" hidden>
-        <div class="grid h-full grid-cols-[1fr_auto] gap-4 sm:grid-cols-[1fr_9rem]">
-          <div class="flex min-w-0 flex-col">
+        <!-- Phones: the board runs full width under everything. Wider: it sits under the dice, beside the balloon. -->
+        <div class="grid h-full grid-cols-[1fr_auto] grid-rows-[1fr_auto] gap-x-4 gap-y-3 sm:grid-cols-[1fr_9rem]">
+          <div class="col-start-1 row-start-1 flex min-w-0 flex-col">
             <p class="kd-title">Kings Dice <span>Custom rules</span></p>
             <div class="mt-4 flex items-center gap-3">
               <div class="kd-die" data-die></div>
@@ -104,13 +119,13 @@ const rules: Record<number, string> = {
             </div>
             <p class="kd-rule mt-3" data-kd-rule aria-live="polite">Roll to pick a rule from the board.</p>
             <button type="button" class="kd-roll mt-3 self-start" data-kd-roll>Roll dice</button>
-            <ol class="kd-board mt-auto hidden sm:grid">
-              {Object.entries(rules).map(([n, r]) => (
-                <li data-rule={n}><b>{n}</b><span>{r}</span></li>
-              ))}
-            </ol>
           </div>
-          <div class="flex flex-col items-center justify-end gap-2.5">
+          <ol class="kd-board col-span-2 row-start-2 grid sm:col-span-1 sm:col-start-1">
+            {Object.entries(board).map(([n, r]) => (
+              <li data-rule={n}><b>{n}</b><span>{r}</span></li>
+            ))}
+          </ol>
+          <div class="col-start-2 row-start-1 flex flex-col items-center justify-end gap-2.5 sm:row-span-2">
             <div class="kd-balloon-area">
               <div class="kd-balloon" data-balloon><i></i></div>
               <p class="kd-pop" data-pop hidden>POP!</p>
@@ -247,6 +262,19 @@ const rules: Record<number, string> = {
   .kd-board li { display: flex; gap: 0.4rem; align-items: baseline; border-radius: 0.3rem; padding: 0.1rem 0.3rem; transition: background-color 200ms, color 200ms; }
   .kd-board b { color: #a9b8ff; min-width: 1.1rem; }
   .kd-board span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* The narrowest phones get a little tighter spacing so every label fits on one line. */
+  @media (max-width: 400px) {
+    .kd-board { gap: 0.2rem 0.5rem; }
+    .kd-board li { gap: 0.3rem; padding-inline: 0.2rem; }
+    .kd-board b { min-width: 0.95rem; }
+  }
+  @media (max-width: 370px) {
+    .kd-board { font-size: 0.66rem; }
+    .kd-board span { white-space: normal; line-height: 1.2; }
+  }
+  @media (max-width: 639px) {
+    .kd-balloon { --grow: 0.5; }
+  }
   .kd-board li.on { background: rgba(169, 184, 255, 0.14); color: #fff; }
   .kd-balloon-area { position: relative; flex: 1; width: 100%; display: grid; place-items: end center; min-height: 9rem; }
   .kd-balloon {
@@ -256,13 +284,14 @@ const rules: Record<number, string> = {
     border-radius: 50% 50% 48% 48% / 55% 55% 45% 45%;
     background: radial-gradient(circle at 35% 35%, #b5475a, #7a1f2e 60%, #561422);
     transform-origin: 50% 100%;
-    transform: scale(var(--s, 1));
+    /* --grow scales how much each pump inflates it; phones have less room, so they inflate slower. */
+    transform: scale(calc(1 + (var(--s, 1) - 1) * var(--grow, 1)));
     transition: transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
     margin-bottom: 0.6rem;
   }
   .kd-balloon i { position: absolute; left: 50%; bottom: -0.5rem; width: 0.6rem; height: 0.5rem; margin-left: -0.3rem; background: #561422; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
   .kd-balloon.popped { animation: burst 260ms ease-out forwards; }
-  @keyframes burst { to { transform: scale(calc(var(--s) * 1.5)); opacity: 0; } }
+  @keyframes burst { to { transform: scale(calc((1 + (var(--s) - 1) * var(--grow, 1)) * 1.5)); opacity: 0; } }
   .kd-pop { position: absolute; inset: 0; display: grid; place-items: center; font-size: 1.8rem; font-weight: 700; color: var(--color-text); }
   .kd-pop[hidden] { display: none; }
   @media (prefers-reduced-motion: reduce) {
