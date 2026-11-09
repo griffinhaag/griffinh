@@ -9,6 +9,7 @@ const HELMET = '#dfe5f1';
 const S = 1.75; // figure scale
 const LIP = 68; // where the ledge's lip sits, from the top of the section
 const REST = 40; // how far below the anchor he hangs before the timeline starts
+const LENS_Y = -7.6; // the flashlight's height above his boots, in figure units
 
 const ns = 'http://www.w3.org/2000/svg';
 const el = <K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string, string | number>, parent?: Element) => {
@@ -44,9 +45,9 @@ function figure(defs: Element) {
   // Arms: one holds the flashlight out toward the wall, the other brakes the rope behind him
   const down = el('g', { class: 'arms-down' }, body);
   stroke(down, JACKET, 1.6, 'M-10.6 -13.6 L-12.6 -10.2 L-10.6 -8.4');
-  stroke(down, JACKET, 1.6, 'M-10.2 -13.6 L-6.6 -12 L-3.8 -12.8');
-  stroke(down, DARK, 2, 'M-4 -12.9 L-0.8 -13.5');
-  el('circle', { cx: -0.5, cy: -13.5, r: 0.9, fill: '#fff2cc', class: 'lens' }, down);
+  stroke(down, JACKET, 1.6, 'M-10.2 -13.6 L-7.6 -9.8 L-4.6 -7.6');
+  stroke(down, DARK, 2, 'M-4.8 -7.6 L-1.4 -7.6');
+  el('circle', { cx: -1.1, cy: -7.6, r: 0.9, fill: '#fff2cc', class: 'lens' }, down);
   // On the right side he's mirrored, so the flashlight moves to his other hand, stretched out behind
   // him toward the entries, while the front hand works the rope.
   const back = el('g', { class: 'arms-back' }, body);
@@ -145,7 +146,12 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
   let y = 0;
   let side = -1; // -1: hanging on the left of the line, 1: on the right
   let placed = false;
-  let hop: { from: number; to: number; sideFrom: number; sideTo: number; t0: number; dur: number } | null = null;
+  let x = 0;
+  let hop: { from: number; to: number; xFrom: number; sideTo: number; t0: number; dur: number } | null = null;
+  // How fast the reader is scrolling (px per ms, smoothed), so his hops keep pace with their eyes.
+  let speed = 0;
+  let lastScrollY = scrollY;
+  let lastScrollT = performance.now();
   let mode: 'hang' | 'ascend' = 'hang';
   let lit = -1;
   let raf = 0;
@@ -178,10 +184,16 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
     const dt = Math.min(0.05, (now - (last || now)) / 1000);
     last = now;
     const { idx, rest, p, light } = targets();
-    const base = idx >= 0 ? dots[idx] : rest;
-    let x = 0;
+    // He settles so his flashlight is level with the entry's year, and the beam runs straight across.
+    const base = idx >= 0 ? (years[idx]?.y ?? dots[idx]) - LENS_Y * S * z : rest;
     let tilt = 0;
     let moving = false;
+    // A slow, reading-pace scroll gets an unhurried hop; a quick flick of the trackpad gets a quick one.
+    const hopTime = (dist: number) => {
+      const base = Math.min(820, Math.max(480, dist * 1.1));
+      const recent = speed * Math.exp(-(performance.now() - lastScrollT) / 250); // fades once scrolling pauses
+      return Math.max(240, base / (1 + recent * 0.9));
+    };
 
     if (p > 0) {
       // Climbing out: glide toward the scroll position instead of jumping with each wheel step.
@@ -189,36 +201,39 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
       hop = null;
       const goal = base + (rest - base) * ease(p);
       y += (goal - y) * Math.min(1, dt * 14 || 1);
+      const gx = sideX(side, z) + 3 * Math.sin(y * 0.08) * (1 - p); // a slight sway on the way up
+      x += (gx - x) * Math.min(1, dt * 14 || 1);
       moving = Math.abs(goal - y) > 0.3;
-      x = sideX(side, z) + 3 * Math.sin(y * 0.08) * (1 - p); // a slight sway on the way up
     } else {
       mode = 'hang';
       const want = sideFor(idx);
-      x = sideX(side, z);
       if (!placed) {
         y = base;
         side = want;
         x = sideX(side, z);
         placed = true;
-      } else if (!hop && (Math.abs(base - y) > 0.5 || want !== side)) {
-        if (reduced) {
-          y = base;
-          side = want;
-        } else hop = { from: y, to: base, sideFrom: side, sideTo: want, t0: now, dur: Math.min(900, Math.max(520, Math.abs(base - y) * 1.1)) };
+      } else if (reduced) {
+        y = base;
+        side = want;
+        x = sideX(side, z);
+      } else if (hop ? hop.to !== base : Math.abs(base - y) > 0.5 || Math.abs(sideX(want, z) - x) > 0.5) {
+        // Start a hop, or redirect the one in progress from wherever he is right now, so a change of
+        // direction mid-swing never snaps.
+        hop = { from: y, to: base, xFrom: x, sideTo: want, t0: now, dur: hopTime(Math.abs(base - y)) };
       }
       if (hop) {
-        if (hop.to !== base) hop = { from: y, to: base, sideFrom: side, sideTo: want, t0: now, dur: hop.dur };
         const k = Math.min(1, (now - hop.t0) / hop.dur);
         y = hop.from + (hop.to - hop.from) * ease(k);
         // Push off the wall, swing out in an arc, and land on the other side of the next dot.
-        x = sideX(hop.sideFrom, z) + (sideX(hop.sideTo, z) - sideX(hop.sideFrom, z)) * ease(k) - 14 * z * Math.sin(Math.PI * k);
+        x = hop.xFrom + (sideX(hop.sideTo, z) - hop.xFrom) * ease(k) - 14 * z * Math.sin(Math.PI * k);
         tilt = -14 * Math.sin(Math.PI * k);
         if (k >= 1) {
           side = hop.sideTo;
+          x = sideX(side, z);
           hop = null;
         }
         moving = true;
-      }
+      } else x = sideX(side, z);
     }
 
     // He always faces right, toward the entries.
@@ -226,8 +241,8 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
     const fx = lineX + x;
     guy.setAttribute('transform', `translate(${fx.toFixed(2)} ${y.toFixed(2)}) rotate(${tilt.toFixed(2)}) scale(${z})`);
     flip.setAttribute('transform', `scale(${mirror} 1)`);
-    const lensX = mirror === 1 ? -0.5 : -17.9;
-    const lensY = mirror === 1 ? -13.5 : -13.85;
+    const lensX = mirror === 1 ? -1.1 : -17.9;
+    const lensY = mirror === 1 ? LENS_Y : -13.85;
     const lx = lensX * S * mirror;
     const ly = lensY * S;
     // Aim the beam at the year of the entry he's lighting up (in his own, unscaled coordinates).
@@ -267,7 +282,18 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
   };
 
   relayout();
-  addEventListener('scroll', schedule, { passive: true });
+  addEventListener(
+    'scroll',
+    () => {
+      const t = performance.now();
+      const v = Math.abs(scrollY - lastScrollY) / Math.max(1, t - lastScrollT);
+      speed = speed * 0.7 + Math.min(v, 6) * 0.3;
+      lastScrollY = scrollY;
+      lastScrollT = t;
+      schedule();
+    },
+    { passive: true },
+  );
   addEventListener('resize', relayout);
   new ResizeObserver(relayout).observe(timeline);
   document.fonts?.ready.then(relayout);
