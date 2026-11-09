@@ -94,6 +94,8 @@
     display: grid;
     gap: 2.5rem;
   }
+  /* Stacked on small screens: tighter spacing between a heading and its text. */
+  .row { gap: 1.25rem; }
   .split > *,
   .row > * { min-width: 0; }
   @media (min-width: 1024px) {

@@ -48,7 +48,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           gh<span class="dot">.</span>
         </a>
         <ul class="hidden items-center gap-1 md:flex">
-          {nav.map((item) => (
+          {nav.filter((item) => item.id !== 'contact').map((item) => (
             <li>
               <a href={item.href} data-nav={item.id} class="nav-link rounded-full px-3.5 py-2 text-[0.95rem] text-muted transition-colors">
                 {item.label}
@@ -57,7 +57,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           ))}
         </ul>
         <div class="flex items-center gap-2">
-          <a href={links.resume} class="btn btn-ghost hidden !h-9 !px-4 text-sm sm:inline-flex" target="_blank" rel="noopener">Resume</a>
+          <a href="/#contact-form" data-nav="contact" class="btn btn-ghost !h-9 !px-4 text-sm">Contact</a>
           <button id="menu-btn" class="grid size-10 place-items-center rounded-full border border-line md:hidden" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
             <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 5h14M2 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg>
           </button>
@@ -68,7 +68,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           {nav.map((item) => (
             <li><a href={item.href} class="block py-3 font-display text-2xl font-medium">{item.label}</a></li>
           ))}
-          <li><a href={links.resume} class="block py-3 font-display text-2xl font-medium text-muted" target="_blank" rel="noopener">Resume</a></li>
+          <li><a href={links.resume} class="block py-3 font-display text-2xl font-medium text-muted" target="_blank" rel="noopener">Résumé</a></li>
         </ul>
       </div>
     </header>
