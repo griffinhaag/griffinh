@@ -91,6 +91,36 @@ import { links } from '../data/site';
     clearTimeout(hintTimer);
     hintTimer = window.setTimeout(syncHint, 300);
   });
+  // Scrolling past the hero sends the skier down the mountain to become the climber
+  // rappelling into "Where I've been". Scrolling back to the top returns the skier to the summit.
+  // <html data-skier> holds the skier state for the climber: 'here', 'away', or 'none'.
+  const root = document.documentElement;
+  const setSkier = (v: string) => {
+    if (root.dataset.skier === v) return;
+    root.dataset.skier = v;
+    dispatchEvent(new Event('skier:' + v));
+  };
+  addEventListener('skier:away', () => setSkier('away'));
+  let handoffTick = 0;
+  const handoff = () => {
+    handoffTick = 0;
+    if (!scene.runInfo()) return setSkier('none'); // phones and narrow screens have no skier
+    const bottom = hero.getBoundingClientRect().bottom / innerHeight;
+    const state = root.dataset.skier;
+    if (bottom < 0.55 && state === 'here') {
+      const r = scene.skiAway();
+      if (r === 'away' || r === 'none') setSkier(r === 'none' ? 'none' : 'away');
+      // Mid-ride or mid-drag: check again shortly, even if scrolling stops.
+      else if (r === 'busy') setTimeout(() => { if (!handoffTick) handoffTick = requestAnimationFrame(handoff); }, 500);
+    } else if (bottom > 0.9 && state !== 'here') {
+      scene.comeBack();
+      setSkier('here');
+    }
+  };
+  root.dataset.skier = 'here';
+  addEventListener('scroll', () => { if (!handoffTick) handoffTick = requestAnimationFrame(handoff); }, { passive: true });
+  addEventListener('resize', () => { if (!handoffTick) handoffTick = requestAnimationFrame(handoff); });
+  requestAnimationFrame(handoff);
   // Re-measure the period once the name finishes rising into place.
   document.querySelector('.name')?.addEventListener('animationend', () => scene.remeasure());
 </script>
