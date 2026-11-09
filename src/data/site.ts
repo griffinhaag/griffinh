@@ -86,9 +86,29 @@ export type Build = {
   linkLabel?: string;
 };
 
-// Smaller projects, one line each. The ones with code to look at come first.
+// Smaller projects, one line each. The first four show up front; the rest are behind "Show more".
 // Pure homework is left out on purpose.
 export const builds: Build[] = [
+  {
+    name: 'Data analytics tool',
+    blurb: 'Turns spreadsheets and SQL results into the chart that fits the data.',
+    stack: ['Python', 'SQL', 'Excel'],
+  },
+  {
+    name: 'Movie generator',
+    blurb: 'Describe what you’re in the mood for, and it suggests a movie from IMDb data.',
+    stack: ['JavaScript', 'IMDb API'],
+  },
+  {
+    name: 'Budget Buddy',
+    blurb: 'A personal finance tracker for logging and searching transactions and receipts.',
+    stack: ['React', 'Node.js', 'MongoDB'],
+  },
+  {
+    name: 'Classroom chatbot',
+    blurb: 'Gave my iD Tech students somewhere to ask questions while I was helping someone else.',
+    stack: ['Python', 'OpenAI API'],
+  },
   {
     name: 'CI/CD pipeline',
     blurb: 'A Jenkins pipeline that scans, builds, and redeploys a Node chat app in Docker.',
@@ -114,29 +134,9 @@ export const builds: Build[] = [
     href: 'https://github.com/griffinhaag/virtual-pet-api',
   },
   {
-    name: 'Budget Buddy',
-    blurb: 'A personal finance tracker for logging and searching transactions and receipts.',
-    stack: ['React', 'Node.js', 'MongoDB'],
-  },
-  {
-    name: 'Classroom chatbot',
-    blurb: 'Gave my iD Tech students somewhere to ask questions while I was helping someone else.',
-    stack: ['Python', 'OpenAI API'],
-  },
-  {
     name: 'Image and webcam recognition',
     blurb: 'Recognizes objects in photos and in a live webcam feed.',
     stack: ['Python', 'Machine learning'],
-  },
-  {
-    name: 'Data analytics tool',
-    blurb: 'Turns spreadsheets and SQL results into the chart that fits the data.',
-    stack: ['Python', 'SQL', 'Excel'],
-  },
-  {
-    name: 'Movie generator',
-    blurb: 'Describe what you’re in the mood for, and it suggests a movie from IMDb data.',
-    stack: ['JavaScript', 'IMDb API'],
   },
 ];
 
