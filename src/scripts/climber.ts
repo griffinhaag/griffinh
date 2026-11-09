@@ -21,10 +21,10 @@ const stroke = (g: Element, color: string, width: number, d: string) =>
   el('path', { d, stroke: color, 'stroke-width': width, fill: 'none', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
 
 /**
- * Builds the figure with his seat at the origin, which rests on a timeline dot as if the dot is
- * holding him up. He faces right toward the entries, one hand on the rope above him and the other
- * holding a flashlight at lap height. His legs either dangle or kick out; the beam lives outside the
- * figure so it can be aimed freely.
+ * Builds the figure with his boots at the origin, which is always planted on a timeline dot. He has two
+ * poses, both facing right toward the entries and leaning back on the rope like a rappeller: braced on
+ * the left of the line, and sitting on the dot on the right of it. Either way the flashlight is held low
+ * and forward. The beam lives outside the poses so it can be aimed freely.
  */
 function figure(defs: Element) {
   const g = el('g', { class: 'climber' });
@@ -35,38 +35,46 @@ function figure(defs: Element) {
   const beam = el('polygon', { class: 'beam', points: `0,0 ${34 * S},${-12.5 * S} ${34 * S},${12.5 * S}`, fill: 'url(#climb-beam)' }, g);
   const body = el('g', { transform: `scale(${S})` }, g);
 
-  // Legs: dangling over the front of the dot, or kicked out
-  const dangle = el('g', { class: 'legs-a' }, body);
-  stroke(dangle, PANTS, 2.3, 'M0 -0.6 L4.4 -0.8 L5 4');
-  stroke(dangle, PANTS, 2.3, 'M-0.4 0 L3.6 0.4 L3.6 5');
-  stroke(dangle, DARK, 1.6, 'M5 4.2 L6.2 4.4 M3.6 5.2 L4.8 5.4');
-  const kick = el('g', { class: 'legs-b' }, body);
-  stroke(kick, PANTS, 2.3, 'M0 -0.6 L4.6 -1.6 L8.4 -0.4');
-  stroke(kick, PANTS, 2.3, 'M-0.4 0 L4 0.2 L6.6 2.8');
-  stroke(kick, DARK, 1.6, 'M8.6 -1.2 L8.8 0.2 M6.8 2.6 L7.6 3.6');
-  // Torso, sitting upright, with a harness at the hips
-  stroke(body, JACKET, 3.8, 'M-0.4 -0.8 L-1.2 -8');
-  stroke(body, DARK, 1.3, 'M-1.8 -1.6 L1.2 -1.4');
-  // Arms: rope hand above him, flashlight held at lap height
-  const down = el('g', { class: 'arms-down' }, body);
-  stroke(down, JACKET, 1.6, 'M-1 -7.4 L-0.6 -11 L0 -13.6');
-  stroke(down, JACKET, 1.6, 'M-0.8 -7 L1.6 -3.6 L4.6 -2.2');
-  stroke(down, DARK, 2, 'M4.4 -2.2 L7.2 -2.2');
-  el('circle', { cx: 7.5, cy: -2.2, r: 0.9, fill: '#fff2cc', class: 'lens' }, down);
-  // Climbing back up: both hands on the rope
-  const up = el('g', { class: 'arms-up' }, body);
-  stroke(up, JACKET, 1.6, 'M-1 -7.4 L-0.6 -11 L0 -13.6');
-  stroke(up, JACKET, 1.6, 'M-0.8 -7.2 L-0.2 -9.6 L0 -11');
-  // Helmet
-  el('circle', { cx: -1.6, cy: -10.8, r: 2.3, fill: HELMET }, body);
-  el('rect', { x: -1, y: -11.4, width: 1.8, height: 0.9, fill: DARK }, body);
+  // Left of the line: legs braced, leaning back on the rope
+  const left = el('g', { class: 'pose-l' }, body);
+  stroke(left, PANTS, 2.3, 'M-8 -7.2 L-4 -5.6 L-0.4 -2.2');
+  stroke(left, PANTS, 2.3, 'M-8 -6.6 L-4.6 -2.8 L-0.8 0');
+  stroke(left, DARK, 1.6, 'M-0.6 -3 L0.4 -1.4 M-1 -0.8 L0 0.8');
+  stroke(left, JACKET, 3.8, 'M-8 -7.6 L-11 -14.8');
+  stroke(left, DARK, 1.3, 'M-9.8 -8.8 L-6.6 -7');
+  const down = el('g', { class: 'arms-down' }, left);
+  stroke(down, JACKET, 1.6, 'M-10.6 -13.6 L-12.6 -10.2 L-10.6 -8.4');
+  stroke(down, JACKET, 1.6, 'M-10.2 -13.6 L-7.4 -8.8 L-4.4 -5.4');
+  stroke(down, DARK, 2, 'M-4.6 -5.4 L-1.2 -5.4');
+  el('circle', { cx: -0.9, cy: -5.4, r: 0.9, fill: '#fff2cc', class: 'lens' }, down);
+  const up = el('g', { class: 'arms-up' }, left);
+  stroke(up, JACKET, 1.6, 'M-10.6 -13.6 L-10 -17.6 L-8.8 -21');
+  stroke(up, JACKET, 1.6, 'M-10.2 -13.6 L-8.6 -16 L-8.4 -18.2');
+  el('circle', { cx: -11.8, cy: -17.8, r: 2.3, fill: HELMET }, left);
+  el('rect', { x: -11.2, y: -18.4, width: 1.8, height: 0.9, fill: DARK }, left);
+
+  // Right of the line: sitting on the dot, legs out toward the entry, leaning back on the rope just
+  // like the left pose, with the flashlight held low and forward
+  const right = el('g', { class: 'pose-r' }, body);
+  stroke(right, PANTS, 2.3, 'M0.4 -2.4 L4.6 -2.8 L6.4 1.4');
+  stroke(right, PANTS, 2.3, 'M0 -1.8 L4 -1.4 L4.8 2.6');
+  stroke(right, DARK, 1.6, 'M6.4 1.6 L7.6 1.8 M4.8 2.8 L6 3');
+  stroke(right, JACKET, 3.8, 'M-0.2 -2.6 L-3.4 -9.4');
+  stroke(right, DARK, 1.3, 'M-1.4 -3.2 L1.4 -2.8');
+  stroke(right, JACKET, 1.6, 'M-3 -8.8 L-2 -11.8 L-0.4 -14');
+  stroke(right, JACKET, 1.6, 'M-2.6 -8.4 L0.2 -5.4 L3.4 -4.4');
+  stroke(right, DARK, 2, 'M3.2 -4.4 L6 -4.4');
+  el('circle', { cx: 6.3, cy: -4.4, r: 0.9, fill: '#fff2cc', class: 'lens' }, right);
+  el('circle', { cx: -4.4, cy: -12.2, r: 2.3, fill: HELMET }, right);
+  el('rect', { x: -3.8, y: -12.8, width: 1.8, height: 0.9, fill: DARK }, right);
   return { g, beam };
 }
 
-// Where the flashlight lens and harness sit, in figure units (seat at 0,0).
-const LENS = [7.5, -2.2] as const;
-const HARNESS = [0, -1.5] as const;
-const SEAT = 3.5; // he sits just on top of the dot, so the dot shows beneath him like a stool
+// Where the flashlight lens and harness sit in each pose, in figure units (boots at 0,0).
+const POSE = {
+  l: { lens: [-0.9, -5.4], harness: [-8.2, -7.8] },
+  r: { lens: [6.3, -4.4], harness: [0, -2.8] },
+} as const;
 
 export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: SVGSVGElement, next: HTMLElement | null) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -184,8 +192,8 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
     const dt = Math.min(0.05, (now - (last || now)) / 1000);
     last = now;
     const { idx, rest, p, light } = targets();
-    // He sits right on top of each entry's dot.
-    const base = idx >= 0 ? dots[idx] - SEAT : rest;
+    // His boots land right on each entry's dot.
+    const base = idx >= 0 ? dots[idx] : rest;
     let x = 0;
     let tilt = 0;
     let moving = false;
@@ -222,11 +230,11 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
       if (hop) {
         const k = Math.min(1, (now - hop.t0) / hop.dur);
         y = hop.from + (hop.to - hop.from) * ease(k);
-        // Push off, swing out in a little arc, and settle back down onto the next dot, legs kicking
-        // out mid-swing.
-        x = -14 * z * Math.sin(Math.PI * k);
-        tilt = -10 * Math.sin(Math.PI * k);
-        pose = k > 0.15 && k < 0.85 ? 'r' : hop.sideTo === 1 ? 'r' : 'l';
+        // Push off the wall, swing out in an arc, and plant his boots on the next dot, switching sides
+        // at the top of the swing.
+        x = -16 * z * Math.sin(Math.PI * k);
+        tilt = -12 * Math.sin(Math.PI * k);
+        if (k >= 0.5) pose = hop.sideTo === 1 ? 'r' : 'l';
         if (k >= 1) {
           side = hop.sideTo;
           hop = null;
@@ -237,9 +245,9 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
 
     const fx = lineX + x;
     guy.setAttribute('transform', `translate(${fx.toFixed(2)} ${y.toFixed(2)}) rotate(${tilt.toFixed(2)}) scale(${z})`);
-    svg.classList.toggle('kick', pose === 'r');
-    const lx = LENS[0] * S;
-    const ly = LENS[1] * S;
+    svg.classList.toggle('pose-right', pose === 'r');
+    const lx = POSE[pose].lens[0] * S;
+    const ly = POSE[pose].lens[1] * S;
     // Aim the beam at the year of the entry he's lighting up (in his own, unscaled coordinates).
     let aim = 0;
     const yr = years[light >= 0 ? light : Math.max(0, idx)];
@@ -247,12 +255,12 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
     beam.setAttribute('transform', `translate(${lx.toFixed(2)} ${ly.toFixed(2)}) rotate(${aim.toFixed(2)})`);
 
     // The rope runs from the anchor to his harness, and its loose end hangs below him.
-    const hx = fx + HARNESS[0] * S * z;
-    const hy = y + HARNESS[1] * S * z;
+    const hx = fx + POSE[pose].harness[0] * S * z;
+    const hy = y + POSE[pose].harness[1] * S * z;
     const main = `M${lineX} ${anchorY + 9} L${hx.toFixed(2)} ${hy.toFixed(2)}`;
     ropeParts.forEach((r) => r.setAttribute('d', main));
     const sway = Math.sin(now / 700) * 2.5;
-    const dirT = -1;
+    const dirT = pose === 'r' ? 1 : -1;
     const tail = `M${hx.toFixed(2)} ${hy.toFixed(2)} q${(4 * dirT + sway).toFixed(2)} 12 ${(2 * dirT + sway).toFixed(2)} 26`;
     tailParts.forEach((r) => r.setAttribute('d', tail));
     anchor.setAttribute('transform', `translate(${lineX} ${anchorY})`);
