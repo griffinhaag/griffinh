@@ -43,7 +43,7 @@ export const experience: Job[] = [
     where: 'St. Paul, MN',
     points: [
       'Taught Python at the same camp where I learned to code.',
-      'Built a chatbot on the OpenAI API so campers could get unstuck while I was helping someone else.',
+      'Built a classroom chatbot on the OpenAI API and taught campers to customize it and run it from the terminal.',
     ],
   },
   {
@@ -106,7 +106,7 @@ export const builds: Build[] = [
   },
   {
     name: 'Classroom chatbot',
-    blurb: 'Gave my iD Tech students somewhere to ask questions while I was helping someone else.',
+    blurb: 'A terminal chatbot I built and taught at iD Tech. It connects to an AI model with an API key, and students customize how it responds right in the file.',
     stack: ['Python', 'OpenAI API'],
   },
   {
