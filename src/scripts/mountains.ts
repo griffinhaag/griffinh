@@ -103,6 +103,15 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
   let run: Run | null = null;
   let running = false;
   let visible = true;
+  // Hand-off to the climber below the hero: when the reader scrolls past, he takes one quick run
+  // down the mountain (`leaving`), drops out of sight off the bottom (`dropping`), and stays
+  // `gone` until they scroll back up, when he's back on the summit (`appearAt` fades him in).
+  let leaving = false;
+  let dropping = false;
+  let dropT0 = 0;
+  let gone = false;
+  let appearAt = 0;
+  const DROP_MS = 380;
   let raf = 0;
   let now = 0;
   let lastAmbient = 0;
@@ -236,6 +245,7 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
     track = [];
     measureHub();
     resetSkier();
+    if (leaving || dropping) finishAway();
     if (!running) draw();
   }
 
@@ -547,7 +557,14 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
   const seatOffset = () => 10 * chairScale();
 
   function updateSkier(k: number) {
-    if (!run) return;
+    if (!run || gone) return;
+    if (dropping) {
+      skier.px += skier.vx * k;
+      skier.py += skier.vy * k;
+      skier.x = skier.px;
+      if (now - dropT0 > DROP_MS) finishAway();
+      return;
+    }
     const R = ranges[run.li];
     const before = skier.x;
 
@@ -555,12 +572,17 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
       case 'skiing': {
         let nx = skier.px;
         let ny = skier.py;
-        if (skier.dragging) {
+        if (leaving) {
+          // Heading down to the climb: aim for the valley floor by the gondola base.
+          skier.tx = run.cable.ax;
+          skier.ty = floorY + 4;
+        }
+        if (skier.dragging || leaving) {
           // Follow the cursor anywhere across the slope, easing toward it.
           const dx = skier.tx - skier.px;
           const dy = skier.ty - skier.py;
           const dist = Math.hypot(dx, dy);
-          const step = Math.min(dist * 0.38, 14) * k;
+          const step = Math.min(dist * 0.38, leaving ? 10 : 14) * k;
           nx += dist ? (dx / dist) * step : 0;
           ny += dist ? (dy / dist) * step : 0;
         } else {
@@ -592,7 +614,7 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
         }
         const p = onSlope(nx, ny);
         if (p) {
-          if (skier.dragging) {
+          if (skier.dragging || leaving) {
             skier.vx = (p.x - skier.px) / k;
             skier.vy = (p.y - skier.py) / k;
           } else if (Math.abs(p.y - ny) > 0.5) skier.vy = 0; // came to rest against the slope
@@ -603,6 +625,13 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
         }
         skier.x = skier.px;
         if (Math.abs(skier.vx) > 0.2) skier.facing = Math.sign(skier.vx);
+        if (leaving && reachedFloor()) {
+          // At the bottom he keeps going, over the edge and out of sight, toward the climb.
+          dropping = true;
+          dropT0 = now;
+          skier.vy = 2.4;
+          break;
+        }
         if (reachedFloor()) {
           // All the way down: skid to a stop with a spray of snow, then head for the gondola.
           skier.dragging = false;
@@ -919,7 +948,7 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
     // Gondola cabins
     for (let c = 0; c < chairCount(); c++) {
       const p = chairPoint(chairU(c));
-      const aboard = c === skier.chair && skier.state === 'riding' && now - skier.since > 450;
+      const aboard = !gone && c === skier.chair && skier.state === 'riding' && now - skier.since > 450;
       drawCabin(p.x, p.y, s, p.up ? 0.7 : 0.25, aboard);
     }
   }
@@ -1038,7 +1067,18 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
   }
 
   function drawSkier() {
-    if (!run) return;
+    if (!run || gone) return;
+    if (dropping) {
+      ctx.globalAlpha = Math.max(0, 1 - (now - dropT0) / DROP_MS);
+      drawFigure(skier.px, skier.py + 0.5, skier.angle, 'ski', skier.facing);
+      ctx.globalAlpha = 1;
+      return;
+    }
+    if (appearAt) {
+      const a = Math.min(1, (now - appearAt) / 450);
+      if (a >= 1) appearAt = 0;
+      ctx.globalAlpha = a;
+    }
     const R = ranges[run.li];
     const ground = (x: number) => surfaceY(R, x) + 0.5;
     if (skier.state === 'riding') {
@@ -1069,6 +1109,7 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
     if (skier.state === 'stopping') facing = Math.sign(skier.vx) || skier.facing;
     if (skier.state === 'skiing' || skier.state === 'ready') facing = skier.facing;
     drawFigure(pos.x, pos.y + 0.5, skier.angle, pose, facing);
+    ctx.globalAlpha = 1;
   }
 
   /** A quiet night sky: a moon with a soft halo, and a field of gently twinkling stars. */
@@ -1178,7 +1219,7 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
 
   /* ------------------------------------------------------------------ input */
 
-  const canControl = () => skier.state === 'ready' || skier.state === 'skiing';
+  const canControl = () => !leaving && !dropping && !gone && (skier.state === 'ready' || skier.state === 'skiing');
   // Fingers are less precise than a cursor, so touches get a bigger grab area.
   const nearSkier = (x: number, y: number, radius = 24) => {
     if (!run || !canControl()) return false;
@@ -1302,12 +1343,24 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
     }
   });
 
+  function finishAway() {
+    leaving = dropping = false;
+    gone = true;
+    skier.dragging = false;
+    // If he was riding, the cabin he was in is now empty.
+    skier.chair = -1;
+    skier.vx = skier.vy = 0;
+    if (!running) draw();
+    window.dispatchEvent(new Event('skier:away'));
+  }
+
   /* ------------------------------------------------------------------ setup */
 
   new ResizeObserver(build).observe(canvas);
   document.fonts?.ready.then(build);
   new IntersectionObserver(([e]) => {
     visible = e.isIntersecting;
+    if (!visible && (leaving || dropping)) finishAway();
     visible ? start() : stop();
   }).observe(canvas);
   document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
@@ -1318,6 +1371,39 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
   return {
     /** Re-run layout-dependent setup, e.g. once fonts load and the entrance finishes. */
     remeasure: build,
+    /**
+     * Send the skier off on a quick run down the mountain, out of sight, toward the climb below.
+     * Returns 'none' on screens without a skier, 'busy' if he's mid-ride or being dragged (try again
+     * later), and otherwise 'leaving' or 'away'. Fires `skier:away` once he's gone.
+     */
+    skiAway(): 'none' | 'busy' | 'leaving' | 'away' {
+      if (!run) return 'none';
+      if (gone) return 'away';
+      if (leaving || dropping) return 'leaving';
+      // While the reader is dragging him, wait for them to let go (unless the hero is already off screen).
+      if (skier.dragging && visible && running) return 'busy';
+      // Riding the gondola or skating to it, he's small or tucked in a cabin, so he can head down now.
+      if (skier.dragging || !freeSkiing() || reduced || !visible || !running) {
+        finishAway();
+        return 'away';
+      }
+      if (reduced || !visible || !running) {
+        finishAway();
+        return 'away';
+      }
+      leaving = true;
+      skier.vx = skier.vy = 0;
+      setState('skiing');
+      return 'leaving';
+    },
+    /** Put him back on the summit, fading in, when the reader scrolls back up to the hero. */
+    comeBack() {
+      if (!run) return;
+      leaving = dropping = gone = false;
+      resetSkier();
+      appearAt = running ? now : 0;
+      if (!running) draw();
+    },
     /** The period in "Haag." shakes loose a flurry. */
     dropFromHub() {
       measureHub();
@@ -1350,6 +1436,7 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
       vx: skier.vx,
       dragging: skier.dragging,
       angle: skier.angle,
+      handoff: gone ? 'gone' : leaving || dropping ? 'leaving' : 'here',
     }),
     /** Where the skier could stand if pulled toward (x, y), or null, for the site's tests. */
     probe: (x: number, y: number) => onSlope(x, y),

@@ -55,7 +55,9 @@ import { experience, origins } from '../data/site';
 <style>
   .ledge { position: absolute; top: 0; left: 0; display: block; pointer-events: none; }
   .timeline { position: relative; }
-  .timeline :global(.climb-layer) { position: absolute; top: 0; left: 0; overflow: visible; pointer-events: none; z-index: 2; }
+  .timeline :global(.climb-layer) { position: absolute; top: 0; left: 0; overflow: visible; pointer-events: none; z-index: 2; transition: opacity 450ms ease; }
+  /* Hidden until the skier from the hero has come down to become him. */
+  .timeline :global(.climb-layer.waiting) { opacity: 0; }
   .timeline :global(.climb-layer .beam) { opacity: 0; transition: opacity 400ms ease; }
   .timeline :global(.climb-layer.beam-on .beam) { opacity: 1; }
   .timeline :global(.climb-layer .lens) { fill: #6b7391; transition: fill 300ms; }

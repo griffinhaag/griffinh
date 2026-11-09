@@ -23,7 +23,7 @@ const stroke = (g: Element, color: string, width: number, d: string) =>
 /**
  * Builds the figure with his boots at the origin, which is always planted on a timeline dot. He has two
  * poses, both facing right toward the entries and leaning back on the rope like a rappeller: braced on
- * the left of the line, and sitting on the dot on the right of it. Either way the flashlight is held low
+ * the left of the line, and sitting on the right edge of the dot. Either way the flashlight is held low
  * and forward. The beam lives outside the poses so it can be aimed freely.
  */
 function figure(defs: Element) {
@@ -53,27 +53,27 @@ function figure(defs: Element) {
   el('circle', { cx: -11.8, cy: -17.8, r: 2.3, fill: HELMET }, left);
   el('rect', { x: -11.2, y: -18.4, width: 1.8, height: 0.9, fill: DARK }, left);
 
-  // Right of the line: sitting on the dot, legs out toward the entry, leaning back on the rope just
+  // Right of the line: sitting on the dot's right edge, body clear of the line, legs out toward the entry, leaning back on the rope just
   // like the left pose, with the flashlight held low and forward
   const right = el('g', { class: 'pose-r' }, body);
-  stroke(right, PANTS, 2.3, 'M0.4 -2.4 L4.6 -2.8 L6.4 1.4');
-  stroke(right, PANTS, 2.3, 'M0 -1.8 L4 -1.4 L4.8 2.6');
-  stroke(right, DARK, 1.6, 'M6.4 1.6 L7.6 1.8 M4.8 2.8 L6 3');
-  stroke(right, JACKET, 3.8, 'M-0.2 -2.6 L-3.4 -9.4');
-  stroke(right, DARK, 1.3, 'M-1.4 -3.2 L1.4 -2.8');
-  stroke(right, JACKET, 1.6, 'M-3 -8.8 L-2 -11.8 L-0.4 -14');
-  stroke(right, JACKET, 1.6, 'M-2.6 -8.4 L0.2 -5.4 L3.4 -4.4');
-  stroke(right, DARK, 2, 'M3.2 -4.4 L6 -4.4');
-  el('circle', { cx: 6.3, cy: -4.4, r: 0.9, fill: '#fff2cc', class: 'lens' }, right);
-  el('circle', { cx: -4.4, cy: -12.2, r: 2.3, fill: HELMET }, right);
-  el('rect', { x: -3.8, y: -12.8, width: 1.8, height: 0.9, fill: DARK }, right);
+  stroke(right, PANTS, 2.3, 'M5.4 -2.4 L9.6 -2.8 L11.4 1.4');
+  stroke(right, PANTS, 2.3, 'M5 -1.8 L9 -1.4 L9.8 2.6');
+  stroke(right, DARK, 1.6, 'M11.4 1.6 L12.6 1.8 M9.8 2.8 L11 3');
+  stroke(right, JACKET, 3.8, 'M5 -2.6 L3.2 -9.6');
+  stroke(right, DARK, 1.3, 'M3.8 -3.2 L6.6 -2.8');
+  stroke(right, JACKET, 1.6, 'M3.4 -8.8 L4 -11.8 L4.6 -14.2');
+  stroke(right, JACKET, 1.6, 'M3.8 -8.4 L5.8 -5.4 L8.6 -4.4');
+  stroke(right, DARK, 2, 'M8.4 -4.4 L11.2 -4.4');
+  el('circle', { cx: 11.5, cy: -4.4, r: 0.9, fill: '#fff2cc', class: 'lens' }, right);
+  el('circle', { cx: 2.6, cy: -12.6, r: 2.3, fill: HELMET }, right);
+  el('rect', { x: 3.2, y: -13.2, width: 1.8, height: 0.9, fill: DARK }, right);
   return { g, beam };
 }
 
 // Where the flashlight lens and harness sit in each pose, in figure units (boots at 0,0).
 const POSE = {
   l: { lens: [-0.9, -5.4], harness: [-8.2, -7.8] },
-  r: { lens: [6.3, -4.4], harness: [0, -2.8] },
+  r: { lens: [11.5, -4.4], harness: [4.4, -2.8] },
 } as const;
 
 export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: SVGSVGElement, next: HTMLElement | null) {
@@ -164,6 +164,10 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
   let mode: 'hang' | 'ascend' = 'hang';
   let lit = -1;
   let raf = 0;
+  // He only shows once the skier up in the hero has headed down to him (or there's no skier on this
+  // screen). The hero sets <html data-skier> and fires skier:away / skier:none / skier:here.
+  const root = document.documentElement;
+  let shown = root.dataset.skier === 'away' || root.dataset.skier === 'none';
   let last = 0;
 
   const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
@@ -182,7 +186,7 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
     const nt = next ? next.getBoundingClientRect().top : Infinity;
     const p = Math.min(1, Math.max(0, (vh * 0.55 - nt) / (vh * 0.4)));
     const onEntry = idx >= 0 && focus < bottoms[idx] + 24;
-    return { idx, rest, p, light: p === 0 && onEntry ? idx : -1 };
+    return { idx, rest, p, light: shown && p === 0 && onEntry ? idx : -1 };
   }
 
   function render(now: number) {
@@ -267,6 +271,7 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
     svg.classList.toggle('ascending', mode === 'ascend');
     svg.classList.toggle('beam-on', light >= 0 && !hop);
 
+    svg.classList.toggle('waiting', !shown);
     if (light !== lit) {
       items.forEach((li, i) => li.classList.toggle('lit', i === light));
       lit = light;
@@ -274,6 +279,28 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
     if (moving || hop) raf = requestAnimationFrame(render);
     else last = 0;
   }
+
+  // The skier has arrived: rappel down from the anchor to wherever the reader is.
+  addEventListener('skier:away', () => {
+    shown = true;
+    placed = true;
+    hop = null;
+    y = anchorY;
+    schedule();
+  });
+  // No skier on this screen: just be here.
+  addEventListener('skier:none', () => {
+    shown = true;
+    placed = false;
+    schedule();
+  });
+  // The reader went back up to the hero, where the skier is again.
+  addEventListener('skier:here', () => {
+    shown = false;
+    placed = false;
+    hop = null;
+    schedule();
+  });
 
   const schedule = () => {
     if (!raf) raf = requestAnimationFrame(render);
