@@ -13,7 +13,8 @@ interface Props {
 const { id, title, lede, sticky = true, band = false, attrs = {} } = Astro.props;
 ---
 
-<section id={id} class={`section ${band ? 'band' : ''}`} {...attrs}>
+<section id={id} class={`section relative ${band ? 'band' : ''}`} {...attrs}>
+  <slot name="top" />
   <div class="wrap">
     <div class="split">
       <header class={sticky ? 'lg:sticky lg:top-28 lg:self-start' : ''}>

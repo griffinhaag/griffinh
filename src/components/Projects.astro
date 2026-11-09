@@ -13,7 +13,22 @@ import { builds, clients, links } from '../data/site';
 
   <Fragment slot="after">
     <!-- Featured projects: one card each, the story on the left and the working preview on the right. -->
-    <article class="feature panel mt-14">
+    <article class="feature panel mt-14" data-peek>
+      <span class="peek" aria-hidden="true">
+        <svg class="peek-head" viewBox="0 0 44 30" width="66" height="45">
+          <circle cx="22" cy="18" r="8.5" fill="#e3bfa0" />
+          <path d="M13.6 16.4c.4-5.6 4.1-8.6 8.4-8.6s8 3 8.4 8.6c-2.2-2.8-5-4-8.4-4s-6.2 1.2-8.4 4Z" fill="#3a2a22" />
+          <path d="M12.6 17.5c0-6.4 4.2-11 9.4-11s9.4 4.6 9.4 11" fill="none" stroke="#262b40" stroke-width="2" stroke-linecap="round" />
+          <rect x="10.4" y="15.2" width="4" height="6.4" rx="1.6" fill="#962a3d" />
+          <rect x="29.6" y="15.2" width="4" height="6.4" rx="1.6" fill="#962a3d" />
+          <path d="M12.4 20.6c0 3.6 2.4 5.6 6 5.8" fill="none" stroke="#262b40" stroke-width="1.2" stroke-linecap="round" />
+          <circle cx="18.8" cy="26.4" r="1.1" fill="#262b40" />
+          <g class="peek-eyes" fill="#151a29"><circle cx="19" cy="19" r="1.1" /><circle cx="25" cy="19" r="1.1" /></g>
+        </svg>
+        <svg class="peek-hands" viewBox="0 0 44 30" width="66" height="45">
+          <g fill="#e3bfa0" stroke="#c99f80" stroke-width=".5"><rect x="8.5" y="25.5" width="6.5" height="5.5" rx="2.4" /><rect x="29" y="25.5" width="6.5" height="5.5" rx="2.4" /></g>
+        </svg>
+      </span>
       <div class="feature-grid">
         <div>
           <p class="meta text-sm">Side project, 2025 – present</p>
@@ -31,8 +46,8 @@ import { builds, clients, links } from '../data/site';
               {['JavaScript', 'Node.js', 'Socket.IO', 'Express', 'Groq', 'Render', 'Netlify'].map((t) => <span class="tag">{t}</span>)}
             </p>
             <div class="flex flex-wrap gap-3">
-              <a href="/projects/griffingames" class="btn btn-primary">How I built it</a>
-              <a href={links.games} class="btn btn-ghost" target="_blank" rel="noopener">Play the real thing</a>
+              <a href={links.games} class="btn btn-primary" target="_blank" rel="noopener">Play my live game</a>
+              <a href="/projects/griffingames" class="btn btn-ghost" target="_blank" rel="noopener">How I built it</a>
             </div>
           </div>
         </div>
@@ -42,7 +57,22 @@ import { builds, clients, links } from '../data/site';
       </div>
     </article>
 
-    <article class="feature panel mt-8">
+    <article class="feature panel mt-8" data-peek>
+      <span class="peek" aria-hidden="true">
+        <svg class="peek-head" viewBox="0 0 44 30" width="66" height="45">
+          <circle cx="22" cy="18" r="8.5" fill="#e3bfa0" />
+          <path d="M14 15.6c1-3.8 4-5.6 8-5.6s7 1.8 8 5.6c-2.4-1.6-5-2.2-8-2.2s-5.6.6-8 2.2Z" fill="#6b4a32" />
+          <path d="M8 8.6 22 3.4l14 5.2-14 5.2Z" fill="#151a29" />
+          <rect x="16" y="9.6" width="12" height="3.6" rx="1" fill="#151a29" />
+          <path d="M33 9.2v6.4" stroke="#f0b03a" stroke-width="1.1" stroke-linecap="round" />
+          <circle cx="33" cy="16.2" r="1.2" fill="#f0b03a" />
+          <g fill="none" stroke="#262b40" stroke-width=".9"><circle cx="19" cy="19" r="2.3" /><circle cx="25" cy="19" r="2.3" /><path d="M21.3 19h1.4" /></g>
+          <g class="peek-eyes" fill="#151a29"><circle cx="19" cy="19" r=".9" /><circle cx="25" cy="19" r=".9" /></g>
+        </svg>
+        <svg class="peek-hands" viewBox="0 0 44 30" width="66" height="45">
+          <g fill="#e3bfa0" stroke="#c99f80" stroke-width=".5"><rect x="8.5" y="25.5" width="6.5" height="5.5" rx="2.4" /><rect x="29" y="25.5" width="6.5" height="5.5" rx="2.4" /></g>
+        </svg>
+      </span>
       <div class="feature-grid">
         <div>
           <p class="meta text-sm">Dunwoody capstone, 2025</p>
@@ -61,7 +91,7 @@ import { builds, clients, links } from '../data/site';
               {['JavaScript', 'Bootstrap', 'YouTube Data API', 'AWS S3'].map((t) => <span class="tag">{t}</span>)}
             </p>
             <div class="flex flex-wrap gap-3">
-              <a href="/projects/dayone" class="btn btn-primary">How I built it</a>
+              <a href="/projects/dayone" class="btn btn-primary" target="_blank" rel="noopener">How I built it</a>
               <a href="https://github.com/griffinhaag/dayone" class="btn btn-ghost" target="_blank" rel="noopener">View the code</a>
             </div>
           </div>
@@ -72,36 +102,35 @@ import { builds, clients, links } from '../data/site';
       </div>
     </article>
 
-    <!-- Everything else -->
+    <!-- Everything else: short cards, with the rest a click away instead of a wall of text. -->
     <div class="row plain mt-24">
-      <div class="lg:sticky lg:top-28 lg:self-start">
+      <div>
         <h3 class="font-display text-3xl font-semibold tracking-tight">More projects</h3>
         <p class="mt-4 max-w-sm text-muted">Smaller things I’ve built, mostly for classes and while teaching.</p>
+        <a href={links.github} class="btn btn-ghost mt-6" target="_blank" rel="noopener">All my code on GitHub</a>
       </div>
-      <ul class="border-t border-line">
-        {builds.map((b) => {
-          const Tag = b.href ? 'a' : 'div';
-          return (
-            <li class="border-b border-line">
-              <Tag
-                {...(b.href ? { href: b.href, target: '_blank', rel: 'noopener' } : {})}
-                class={`build grid gap-x-8 gap-y-2 py-5 md:grid-cols-[1fr_auto] ${b.href ? 'is-link' : ''}`}
-              >
-                <div>
-                  <p class="flex items-center gap-2.5 font-display text-xl font-medium tracking-tight">
-                    {b.name}
-                    {b.href && (
-                      <svg class="arrow text-muted" width="14" height="14" viewBox="0 0 14 14" aria-label="(GitHub)"><path d="M4 10 10 4M5 4h5v5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                    )}
-                  </p>
-                  <p class="mt-1.5 max-w-[60ch] text-muted">{b.blurb}</p>
-                </div>
-                <p class="text-sm text-muted md:max-w-[14rem] md:pt-1.5 md:text-right">{b.stack.join(', ')}</p>
-              </Tag>
+      <div>
+        <ul class="grid gap-3 sm:grid-cols-2" data-builds>
+          {builds.map((b, i) => (
+            <li class={`build-card ${i >= 4 ? 'extra' : ''}`} hidden={i >= 4}>
+              <p class="font-display text-lg font-medium tracking-tight">{b.name}</p>
+              <p class="mt-1 text-[0.95rem] leading-snug text-muted">{b.blurb}</p>
+              <div class="mt-auto flex items-end justify-between gap-3 pt-4">
+                <p class="text-xs text-muted">{b.stack.join(', ')}</p>
+                {b.href && (
+                  <a href={b.href} class="code-link" target="_blank" rel="noopener" aria-label={`View the code for ${b.name} on GitHub`}>
+                    Code
+                    <svg width="12" height="12" viewBox="0 0 14 14" aria-hidden="true"><path d="M4 10 10 4M5 4h5v5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                  </a>
+                )}
+              </div>
             </li>
-          );
-        })}
-      </ul>
+          ))}
+        </ul>
+        {builds.length > 4 && (
+          <button type="button" class="btn btn-ghost mt-4" data-builds-toggle aria-expanded="false">Show {builds.length - 4} more</button>
+        )}
+      </div>
     </div>
 
     <div class="row plain mt-20">
@@ -124,7 +153,24 @@ import { builds, clients, links } from '../data/site';
 </Section>
 
 <style>
-  .feature { padding: 1.5rem; }
+  .feature { position: relative; padding: 1.5rem; transition: box-shadow 500ms ease; }
+  /* A little character peeks over the top-left edge of whichever project you're looking at. The clip
+     box ends a few pixels into the card, so the hands overlap the border and everything else hides below it. */
+  .peek { position: absolute; left: 2.25rem; top: -42px; width: 66px; height: 45px; overflow: hidden; pointer-events: none; z-index: 1; }
+  .peek svg { position: absolute; inset: 0; transform: translateY(100%); transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1); }
+  .peek-hands { transition-delay: 0ms; }
+  .peek-head { transition-delay: 0ms; }
+  .feature.peeking .peek-hands { transform: translateY(0); transition-delay: 0ms; }
+  .feature.peeking .peek-head { transform: translateY(2px); transition-delay: 160ms; transition-duration: 600ms; transition-timing-function: cubic-bezier(0.34, 1.4, 0.64, 1); }
+  .peek-eyes { transform-box: fill-box; transform-origin: center; }
+  .feature.peeking .peek-eyes { animation: peek-blink 3.6s 1s infinite; }
+  @keyframes peek-blink { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(0.15); } }
+  .feature.peeking { box-shadow: 0 0 0 1px rgba(169, 184, 255, 0.22), 0 30px 60px -40px rgba(0, 0, 0, 0.9), 0 0 50px -20px rgba(169, 184, 255, 0.25); }
+  @media (prefers-reduced-motion: reduce) {
+    .peek svg { transition: opacity 300ms; transform: none; opacity: 0; }
+    .feature.peeking .peek svg { opacity: 1; transform: none; }
+    .feature.peeking .peek-eyes { animation: none; }
+  }
   @media (min-width: 768px) { .feature { padding: 2.25rem; } }
   .feature-grid { display: grid; gap: 2rem; }
   .feature-grid > * { min-width: 0; }
@@ -147,25 +193,67 @@ import { builds, clients, links } from '../data/site';
     border-radius: 50%;
     background: var(--color-mist);
   }
-  .build { position: relative; transition: padding 250ms var(--ease-out-quint); }
-  .arrow { transition: transform 200ms var(--ease-out-quint), color 200ms; }
-  @media (hover: hover) {
-    .build.is-link:hover { padding-left: 0.75rem; }
-    .build.is-link:hover .arrow { transform: translate(2px, -2px); color: var(--color-text); }
-    .build.is-link::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 1.5rem;
-      bottom: 1.5rem;
-      width: 2px;
-      background: var(--color-wine);
-      transform: scaleY(0);
-      transition: transform 250ms var(--ease-out-quint);
-    }
-    .build.is-link:hover::before { transform: scaleY(1); }
+  .build-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 0.9rem;
+    border: 1px solid var(--color-line);
+    padding: 1rem 1.1rem;
+    background: color-mix(in oklab, var(--color-slate) 55%, transparent);
   }
-  @media (prefers-reduced-motion: reduce) {
-    .build, .arrow, .build::before { transition: none !important; }
+  .build-card[hidden] { display: none; }
+  .code-link {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-height: 2rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-line);
+    padding: 0 0.75rem;
+    font-size: 0.85rem;
+    color: var(--color-text);
+    transition: border-color 200ms, background-color 200ms;
+  }
+  @media (hover: hover) {
+    .code-link:hover { border-color: var(--color-mist); background: color-mix(in oklab, var(--color-mist) 10%, transparent); }
   }
 </style>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-builds-toggle]');
+  if (toggle) {
+    const extras = document.querySelectorAll<HTMLElement>('[data-builds] .extra');
+    const more = toggle.textContent!.trim();
+    toggle.addEventListener('click', () => {
+      const open = toggle.getAttribute('aria-expanded') !== 'true';
+      extras.forEach((el) => (el.hidden = !open));
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.textContent = open ? 'Show fewer' : more;
+      if (open) extras[0]?.querySelector<HTMLElement>('a, p')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+  }
+</script>
+
+<script>
+  // The featured project nearest the middle of the screen gets a peeking visitor, one at a time.
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-peek]')];
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    const mid = innerHeight * 0.45;
+    let best: HTMLElement | null = null;
+    let bestDist = Infinity;
+    for (const c of cards) {
+      const r = c.getBoundingClientRect();
+      // Only a card that actually spans the middle line counts.
+      if (r.top > mid || r.bottom < mid) continue;
+      const d = Math.abs(r.top + Math.min(r.height, innerHeight) / 2 - mid);
+      if (d < bestDist) (best = c), (bestDist = d);
+    }
+    cards.forEach((c) => c.classList.toggle('peeking', c === best));
+  };
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  addEventListener('resize', update);
+  update();
+</script>

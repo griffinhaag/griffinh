@@ -9,14 +9,15 @@ import { toolbox } from '../data/site';
     <p class="mt-1 font-display text-lg leading-snug" data-used-list>Nothing picked yet.</p>
   </div>
 
-  <div class="grid gap-4 sm:grid-cols-2">
+  <!-- One compact panel: a row per group instead of four separate boxes. -->
+  <div class="panel panel-sm divide-y divide-line !py-1">
     {toolbox.map((g) => (
-      <div class="panel panel-sm">
-        <h3 class="font-display text-xl font-medium">{g.group}</h3>
-        <ul class="mt-4 flex flex-wrap gap-2">
+      <div class="grid gap-x-6 gap-y-2.5 py-4 sm:grid-cols-[9.5rem_1fr] sm:items-baseline">
+        <h3 class="font-display text-lg font-medium">{g.group}</h3>
+        <ul class="flex flex-wrap gap-2">
           {g.tools.map((t) => (
             <li>
-              <button type="button" class="tool rounded-lg border border-line px-3 py-2 text-[0.95rem] transition-colors" data-tool={t.name} data-used={t.used.join('|')} aria-pressed="false">
+              <button type="button" class="tool rounded-lg border border-line px-3 py-1.5 text-[0.92rem] transition-colors" data-tool={t.name} data-used={t.used.join('|')} aria-pressed="false">
                 {t.name}
               </button>
             </li>

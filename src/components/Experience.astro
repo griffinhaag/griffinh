@@ -4,7 +4,19 @@ import { experience, origins } from '../data/site';
 ---
 
 <Section id="experience" title="Where I’ve been" lede="Newest first. The early years are tucked away at the bottom.">
-  <ol class="timeline">
+  <!-- A rocky lip under the hero's mountains. The climber's rope is anchored to it. -->
+  <svg slot="top" class="ledge" height="110" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="ledge-fill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#121a30" stop-opacity="0" />
+        <stop offset="0.45" stop-color="#121a30" stop-opacity="0.85" />
+        <stop offset="1" stop-color="#18213b" />
+      </linearGradient>
+    </defs>
+    <path class="rock" fill="url(#ledge-fill)" />
+    <path class="lip" fill="none" stroke="#9fb2cf" stroke-opacity="0.16" stroke-width="1" />
+  </svg>
+  <ol class="timeline" data-timeline>
     {experience.map((job) => (
       <li class={`item ${job.when.includes('present') ? 'current' : ''}`}>
         <div class="body">
@@ -41,7 +53,36 @@ import { experience, origins } from '../data/site';
 </Section>
 
 <style>
+  .ledge { position: absolute; top: 0; left: 0; display: block; pointer-events: none; }
   .timeline { position: relative; }
+  .timeline :global(.climb-layer) { position: absolute; top: 0; left: 0; overflow: visible; pointer-events: none; z-index: 2; }
+  .timeline :global(.climb-layer .beam) { opacity: 0; transition: opacity 400ms ease; }
+  .timeline :global(.climb-layer.beam-on .beam) { opacity: 1; }
+  .timeline :global(.climb-layer .lens) { fill: #6b7391; transition: fill 300ms; }
+  .timeline :global(.climb-layer.beam-on .lens) { fill: #fff2cc; }
+  .timeline :global(.climb-layer .arms-up),
+  .timeline :global(.climb-layer .arms-back),
+  .timeline :global(.climb-layer.right-side .arms-down) { display: none; }
+  .timeline :global(.climb-layer.right-side .arms-back) { display: inline; }
+  .timeline :global(.climb-layer.ascending .arms-back) { display: none; }
+  .timeline :global(.climb-layer.ascending .arms-up) { display: inline; }
+  .timeline :global(.climb-layer.ascending .arms-down) { display: none; }
+  /* The flashlight's glow on the entry you're reading */
+  .item::after {
+    content: '';
+    position: absolute;
+    inset: -0.9rem -0.5rem 1.6rem 1rem;
+    border-radius: 1.1rem;
+    background: radial-gradient(ellipse 55% 70% at 0% 28%, rgba(255, 233, 186, 0.1), transparent 62%);
+    opacity: 0;
+    transition: opacity 500ms ease;
+    pointer-events: none;
+  }
+  .item.lit::after { opacity: 1; }
+  .item .body { transition: border-color 500ms ease, box-shadow 500ms ease; }
+  .item.lit.current .body { border-color: rgba(255, 233, 186, 0.28); box-shadow: 0 0 40px -18px rgba(255, 233, 186, 0.35); }
+  .item.lit h3 { color: #fff; }
+  .item h3 { transition: color 400ms ease; }
   .timeline::before {
     content: '';
     position: absolute;
@@ -88,3 +129,11 @@ import { experience, origins } from '../data/site';
     .origins[open] ul { animation: none; }
   }
 </style>
+
+<script>
+  import { initClimber } from '../scripts/climber';
+  const section = document.getElementById('experience');
+  const timeline = document.querySelector<HTMLElement>('[data-timeline]');
+  const ledge = document.querySelector<SVGSVGElement>('#experience .ledge');
+  if (section && timeline && ledge) initClimber(section, timeline, ledge, document.getElementById('projects'));
+</script>

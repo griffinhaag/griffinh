@@ -86,41 +86,41 @@ export type Build = {
   linkLabel?: string;
 };
 
-// Smaller projects. Pure homework is left out on purpose.
+// Smaller projects, one line each. The ones with code to look at come first.
+// Pure homework is left out on purpose.
 export const builds: Build[] = [
   {
-    name: 'CI/CD pipeline for a real-time chat app',
-    blurb:
-      'A Jenkins pipeline for a Node chat app. Each build is scanned with Snyk and SonarQube, packaged as a Docker image, pushed to Docker Hub, and redeployed with Compose.',
+    name: 'CI/CD pipeline',
+    blurb: 'A Jenkins pipeline that scans, builds, and redeploys a Node chat app in Docker.',
     stack: ['Jenkins', 'Docker', 'Snyk', 'SonarQube'],
     href: 'https://github.com/griffinhaag/realtime-chat-docker',
   },
   {
     name: 'PHP e-commerce store',
-    blurb: 'An online store written from scratch in plain PHP, with user roles, search, a cart, checkout, and an admin side for managing products.',
+    blurb: 'An online store in plain PHP with user roles, a cart, checkout, and an admin side.',
     stack: ['PHP', 'MySQL', 'JavaScript'],
     href: 'https://github.com/griffinhaag/php-ecommerce-store',
   },
   {
     name: 'GadgetHub',
-    blurb: 'An electronics store in ASP.NET MVC with a session cart, emailed orders, an admin area, and dependency injection through Ninject.',
-    stack: ['C#', 'ASP.NET MVC', 'Entity Framework', 'SQL'],
+    blurb: 'An ASP.NET MVC electronics store with a session cart, emailed orders, and an admin area.',
+    stack: ['C#', 'ASP.NET MVC', 'SQL'],
     href: 'https://github.com/griffinhaag/gadgethub-store',
   },
   {
-    name: 'Budget Buddy',
-    blurb: 'A personal finance tracker for logging and searching transactions and receipts.',
-    stack: ['React', 'Node.js', 'MongoDB', 'Tailwind'],
-  },
-  {
     name: 'Virtual Pet API',
-    blurb: 'A small Spring Boot API for a pet named Gribble, who has moods and strong opinions about toys.',
+    blurb: 'A Spring Boot API for a pet named Gribble, who has strong opinions about toys.',
     stack: ['Java', 'Spring Boot'],
     href: 'https://github.com/griffinhaag/virtual-pet-api',
   },
   {
+    name: 'Budget Buddy',
+    blurb: 'A personal finance tracker for logging and searching transactions and receipts.',
+    stack: ['React', 'Node.js', 'MongoDB'],
+  },
+  {
     name: 'Classroom chatbot',
-    blurb: 'Built while I was teaching at iD Tech, so students had somewhere to ask questions when I was busy.',
+    blurb: 'Gave my iD Tech students somewhere to ask questions while I was helping someone else.',
     stack: ['Python', 'OpenAI API'],
   },
   {
@@ -130,12 +130,12 @@ export const builds: Build[] = [
   },
   {
     name: 'Data analytics tool',
-    blurb: 'Turns spreadsheets and SQL results into charts, choosing a chart type that fits the data.',
+    blurb: 'Turns spreadsheets and SQL results into the chart that fits the data.',
     stack: ['Python', 'SQL', 'Excel'],
   },
   {
     name: 'Movie generator',
-    blurb: 'Describe what you’re in the mood for and it suggests a movie, using IMDb data.',
+    blurb: 'Describe what you’re in the mood for, and it suggests a movie from IMDb data.',
     stack: ['JavaScript', 'IMDb API'],
   },
 ];

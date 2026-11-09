@@ -62,7 +62,7 @@ const hardParts = [
     { label: 'Stack', value: 'JavaScript, Node.js, Express, Socket.IO, Groq' },
   ]}
   links={[
-    { label: 'Play it live', href: links.games, primary: true },
+    { label: 'Play my live game', href: links.games, primary: true },
     { label: 'Frontend code', href: 'https://github.com/griffinhaag/griffinhgames' },
     { label: 'Server code', href: 'https://github.com/griffinhaag/griffinhgames-server' },
   ]}
@@ -179,16 +179,17 @@ const hardParts = [
   </div>
   </section>
 
-  <section class="wrap mt-24">
-    <h2 class="font-display text-3xl font-semibold tracking-tight">The games</h2>
-    <div class="mt-10 space-y-16">
+  <section class="wrap mt-24"><div class="border-t border-line pt-16">
+    <div class="row">
+      <h2 class="font-display text-3xl font-semibold tracking-tight">The games</h2>
+      <p class="max-w-[62ch] text-lg text-muted">Three games, all played from the same room code. Tap any screenshot to see it full size.</p>
+    </div>
+    <div class="mt-12 space-y-14">
       {gallery.map((g) => (
         <div>
-          <div class="flex flex-col gap-2 md:flex-row md:items-baseline md:justify-between md:gap-8">
-            <h3 class="font-display text-2xl font-medium">{g.game}</h3>
-            <p class="max-w-xl text-muted">{g.about}</p>
-          </div>
-          <ul class="mt-6 grid gap-4 sm:grid-cols-3">
+          <h3 class="font-display text-2xl font-medium">{g.game}</h3>
+          <p class="mt-1.5 max-w-[62ch] text-muted">{g.about}</p>
+          <ul class="shots mt-5 grid gap-4 sm:grid-cols-3">
             {g.shots.map((s) => (
               <li>
                 <button type="button" data-zoom class="shot block w-full overflow-hidden rounded-lg border border-line" aria-label={`Enlarge: ${s.alt}`}>
@@ -200,6 +201,7 @@ const hardParts = [
         </div>
       ))}
     </div>
+  </div>
   </section>
 
   <section class="wrap mt-24"><div class="row border-t border-line pt-16">
@@ -224,4 +226,10 @@ const hardParts = [
     .shot:hover img { transform: scale(1.03); }
   }
   .shot { cursor: zoom-in; }
+  /* Phones: each game's screenshots become one swipeable row, with the next one peeking in. */
+  @media (max-width: 639px) {
+    .shots { grid-auto-flow: column; grid-auto-columns: 82%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-inline: -1.25rem; padding-inline: 1.25rem; scroll-padding-inline: 1.25rem; }
+    .shots::-webkit-scrollbar { display: none; }
+    .shots > li { scroll-snap-align: start; }
+  }
 </style>
