@@ -9,7 +9,6 @@ const HELMET = '#dfe5f1';
 const S = 1.75; // figure scale
 const LIP = 68; // where the ledge's lip sits, from the top of the section
 const REST = 40; // how far below the anchor he hangs before the timeline starts
-const LENS_Y = -7.6; // the flashlight's height above his boots, in figure units
 
 const ns = 'http://www.w3.org/2000/svg';
 const el = <K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string, string | number>, parent?: Element) => {
@@ -22,9 +21,10 @@ const stroke = (g: Element, color: string, width: number, d: string) =>
   el('path', { d, stroke: color, 'stroke-width': width, fill: 'none', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
 
 /**
- * Builds the figure with its feet at the origin. The body is drawn facing right (hanging on the left
- * of the line); flipping `flip` mirrors him onto the right side. The flashlight beam lives outside
- * the flip so it always shines toward the entries.
+ * Builds the figure with his seat at the origin, which rests on a timeline dot as if the dot is
+ * holding him up. He faces right toward the entries, one hand on the rope above him and the other
+ * holding a flashlight at lap height. His legs either dangle or kick out; the beam lives outside the
+ * figure so it can be aimed freely.
  */
 function figure(defs: Element) {
   const g = el('g', { class: 'climber' });
@@ -33,37 +33,40 @@ function figure(defs: Element) {
   el('stop', { offset: 1, 'stop-color': '#fff1c9', 'stop-opacity': 0 }, grad);
 
   const beam = el('polygon', { class: 'beam', points: `0,0 ${34 * S},${-12.5 * S} ${34 * S},${12.5 * S}`, fill: 'url(#climb-beam)' }, g);
-  const flip = el('g', {}, g);
-  const body = el('g', { transform: `scale(${S})` }, flip);
-  // Legs braced against the wall, boots on the dot
-  stroke(body, PANTS, 2.3, 'M-8 -7.2 L-4 -5.6 L-0.4 -2.2');
-  stroke(body, PANTS, 2.3, 'M-8 -6.6 L-4.6 -2.8 L-0.8 0');
-  stroke(body, DARK, 1.6, 'M-0.6 -3 L0.4 -1.4 M-1 -0.8 L0 0.8');
-  // Torso leaning back on the rope, with a harness
-  stroke(body, JACKET, 3.8, 'M-8 -7.6 L-11 -14.8');
-  stroke(body, DARK, 1.3, 'M-9.8 -8.8 L-6.6 -7');
-  // Arms: one holds the flashlight out toward the wall, the other brakes the rope behind him
+  const body = el('g', { transform: `scale(${S})` }, g);
+
+  // Legs: dangling over the front of the dot, or kicked out
+  const dangle = el('g', { class: 'legs-a' }, body);
+  stroke(dangle, PANTS, 2.3, 'M0 -0.6 L4.4 -0.8 L5 4');
+  stroke(dangle, PANTS, 2.3, 'M-0.4 0 L3.6 0.4 L3.6 5');
+  stroke(dangle, DARK, 1.6, 'M5 4.2 L6.2 4.4 M3.6 5.2 L4.8 5.4');
+  const kick = el('g', { class: 'legs-b' }, body);
+  stroke(kick, PANTS, 2.3, 'M0 -0.6 L4.6 -1.6 L8.4 -0.4');
+  stroke(kick, PANTS, 2.3, 'M-0.4 0 L4 0.2 L6.6 2.8');
+  stroke(kick, DARK, 1.6, 'M8.6 -1.2 L8.8 0.2 M6.8 2.6 L7.6 3.6');
+  // Torso, sitting upright, with a harness at the hips
+  stroke(body, JACKET, 3.8, 'M-0.4 -0.8 L-1.2 -8');
+  stroke(body, DARK, 1.3, 'M-1.8 -1.6 L1.2 -1.4');
+  // Arms: rope hand above him, flashlight held at lap height
   const down = el('g', { class: 'arms-down' }, body);
-  stroke(down, JACKET, 1.6, 'M-10.6 -13.6 L-12.6 -10.2 L-10.6 -8.4');
-  stroke(down, JACKET, 1.6, 'M-10.2 -13.6 L-7.6 -9.8 L-4.6 -7.6');
-  stroke(down, DARK, 2, 'M-4.8 -7.6 L-1.4 -7.6');
-  el('circle', { cx: -1.1, cy: -7.6, r: 0.9, fill: '#fff2cc', class: 'lens' }, down);
-  // On the right side he's mirrored, so the flashlight moves to his other hand, stretched out behind
-  // him toward the entries, while the front hand works the rope.
-  const back = el('g', { class: 'arms-back' }, body);
-  stroke(back, JACKET, 1.6, 'M-10.2 -13.6 L-7.6 -10.6 L-6.8 -8.8');
-  stroke(back, JACKET, 1.6, 'M-10.6 -13.6 L-13.2 -12.6 L-15 -13.2');
-  stroke(back, DARK, 2, 'M-14.8 -13.3 L-17.6 -13.8');
-  el('circle', { cx: -17.9, cy: -13.85, r: 0.9, fill: '#fff2cc', class: 'lens' }, back);
+  stroke(down, JACKET, 1.6, 'M-1 -7.4 L-0.6 -11 L0 -13.6');
+  stroke(down, JACKET, 1.6, 'M-0.8 -7 L1.6 -3.6 L4.6 -2.2');
+  stroke(down, DARK, 2, 'M4.4 -2.2 L7.2 -2.2');
+  el('circle', { cx: 7.5, cy: -2.2, r: 0.9, fill: '#fff2cc', class: 'lens' }, down);
   // Climbing back up: both hands on the rope
   const up = el('g', { class: 'arms-up' }, body);
-  stroke(up, JACKET, 1.6, 'M-10.6 -13.6 L-10 -17.6 L-8.8 -21');
-  stroke(up, JACKET, 1.6, 'M-10.2 -13.6 L-8.6 -16 L-8.4 -18.2');
+  stroke(up, JACKET, 1.6, 'M-1 -7.4 L-0.6 -11 L0 -13.6');
+  stroke(up, JACKET, 1.6, 'M-0.8 -7.2 L-0.2 -9.6 L0 -11');
   // Helmet
-  el('circle', { cx: -11.8, cy: -17.8, r: 2.3, fill: HELMET }, body);
-  el('rect', { x: -11.2, y: -18.4, width: 1.8, height: 0.9, fill: DARK }, body);
-  return { g, flip, beam };
+  el('circle', { cx: -1.6, cy: -10.8, r: 2.3, fill: HELMET }, body);
+  el('rect', { x: -1, y: -11.4, width: 1.8, height: 0.9, fill: DARK }, body);
+  return { g, beam };
 }
+
+// Where the flashlight lens and harness sit, in figure units (seat at 0,0).
+const LENS = [7.5, -2.2] as const;
+const HARNESS = [0, -1.5] as const;
+const SEAT = 3.5; // he sits just on top of the dot, so the dot shows beneath him like a stool
 
 export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: SVGSVGElement, next: HTMLElement | null) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -89,7 +92,7 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
   el('rect', { x: -4, y: -4, width: 8, height: 8, rx: 2, fill: '#1b2338', stroke: '#8a93ad', 'stroke-width': 1 }, anchor);
   el('circle', { r: 1.2, fill: '#8a93ad' }, anchor);
   el('ellipse', { cx: 0, cy: 6.5, rx: 2.4, ry: 3.6, fill: 'none', stroke: '#c7cfe0', 'stroke-width': 1.2 }, anchor);
-  const { g: guy, flip, beam } = figure(defs);
+  const { g: guy, beam } = figure(defs);
   svg.appendChild(guy);
 
   // The line and dots sit 5.5px in from the timeline's left edge.
@@ -131,13 +134,12 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
     // There, anchor just above the first entry instead.
     const head = section.querySelector('.split > header');
     if (head && head.getBoundingClientRect().bottom <= t.top + 2) anchorY = -52;
-    const dotOffset = parseFloat(getComputedStyle(items[0], '::before').top) + 5.5 || 12.7;
-    dots = items.map((li) => li.getBoundingClientRect().top - t.top + dotOffset);
+    dots = items.map((li) => li.getBoundingClientRect().top - t.top + (parseFloat(getComputedStyle(li, '::before').top) || 4.5) + 5.5);
     bottoms = items.map((li) => li.getBoundingClientRect().bottom - t.top);
     // Where each entry's year sits, so the flashlight can be aimed right at it.
     years = items.map((li) => {
       const r = (li.querySelector('.when') ?? li).getBoundingClientRect();
-      return { x: r.left - t.left + 18, y: r.top + r.height / 2 - t.top };
+      return { x: r.left - t.left + 40, y: r.top + r.height / 2 - t.top };
     });
   }
   let years: { x: number; y: number }[] = [];
@@ -146,7 +148,6 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
   let y = 0;
   let side = -1; // -1: hanging on the left of the line, 1: on the right
   let placed = false;
-  let x = 0;
   let hop: { from: number; to: number; xFrom: number; sideTo: number; t0: number; dur: number } | null = null;
   // How fast the reader is scrolling (px per ms, smoothed), so his hops keep pace with their eyes.
   let speed = 0;
@@ -161,7 +162,6 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
   // He lands on alternating sides of the line as he works his way down, starting on the left. He
   // always faces right, toward the entries. On the right side he hangs just clear of the line.
   const sideFor = (idx: number) => (idx < 0 || idx % 2 === 0 ? -1 : 1);
-  const sideX = (sd: number, z: number) => (sd === 1 ? 24 * z : 0);
 
   function targets() {
     const vh = innerHeight;
@@ -184,81 +184,76 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
     const dt = Math.min(0.05, (now - (last || now)) / 1000);
     last = now;
     const { idx, rest, p, light } = targets();
-    // He settles so his flashlight is level with the entry's year, and the beam runs straight across.
-    const base = idx >= 0 ? (years[idx]?.y ?? dots[idx]) - LENS_Y * S * z : rest;
+    // He sits right on top of each entry's dot.
+    const base = idx >= 0 ? dots[idx] - SEAT : rest;
+    let x = 0;
     let tilt = 0;
     let moving = false;
+    let pose: 'l' | 'r' = side === 1 ? 'r' : 'l';
     // A slow, reading-pace scroll gets an unhurried hop; a quick flick of the trackpad gets a quick one.
     const hopTime = (dist: number) => {
-      const base = Math.min(820, Math.max(480, dist * 1.1));
+      const b0 = Math.min(820, Math.max(480, dist * 1.1));
       const recent = speed * Math.exp(-(performance.now() - lastScrollT) / 250); // fades once scrolling pauses
-      return Math.max(240, base / (1 + recent * 0.9));
+      return Math.max(240, b0 / (1 + recent * 0.9));
     };
 
     if (p > 0) {
-      // Climbing out: glide toward the scroll position instead of jumping with each wheel step.
+      // Climbing out, hand over hand: glide toward the scroll position instead of jumping with each wheel step.
       mode = 'ascend';
       hop = null;
+      pose = 'l';
       const goal = base + (rest - base) * ease(p);
       y += (goal - y) * Math.min(1, dt * 14 || 1);
-      const gx = sideX(side, z) + 3 * Math.sin(y * 0.08) * (1 - p); // a slight sway on the way up
-      x += (gx - x) * Math.min(1, dt * 14 || 1);
+      x = 3 * Math.sin(y * 0.08) * (1 - p); // a slight sway on the way up
       moving = Math.abs(goal - y) > 0.3;
     } else {
       mode = 'hang';
       const want = sideFor(idx);
-      if (!placed) {
+      if (!placed || reduced) {
         y = base;
         side = want;
-        x = sideX(side, z);
         placed = true;
-      } else if (reduced) {
-        y = base;
-        side = want;
-        x = sideX(side, z);
-      } else if (hop ? hop.to !== base : Math.abs(base - y) > 0.5 || Math.abs(sideX(want, z) - x) > 0.5) {
-        // Start a hop, or redirect the one in progress from wherever he is right now, so a change of
-        // direction mid-swing never snaps.
-        hop = { from: y, to: base, xFrom: x, sideTo: want, t0: now, dur: hopTime(Math.abs(base - y)) };
+      } else if (hop ? hop.to !== base : Math.abs(base - y) > 0.5 || want !== side) {
+        // Start a hop, or redirect the one in progress from wherever he is, so a change of direction
+        // mid-swing never snaps.
+        hop = { from: y, to: base, xFrom: 0, sideTo: want, t0: now, dur: hopTime(Math.abs(base - y)) };
       }
+      pose = side === 1 ? 'r' : 'l';
       if (hop) {
         const k = Math.min(1, (now - hop.t0) / hop.dur);
         y = hop.from + (hop.to - hop.from) * ease(k);
-        // Push off the wall, swing out in an arc, and land on the other side of the next dot.
-        x = hop.xFrom + (sideX(hop.sideTo, z) - hop.xFrom) * ease(k) - 14 * z * Math.sin(Math.PI * k);
-        tilt = -14 * Math.sin(Math.PI * k);
+        // Push off, swing out in a little arc, and settle back down onto the next dot, legs kicking
+        // out mid-swing.
+        x = -14 * z * Math.sin(Math.PI * k);
+        tilt = -10 * Math.sin(Math.PI * k);
+        pose = k > 0.15 && k < 0.85 ? 'r' : hop.sideTo === 1 ? 'r' : 'l';
         if (k >= 1) {
           side = hop.sideTo;
-          x = sideX(side, z);
           hop = null;
         }
         moving = true;
-      } else x = sideX(side, z);
+      }
     }
 
-    // He always faces right, toward the entries.
-    const mirror = 1;
     const fx = lineX + x;
     guy.setAttribute('transform', `translate(${fx.toFixed(2)} ${y.toFixed(2)}) rotate(${tilt.toFixed(2)}) scale(${z})`);
-    flip.setAttribute('transform', `scale(${mirror} 1)`);
-    const lensX = mirror === 1 ? -1.1 : -17.9;
-    const lensY = mirror === 1 ? LENS_Y : -13.85;
-    const lx = lensX * S * mirror;
-    const ly = lensY * S;
+    svg.classList.toggle('kick', pose === 'r');
+    const lx = LENS[0] * S;
+    const ly = LENS[1] * S;
     // Aim the beam at the year of the entry he's lighting up (in his own, unscaled coordinates).
     let aim = 0;
     const yr = years[light >= 0 ? light : Math.max(0, idx)];
     if (yr) aim = (Math.atan2((yr.y - y) / z - ly, (yr.x - fx) / z - lx) * 180) / Math.PI;
     beam.setAttribute('transform', `translate(${lx.toFixed(2)} ${ly.toFixed(2)}) rotate(${aim.toFixed(2)})`);
-    svg.classList.toggle('right-side', mirror === -1);
 
     // The rope runs from the anchor to his harness, and its loose end hangs below him.
-    const hx = fx - 8.2 * S * z * mirror;
-    const hy = y - 7.8 * S * z;
+    const hx = fx + HARNESS[0] * S * z;
+    const hy = y + HARNESS[1] * S * z;
     const main = `M${lineX} ${anchorY + 9} L${hx.toFixed(2)} ${hy.toFixed(2)}`;
     ropeParts.forEach((r) => r.setAttribute('d', main));
     const sway = Math.sin(now / 700) * 2.5;
-    const tail = `M${hx.toFixed(2)} ${hy.toFixed(2)} q${(-4 * mirror + sway).toFixed(2)} 12 ${(-2 * mirror + sway).toFixed(2)} 26`;
+    const dirT = -1;
+    const tail = `M${hx.toFixed(2)} ${hy.toFixed(2)} q${(4 * dirT + sway).toFixed(2)} 12 ${(2 * dirT + sway).toFixed(2)} 26`;
     tailParts.forEach((r) => r.setAttribute('d', tail));
     anchor.setAttribute('transform', `translate(${lineX} ${anchorY})`);
     svg.classList.toggle('ascending', mode === 'ascend');

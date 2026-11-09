@@ -61,10 +61,9 @@ import { experience, origins } from '../data/site';
   .timeline :global(.climb-layer .lens) { fill: #6b7391; transition: fill 300ms; }
   .timeline :global(.climb-layer.beam-on .lens) { fill: #fff2cc; }
   .timeline :global(.climb-layer .arms-up),
-  .timeline :global(.climb-layer .arms-back),
-  .timeline :global(.climb-layer.right-side .arms-down) { display: none; }
-  .timeline :global(.climb-layer.right-side .arms-back) { display: inline; }
-  .timeline :global(.climb-layer.ascending .arms-back) { display: none; }
+  .timeline :global(.climb-layer .legs-b),
+  .timeline :global(.climb-layer.kick .legs-a) { display: none; }
+  .timeline :global(.climb-layer.kick .legs-b) { display: inline; }
   .timeline :global(.climb-layer.ascending .arms-up) { display: inline; }
   .timeline :global(.climb-layer.ascending .arms-down) { display: none; }
   /* The flashlight's glow on the entry you're reading */
@@ -98,7 +97,8 @@ import { experience, origins } from '../data/site';
     content: '';
     position: absolute;
     left: 0;
-    top: 0.45rem;
+    /* Centered on the year line, so the dot, the year, and the climber's flashlight all line up. */
+    top: 4.5px;
     width: 11px;
     height: 11px;
     border-radius: 50%;
@@ -113,7 +113,7 @@ import { experience, origins } from '../data/site';
     border: 1px solid var(--color-line);
     background: linear-gradient(180deg, #172039, #121a30);
   }
-  .item.current::before { top: 0.45rem; }
+  .item.current::before { top: 19.1px; }
   .item.current::before {
     background: var(--color-wine);
     border-color: var(--color-wine);
