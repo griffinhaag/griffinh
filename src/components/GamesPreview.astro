@@ -50,7 +50,7 @@ const board: Record<number, string> = {
 
 <div class="gp" data-games data-lockin={JSON.stringify(lockin)} data-griddy={JSON.stringify(griddy)} data-rules={JSON.stringify(rules)} data-decks={JSON.stringify(decks)}>
   <BrowserFrame url="griffinhgames.xyz">
-    <button slot="toolbar" type="button" class="shot-btn ml-auto shrink-0 rounded-md px-2 py-0.5 text-xs text-muted hover:text-text" data-shot-btn>Real screenshot</button>
+    <button slot="toolbar" type="button" class="shot-btn ml-auto shrink-0 rounded-md px-2 py-0.5 text-xs text-muted hover:text-text" data-shot-btn aria-label="Real screenshot"><span class="min-[420px]:hidden">Screenshot</span><span class="hidden min-[420px]:inline">Real screenshot</span></button>
 
     <div class="stage relative h-[31rem] overflow-hidden sm:h-[26.5rem]">
       <!-- LOCKED IN -->

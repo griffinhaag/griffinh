@@ -12,8 +12,8 @@ const { url, tilt = false, class: className = '' } = Astro.props;
 
 <div class={`frame-wrap ${className}`} data-tilt={tilt ? '' : undefined}>
   <div class="frame overflow-hidden rounded-xl border border-line bg-ink-2 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.8)]">
-    <div class="flex h-9 items-center gap-3 border-b border-line px-3.5">
-      <span class="flex gap-1.5" aria-hidden="true">
+    <div class="flex h-9 items-center gap-2 border-b border-line px-3 sm:gap-3 sm:px-3.5">
+      <span class="flex gap-1.5 max-[369px]:hidden" aria-hidden="true">
         <i class="size-2.5 rounded-full bg-line"></i><i class="size-2.5 rounded-full bg-line"></i><i class="size-2.5 rounded-full bg-line"></i>
       </span>
       <span class="truncate rounded-md bg-ink px-2.5 py-0.5 text-xs text-muted">{url}</span>
