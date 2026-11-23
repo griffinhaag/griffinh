@@ -15,18 +15,22 @@ const clientCards: Card[] = clients.map((c) => ({
   badge: 'Client',
   linkText: 'Visit',
 }));
+// Each group leads with its strongest cards (code or a live site); the rest open with "Show more".
+const SHOWN = 3;
+const byOrder = (items: Card[], order: string[]) =>
+  [...items].sort((a, b) => (order.indexOf(a.name) + 1 || 99) - (order.indexOf(b.name) + 1 || 99));
 const groups: { id: string; title: string; blurb: string; items: Card[] }[] = [
   {
     id: 'full-stack',
     title: 'Full stack',
     blurb: 'More apps with a front end, a server, and a database, plus the sites I’ve built for clients since 2023.',
-    items: [...builds.filter((b) => b.kind === 'full'), ...clientCards],
+    items: byOrder([...builds.filter((b) => b.kind === 'full'), ...clientCards], ['GadgetHub', 'PHP e-commerce store', 'SendMeAPostcard', 'Buddy Tracker', 'SheShuttle', 'Movie generator']),
   },
   {
     id: 'backend',
     title: 'Backend & infrastructure',
     blurb: 'Production services and cloud infrastructure at KorTerra, plus the APIs, pipelines, and data tools I’ve built on my own.',
-    items: builds.filter((b) => b.kind === 'backend'),
+    items: byOrder(builds.filter((b) => b.kind === 'backend'), ['Software Developer at KorTerra', 'CI/CD pipeline', 'Virtual Pet API', 'Classroom chatbot', 'Data analytics tool', 'Image and webcam recognition']),
   },
 ];
 ---
@@ -50,7 +54,6 @@ const groups: { id: string; title: string; blurb: string; items: Card[] }[] = [
           </p>
           <ul class="mt-6 space-y-3 text-muted">
             <li class="fact">I wrote the application, and my teammate Lucas Kells deployed it on AWS S3.</li>
-            <li class="fact">Video titles come from the YouTube Data API. You can filter by platform and topic, or search.</li>
             <li class="fact">Students can register and log in, and admins get a dashboard for managing videos and categories.</li>
           </ul>
           <p class="meta mt-6 text-sm">Go ahead and use it. Log in to try the admin tools.</p>
@@ -79,7 +82,6 @@ const groups: { id: string; title: string; blurb: string; items: Card[] }[] = [
             Party games I made for game nights with my friends. One person puts it on the TV, and everyone else joins from their phone with a room code.
           </p>
           <ul class="mt-6 space-y-3 text-muted">
-            <li class="fact">LOCKED IN is a buzzer trivia game with about 6,500 questions across 11 categories.</li>
             <li class="fact">A Node and Socket.IO server keeps every screen in sync, decides who buzzed first, and lets people rejoin when their phone drops off Wi‑Fi.</li>
             <li class="fact">Typed answers are graded by an LLM, so a typo or a last name alone still counts.</li>
           </ul>
@@ -108,7 +110,7 @@ const groups: { id: string; title: string; blurb: string; items: Card[] }[] = [
         </header>
         <ul class="build-grid mt-8" data-builds>
           {g.items.map((b, i) => (
-            <li class={`build-card ${i >= 4 ? 'extra' : ''}`}>
+            <li class={`build-card ${i >= SHOWN ? 'extra' : ''}`}>
               <p class="flex flex-wrap items-center gap-x-2 gap-y-1 font-display text-lg font-medium tracking-tight">
                 {b.name}
                 {b.badge && <span class="badge">{b.badge}</span>}
@@ -126,10 +128,10 @@ const groups: { id: string; title: string; blurb: string; items: Card[] }[] = [
             </li>
           ))}
         </ul>
-        {(g.items.length > 4 || g.id === 'backend') && (
-          <div class={`mt-5 flex flex-wrap gap-3 ${g.id === 'backend' ? '' : 'sm:hidden'}`}>
-            {g.items.length > 4 && (
-              <button type="button" class="btn btn-ghost sm:hidden" data-builds-toggle aria-expanded="false">Show {g.items.length - 4} more</button>
+        {(g.items.length > SHOWN || g.id === 'backend') && (
+          <div class="mt-5 flex flex-wrap gap-3">
+            {g.items.length > SHOWN && (
+              <button type="button" class="btn btn-ghost" data-builds-toggle aria-expanded="false">Show {g.items.length - SHOWN} more</button>
             )}
             {g.id === 'backend' && (
               <a href={links.github} class="btn btn-ghost" target="_blank" rel="noopener">All my code on GitHub</a>
@@ -183,8 +185,8 @@ const groups: { id: string; title: string; blurb: string; items: Card[] }[] = [
     .group-head > p:last-child { grid-column: 2; grid-row: 1 / span 2; align-self: end; max-width: 36rem; }
   }
   .build-grid { display: grid; gap: 0.75rem; }
-  /* Phones show four cards per group; the rest open with "Show more". */
-  @media (max-width: 639px) { .build-grid:not(.open) .extra { display: none; } }
+  /* Each group shows its first SHOWN cards; the rest open with "Show more". */
+  .build-grid:not(.open) .extra { display: none; }
   @media (min-width: 640px) { .build-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (min-width: 1024px) { .build-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   .badge {
