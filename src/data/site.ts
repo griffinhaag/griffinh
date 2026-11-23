@@ -34,7 +34,7 @@ export const experience: Job[] = [
       'Configure Azure infrastructure with Terraform, and contribute to REST APIs, microservices, and Kubernetes workloads.',
       'Support SQL and NoSQL databases, including Azure Cosmos DB caching.',
       'Review code and work with engineers across many large, varied codebases.',
-      'Practice spec-driven development (SDD) with OpenSpec: write the spec first, build with AI coding tools, then review every change and keep code and data secure.',
+      'Practice spec-driven development (SDD) with OpenSpec: write the spec first, build with AI coding tools, then review every change to keep code functional and secure.',
     ],
   },
   {
