@@ -102,13 +102,15 @@ const groups: { id: string; title: string; blurb: string; items: Card[] }[] = [
     </article>
 
     {groups.map((g, gi) => (
-      <div class={`group ${gi ? 'mt-24' : 'mt-20'}`} id={g.id}>
+      <div class="group mt-20" id={g.id}>
         <header class="group-head">
-          <p class="meta text-sm">{String(gi + 1).padStart(2, '0')}</p>
-          <h3 class="font-display text-3xl font-semibold tracking-tight">{g.title}</h3>
-          <p class="max-w-md text-muted">{g.blurb}</p>
+          <div>
+            <p class="meta text-sm">{String(gi + 1).padStart(2, '0')}</p>
+            <h3 class="mt-1 font-display text-3xl font-semibold tracking-tight">{g.title}</h3>
+          </div>
+          <p class="text-muted">{g.blurb}</p>
         </header>
-        <ul class="build-grid mt-8" data-builds>
+        <ul class="build-grid mt-6" data-builds>
           {g.items.map((b, i) => (
             <li class={`build-card ${i >= SHOWN ? 'extra' : ''}`}>
               <p class="flex flex-wrap items-center gap-x-2 gap-y-1 font-display text-lg font-medium tracking-tight">
@@ -176,13 +178,14 @@ const groups: { id: string; title: string; blurb: string; items: Card[] }[] = [
     padding: 1rem 1.1rem;
     background: color-mix(in oklab, var(--color-slate) 55%, transparent);
   }
-  .group-head { display: grid; gap: 0.5rem; }
+  .group-head { display: grid; row-gap: 0.4rem; }
+  .group-head > p:last-child { margin-top: 0.1rem; max-width: 34rem; }
   @media (min-width: 1024px) {
-    /* Number and title on the left, one-line summary on the right, matching the section frame. */
-    .group-head { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); column-gap: 4rem; align-items: end; }
-    .group-head > .meta { grid-column: 1; }
-    .group-head > h3 { grid-column: 1; }
-    .group-head > p:last-child { grid-column: 2; grid-row: 1 / span 2; align-self: end; max-width: 36rem; }
+    /* Same three columns as the cards below: number and title over the first card, the summary starting
+       at the second card's edge, its last line on the title's baseline (the div's last baseline). */
+    .group-head { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 0.75rem; align-items: end; align-items: last baseline; }
+    .group-head > div { grid-column: 1; }
+    .group-head > p:last-child { grid-column: 2 / span 2; margin-top: 0; max-width: 40rem; }
   }
   .build-grid { display: grid; gap: 0.75rem; }
   /* Each group shows its first SHOWN cards; the rest open with "Show more". */
