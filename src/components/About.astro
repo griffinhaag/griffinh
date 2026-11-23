@@ -166,13 +166,15 @@ import { facts, links } from '../data/site';
   setFace(5);
   // Each tumble on hover lands on a new face.
   let face = 5;
-  die?.addEventListener('animationiteration', () => {
+  // Always lands on a different face, so every roll visibly changes.
+  const rollFace = () => {
     let n = face;
     while (n === face) n = 1 + Math.floor(Math.random() * 6);
     setFace((face = n));
-  });
+  };
+  die?.addEventListener('animationiteration', rollFace);
   document.querySelector('[data-hobby="dice"]')?.addEventListener('click', () => {
-    setFace(1 + Math.floor(Math.random() * 6));
+    rollFace();
     die?.classList.remove('roll');
     void die?.getBoundingClientRect();
     die?.classList.add('roll');
