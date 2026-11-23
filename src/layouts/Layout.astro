@@ -12,7 +12,7 @@ interface Props {
 
 const {
   title = 'Griffin Haag, Web Developer & Software Engineer in Minneapolis',
-  description = 'Freelance web developer and software engineer in Minneapolis, available for hire. Custom websites, web apps, and tech help for small businesses and individuals.',
+  description = 'Web developer and software engineer in Minneapolis, open to software engineering roles and available for hire: custom websites, web apps, and tech help.',
   noindex = false,
 } = Astro.props;
 
@@ -50,7 +50,9 @@ const jsonLd = {
         { '@type': 'CollegeOrUniversity', name: 'Dunwoody College of Technology' },
         { '@type': 'CollegeOrUniversity', name: 'University of Minnesota' },
       ],
-      description: 'Web developer and software engineer in Minneapolis, available for freelance websites, web apps, and tech help.',
+      description: 'Web developer and software engineer in Minneapolis, open to software engineering roles and internships, and available for freelance websites, web apps, and tech help.',
+      // Open to employment as well as freelance work.
+      seeks: { '@type': 'Demand', name: 'Software engineering roles and internships' },
       knowsAbout: ['Web development', 'Software engineering', 'Full-stack development', 'C#', '.NET', 'Azure', 'Terraform', 'Kubernetes', 'REST APIs', 'JavaScript', 'Node.js', 'Socket.IO', 'SQL', 'Spec-driven development'],
       hasOccupation: [
         { '@type': 'Occupation', name: 'Software Engineer', occupationLocation: { '@type': 'City', name: 'Minneapolis' } },
