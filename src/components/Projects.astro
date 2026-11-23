@@ -23,13 +23,13 @@ const groups: { id: string; title: string; blurb: string; items: Card[] }[] = [
   {
     id: 'backend',
     title: 'Backend & infrastructure',
-    blurb: 'Production services and cloud infrastructure at KorTerra, plus the APIs, pipelines, and data tools I’ve built on my own.',
+    blurb: 'Services at KorTerra, plus APIs, pipelines, and data tools.',
     items: byOrder(builds.filter((b) => b.kind === 'backend'), ['Software Developer at KorTerra', 'CI/CD pipeline', 'Virtual Pet API', 'Classroom chatbot', 'Data analytics tool', 'Image and webcam recognition']),
   },
   {
     id: 'full-stack',
     title: 'Full stack',
-    blurb: 'More apps with a front end, a server, and a database, plus the sites I’ve built for clients since 2023.',
+    blurb: 'Front end, server, and database apps, plus client websites.',
     items: byOrder([...builds.filter((b) => b.kind === 'full'), ...clientCards], ['GadgetHub', 'Budget Tracker', 'SendMeAPostcard', 'PHP e-commerce store', 'SheShuttle', 'Movie generator']),
   },
 ];

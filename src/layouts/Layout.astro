@@ -6,11 +6,14 @@ import { links } from '../data/site';
 interface Props {
   title?: string;
   description?: string;
+  /** Keep the page out of search results (the 404 page). */
+  noindex?: boolean;
 }
 
 const {
   title = 'Griffin Haag, full-stack developer',
   description = 'Griffin Haag is a full-stack developer in Minneapolis building C#/.NET services, Azure infrastructure, and real-time web apps.',
+  noindex = false,
 } = Astro.props;
 
 const nav = [
@@ -19,7 +22,39 @@ const nav = [
   { href: '/#about', label: 'About', id: 'about' },
   { href: '/#contact', label: 'Contact', id: 'contact' },
 ];
-const canonical = new URL(Astro.url.pathname, Astro.site);
+// Clean canonical URLs: the build emits .html files, but each page is reachable without the extension.
+const canonical = new URL(Astro.url.pathname.replace(/index\.html$/, '').replace(/\.html$/, ''), Astro.site);
+const ogImage = new URL('/og.jpg', Astro.site);
+// Structured data so search engines can identify the site's owner and link his profiles.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': `${Astro.site}#website`,
+      url: String(Astro.site),
+      name: 'Griffin Haag',
+      inLanguage: 'en',
+      publisher: { '@id': `${Astro.site}#person` },
+    },
+    {
+      '@type': 'Person',
+      '@id': `${Astro.site}#person`,
+      name: 'Griffin Haag',
+      url: String(Astro.site),
+      image: String(new URL('/images/griffin.jpg', Astro.site)),
+      jobTitle: 'Software Developer',
+      worksFor: { '@type': 'Organization', name: 'KorTerra' },
+      address: { '@type': 'PostalAddress', addressLocality: 'Minneapolis', addressRegion: 'MN', addressCountry: 'US' },
+      alumniOf: [
+        { '@type': 'CollegeOrUniversity', name: 'Dunwoody College of Technology' },
+        { '@type': 'CollegeOrUniversity', name: 'University of Minnesota' },
+      ],
+      knowsAbout: ['C#', '.NET', 'Azure', 'Terraform', 'Kubernetes', 'REST APIs', 'JavaScript', 'Node.js', 'Socket.IO', 'SQL', 'Spec-driven development'],
+      sameAs: [links.linkedin, links.github, links.games],
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -29,15 +64,27 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="author" content="Griffin Haag" />
+    {noindex && <meta name="robots" content="noindex" />}
     <link rel="canonical" href={canonical} />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#0b1020" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Griffin Haag" />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={new URL('/og.jpg', Astro.site)} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Griffin Haag's portfolio: his name over a night mountain range with a skier and a gondola" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
   <body class="min-h-dvh">
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-md focus:bg-slate focus:px-4 focus:py-2">Skip to content</a>
