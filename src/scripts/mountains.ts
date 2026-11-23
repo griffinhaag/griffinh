@@ -117,6 +117,8 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
   const leave = { fromX: 0, fromY: 0, t0: 0, p: 0, target: 0 };
   const LEAVE_AUTO_MS = 4500; // pace when the page isn't scrolling
   const LEAVE_MIN_MS = 1300; // fastest full run, however fast the page scrolls
+  // Motion pace relative to the desktop scene: the same pixel speeds read as faster on smaller screens.
+  const pace = () => (w < 640 ? 0.72 : w < 1024 ? 0.86 : 1);
   // Until the skier is first grabbed (or moved with the keys), it hops and waves every few seconds.
   let grabbed = false;
   let loadedAt = 0;
@@ -613,8 +615,8 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
           // Scripted run to the gondola base: eased along the line from the start, with wide S-turns
           // across it.
           // Follows the scroll position, never slower than the auto pace or faster than the minimum run time.
-          const want = Math.min(1, Math.max(leave.target, (now - leave.t0) / LEAVE_AUTO_MS));
-          leave.p += Math.max(0, Math.min(want - leave.p, (k * 16.7) / LEAVE_MIN_MS));
+          const want = Math.min(1, Math.max(leave.target, (now - leave.t0) / (LEAVE_AUTO_MS / pace())));
+          leave.p += Math.max(0, Math.min(want - leave.p, (k * 16.7) / (LEAVE_MIN_MS / pace())));
           const t = leave.p;
           const e = t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
           const ex = run.cable.ax;
@@ -631,7 +633,7 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
           const dx = skier.tx - skier.px;
           const dy = skier.ty - skier.py;
           const dist = Math.hypot(dx, dy);
-          const step = Math.min(dist * 0.38, 14) * k;
+          const step = Math.min(dist * 0.38 * pace(), 14 * pace()) * k;
           nx += dist ? (dx / dist) * step : 0;
           ny += dist ? (dy / dist) * step : 0;
         } else {
@@ -640,7 +642,7 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
           // Below a minimum speed the edges hold, so gravity alone never moves the skier.
           if (Math.hypot(skier.vx, skier.vy) < 0.7) skier.vx = skier.vy = 0;
           else {
-            skier.vy += 0.035 * k;
+            skier.vy += 0.035 * pace() * k;
             skier.vx *= Math.pow(0.95, k);
             skier.vy *= Math.pow(0.93, k);
           }
@@ -687,7 +689,7 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
           skier.dragging = false;
           host.style.cursor = '';
           skier.x = skier.px;
-          skier.vx = skier.facing * Math.max(1.4, Math.min(4, Math.hypot(skier.vx, skier.vy)));
+          skier.vx = skier.facing * Math.max(1.4, Math.min(4, Math.hypot(skier.vx, skier.vy))) * pace();
           setState('stopping');
         }
         break;
@@ -1402,7 +1404,7 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
     const push = e.key === 'ArrowRight' ? 1 : -1;
     if (skier.state === 'ready') setState('skiing');
     markGrabbed();
-    skier.vx = Math.max(-6, Math.min(6, skier.vx + push * 1.8));
+    skier.vx = Math.max(-6, Math.min(6, skier.vx + push * 1.8 * pace()));
     skier.vy = Math.max(skier.vy, 0.9);
     skier.facing = push;
     if (reduced) {

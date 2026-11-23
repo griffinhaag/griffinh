@@ -30,11 +30,9 @@ export const experience: Job[] = [
     org: 'KorTerra',
     where: 'Chanhassen, MN, part-time',
     points: [
-      'Build and maintain server-side applications in C# and .NET, and helped ship SDKs and deliver features across multi-sprint epics.',
-      'Configure Azure infrastructure with Terraform, and contribute to REST APIs, microservices, and Kubernetes workloads.',
-      'Support SQL and NoSQL databases, including Azure Cosmos DB caching.',
-      'Review code and work with engineers across many large, varied codebases.',
-      'Practice spec-driven development (SDD) with OpenSpec: write the spec first, build with AI coding tools, then review every change to keep code functional and secure.',
+      'Build C# and .NET services and REST APIs on Azure, with Terraform, Kubernetes, SQL, and Cosmos DB.',
+      'Helped ship SDKs and multi-sprint epics, and review code across large codebases.',
+      'Practice spec-driven development (SDD) with OpenSpec and AI tools, reviewing every change to keep code functional and secure.',
     ],
   },
   {

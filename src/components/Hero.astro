@@ -135,8 +135,9 @@ import { links } from '../data/site';
     // when "Where I've been" comes into view. Back at the very top the skier returns to the summit.
     scene.followScroll((f - 0.02) / 0.5);
     if (f > 0.02 && state === 'here') {
-      // Once the hero is mostly scrolled past, hand off at once instead of running off screen.
-      const res = scene.skiAway(f > 0.8);
+      // Hand off at once only when the skier has scrolled out of view, so a fast flick still shows the run.
+      const st = scene.skierState();
+      const res = scene.skiAway(f >= 1 || r.top + st.y < -10);
       if (res === 'away' || res === 'none') setSkier(res === 'none' ? 'none' : 'away');
       // Mid-ride or mid-drag: check again shortly, even if scrolling stops.
       else if (res === 'busy') setTimeout(() => { if (!handoffTick) handoffTick = requestAnimationFrame(handoff); }, 500);
