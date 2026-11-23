@@ -11,8 +11,8 @@ interface Props {
 }
 
 const {
-  title = 'Griffin Haag, full-stack developer',
-  description = 'Griffin Haag is a full-stack developer in Minneapolis building C#/.NET services, Azure infrastructure, and real-time web apps.',
+  title = 'Griffin Haag, Web Developer & Software Engineer in Minneapolis',
+  description = 'Freelance web developer and software engineer in Minneapolis, available for hire. Custom websites, web apps, and tech help for small businesses and individuals.',
   noindex = false,
 } = Astro.props;
 
@@ -50,7 +50,19 @@ const jsonLd = {
         { '@type': 'CollegeOrUniversity', name: 'Dunwoody College of Technology' },
         { '@type': 'CollegeOrUniversity', name: 'University of Minnesota' },
       ],
-      knowsAbout: ['C#', '.NET', 'Azure', 'Terraform', 'Kubernetes', 'REST APIs', 'JavaScript', 'Node.js', 'Socket.IO', 'SQL', 'Spec-driven development'],
+      description: 'Web developer and software engineer in Minneapolis, available for freelance websites, web apps, and tech help.',
+      knowsAbout: ['Web development', 'Software engineering', 'Full-stack development', 'C#', '.NET', 'Azure', 'Terraform', 'Kubernetes', 'REST APIs', 'JavaScript', 'Node.js', 'Socket.IO', 'SQL', 'Spec-driven development'],
+      hasOccupation: [
+        { '@type': 'Occupation', name: 'Software Engineer', occupationLocation: { '@type': 'City', name: 'Minneapolis' } },
+        { '@type': 'Occupation', name: 'Freelance Web Developer', occupationLocation: { '@type': 'City', name: 'Minneapolis' } },
+      ],
+      // Services offered for hire, so search engines can match "web developer for hire" style searches.
+      makesOffer: ['Website design and development', 'Web application development', 'Tech help and troubleshooting'].map((name) => ({
+        '@type': 'Offer',
+        availability: 'https://schema.org/InStock',
+        areaServed: { '@type': 'Place', name: 'Minneapolis–Saint Paul, Minnesota' },
+        itemOffered: { '@type': 'Service', name, provider: { '@id': `${Astro.site}#person` } },
+      })),
       sameAs: [links.linkedin, links.github, links.games],
     },
   ],
