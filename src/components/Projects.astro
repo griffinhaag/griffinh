@@ -21,24 +21,24 @@ const byOrder = (items: Card[], order: string[]) =>
   [...items].sort((a, b) => (order.indexOf(a.name) + 1 || 99) - (order.indexOf(b.name) + 1 || 99));
 const groups: { id: string; title: string; blurb: string; items: Card[] }[] = [
   {
-    id: 'full-stack',
-    title: 'Full stack',
-    blurb: 'More apps with a front end, a server, and a database, plus the sites I’ve built for clients since 2023.',
-    items: byOrder([...builds.filter((b) => b.kind === 'full'), ...clientCards], ['GadgetHub', 'PHP e-commerce store', 'SendMeAPostcard', 'Buddy Tracker', 'SheShuttle', 'Movie generator']),
-  },
-  {
     id: 'backend',
     title: 'Backend & infrastructure',
     blurb: 'Production services and cloud infrastructure at KorTerra, plus the APIs, pipelines, and data tools I’ve built on my own.',
     items: byOrder(builds.filter((b) => b.kind === 'backend'), ['Software Developer at KorTerra', 'CI/CD pipeline', 'Virtual Pet API', 'Classroom chatbot', 'Data analytics tool', 'Image and webcam recognition']),
+  },
+  {
+    id: 'full-stack',
+    title: 'Full stack',
+    blurb: 'More apps with a front end, a server, and a database, plus the sites I’ve built for clients since 2023.',
+    items: byOrder([...builds.filter((b) => b.kind === 'full'), ...clientCards], ['GadgetHub', 'PHP e-commerce store', 'SendMeAPostcard', 'Budget Tracker', 'SheShuttle', 'Movie generator']),
   },
 ];
 ---
 
 <Section id="projects" title="Things I’ve built" sticky={false} band>
   <p class="max-w-[38rem] text-lg text-muted lg:pt-3 lg:text-xl">
-    <span class="text-text">The two I’m proudest of come first, and both are playable right on this page.</span> After those, the rest
-    are sorted by the kind of work: full stack apps and client sites, then backend and infrastructure.
+    <span class="text-text">The two I’m proudest of come first, and both are playable right on this page.</span> After those come my
+    backend and infrastructure work, led by KorTerra, then full stack apps and client sites.
   </p>
 
   <Fragment slot="after">
@@ -128,12 +128,12 @@ const groups: { id: string; title: string; blurb: string; items: Card[] }[] = [
             </li>
           ))}
         </ul>
-        {(g.items.length > SHOWN || g.id === 'backend') && (
+        {(g.items.length > SHOWN || gi === groups.length - 1) && (
           <div class="mt-5 flex flex-wrap gap-3">
             {g.items.length > SHOWN && (
               <button type="button" class="btn btn-ghost" data-builds-toggle aria-expanded="false">Show {g.items.length - SHOWN} more</button>
             )}
-            {g.id === 'backend' && (
+            {gi === groups.length - 1 && (
               <a href={links.github} class="btn btn-ghost" target="_blank" rel="noopener">All my code on GitHub</a>
             )}
           </div>

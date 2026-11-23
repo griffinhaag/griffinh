@@ -93,7 +93,7 @@ export type Build = {
 export const builds: Build[] = [
   // Full stack
   {
-    name: 'Buddy Tracker',
+    name: 'Budget Tracker',
     blurb: 'A personal finance tracker for logging and searching transactions and receipts.',
     stack: ['React', 'Node.js', 'MongoDB'],
     kind: 'full',
@@ -183,12 +183,12 @@ export const toolbox: { group: string; tools: { name: string; used: string[] }[]
     group: 'On the web',
     tools: [
       { name: 'JavaScript', used: ['GriffinGames', 'DayONE', 'Movie generator', 'Client sites'] },
-      { name: 'Node.js', used: ['GriffinGames', 'Buddy Tracker'] },
+      { name: 'Node.js', used: ['GriffinGames', 'Budget Tracker'] },
       { name: 'Socket.IO', used: ['GriffinGames'] },
-      { name: 'React', used: ['Buddy Tracker'] },
+      { name: 'React', used: ['Budget Tracker'] },
       { name: 'PHP', used: ['PHP e-commerce store'] },
       { name: 'HTML & CSS', used: ['Everything here', 'Client sites'] },
-      { name: 'Tailwind', used: ['Buddy Tracker', 'This site'] },
+      { name: 'Tailwind', used: ['Budget Tracker', 'This site'] },
     ],
   },
   {
@@ -198,7 +198,7 @@ export const toolbox: { group: string; tools: { name: string; used: string[] }[]
       { name: 'Java', used: ['Virtual Pet API'] },
       { name: 'SQL', used: ['KorTerra', 'GadgetHub', 'PHP e-commerce store'] },
       { name: 'MySQL', used: ['PHP e-commerce store'] },
-      { name: 'MongoDB', used: ['Buddy Tracker'] },
+      { name: 'MongoDB', used: ['Budget Tracker'] },
       { name: 'LLM APIs', used: ['GriffinGames', 'Classroom chatbot'] },
     ],
   },
