@@ -111,7 +111,21 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
   let dropT0 = 0;
   let gone = false;
   let appearAt = 0;
-  const DROP_MS = 380;
+  const DROP_MS = 650;
+  // Scripted run down to the gondola base when the user scrolls away.
+  // p: progress 0..1; target: progress implied by the page scroll (set from the hero).
+  const leave = { fromX: 0, fromY: 0, t0: 0, p: 0, target: 0 };
+  const LEAVE_AUTO_MS = 4500; // pace when the page isn't scrolling
+  const LEAVE_MIN_MS = 1300; // fastest full run, however fast the page scrolls
+  // Until the skier is first grabbed (or moved with the keys), it hops and waves every few seconds.
+  let grabbed = false;
+  let loadedAt = 0;
+  const ATTENTION_EVERY = 3600;
+  function markGrabbed() {
+    if (grabbed) return;
+    grabbed = true;
+    window.dispatchEvent(new Event('skier:grabbed'));
+  }
   let raf = 0;
   let now = 0;
   let lastAmbient = 0;
@@ -165,6 +179,16 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
     hub.y = r.top - c.top + r.height * 0.8;
   }
 
+  /** Where the ski peak goes: right of the name and above the intro on narrow screens. */
+  function peakSpot() {
+    if (w >= 900) return { xc: w * 0.76, summit: h * 0.34 };
+    const name = (opts.avoid ?? []).map(toZone);
+    const nameRight = Math.max(0, ...name.map((z) => z.right));
+    const textTop = Math.min(h, ...(opts.clear ?? []).filter((el) => el.offsetHeight).map(toZone).map((z) => z.top));
+    const xc = Math.min(w - 44, Math.max(nameRight + 70, w * 0.78));
+    return { xc, summit: Math.max(h * 0.2, Math.min(h * 0.34, textTop - 110)) };
+  }
+
   function build() {
     const rect = canvas.getBoundingClientRect();
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -175,6 +199,11 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     n = Math.ceil(w / COL) + 1;
     floorY = Math.min(h * 0.8, h - 60); // above where the hero fades to dark, so the skier stays visible
+    if (w < 900) {
+      // Narrow screens: just below the text, so the base station has room beside it.
+      const textBottom = Math.max(0, ...(opts.clear ?? []).filter((el) => el.offsetHeight).map((el) => toZone(el).bottom));
+      floorY = Math.min(Math.max(floorY, textBottom + 56), h - 44);
+    }
     const starR = rng(19);
     stars = Array.from({ length: Math.round((w * h) / 26000) }, () => ({
       x: starR() * w,
@@ -183,8 +212,9 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
       phase: starR() * Math.PI * 2,
       speed: 0.4 + starR() * 0.8,
     }));
-    clearZones = (opts.clear ?? []).map(toZone);
-    avoidZones = [...(opts.avoid ?? []), ...(opts.clear ?? [])].map(toZone);
+    // Hidden elements (zero size) don't block anything.
+    clearZones = (opts.clear ?? []).filter((el) => el.offsetHeight).map(toZone);
+    avoidZones = [...(opts.avoid ?? []), ...(opts.clear ?? [])].filter((el) => el.offsetHeight).map(toZone);
 
     const edgeR = rng(7);
     ranges = SPEC.map(([, , top, foot], li) => {
@@ -202,11 +232,10 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
         const v = prof[a] + (prof[Math.min(a + 1, 256)] - prof[a]) * (f - a);
         ridge[i] = footY - v * (footY - peakY);
       }
-      // The ski mountain: on wider screens the middle range rises into one tall peak on the
-      // right, away from the text, with long open slopes for the trails and the lift.
-      if (li === 2 && w >= 900) {
-        const xc = w * 0.76;
-        const summit = h * 0.34;
+      // The ski mountain: the middle range rises into one tall peak on the right, clear of
+      // the text, with open slopes for the trails and the lift.
+      if (li === 2) {
+        const { xc, summit } = peakSpot();
         for (let i = 0; i < n; i++) {
           const x = i * COL;
           const y = summit + Math.abs(x - xc) * 0.74 * (1 + 0.06 * Math.sin(x * 0.045));
@@ -220,7 +249,7 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
       for (let i = 0; i < n; i++) {
         jitter = jitter * 0.9 + (edgeR() - 0.5) * 2.4;
         // Caps follow the slope so they don't pile into a block on the tallest peaks.
-        snow[i] = Math.max(0, Math.min(snowLine - ridge[i], h * 0.06) + jitter);
+        snow[i] = Math.max(0, Math.min(snowLine - ridge[i], h * (w < 900 ? 0.04 : 0.06)) + jitter);
       }
       // Keep snow out from behind the intro text, fading it out over a short margin.
       for (const z of clearZones) {
@@ -228,7 +257,10 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
           const x = i * COL;
           const dx = Math.max(z.left - x, x - z.right, 0);
           if (dx > 60 || ridge[i] > z.bottom + 12 || ridge[i] + snow[i] < z.top - 24) continue;
-          snow[i] *= Math.min(dx / 60, 1);
+          // Taper the cap toward the text to avoid a hard edge.
+          const keep = Math.min(dx / 60, 1);
+          const allowed = Math.max(0, z.top - 24 - ridge[i]);
+          snow[i] = snow[i] * keep + Math.min(snow[i], allowed) * (1 - keep);
         }
       }
       return { ridge, snow, base: snow.slice(), depth: li / (SPEC.length - 1) };
@@ -292,15 +324,21 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
    */
   function designedRun(): Run | null {
     const R = ranges[2];
-    const top = colAt(w * 0.76) * COL;
+    const top = colAt(peakSpot().xc) * COL;
+    const narrow = w < 900;
     // Prefer the long left side; if the text leaves no room there, use the right side.
     // Only text to the left of the peak limits how far left the base can go.
     const minX = Math.max(...avoidZones.filter((z) => z.right < top).map((z) => z.right), 0) + 70;
     const candidates: [number, 1 | -1][] = [];
-    for (let x = Math.max(minX, w * 0.5); x < top - 120; x += COL) candidates.push([x, -1]);
-    for (let x = w - 30; x > top + 110; x -= COL) candidates.push([x, 1]);
+    // Narrow screens have less room beside the text, so the trails can be shorter there.
+    const left: [number, 1 | -1][] = [];
+    const right: [number, 1 | -1][] = [];
+    for (let x = Math.max(minX, w * 0.5); x < top - (narrow ? 40 : 120); x += COL) left.push([x, -1]);
+    for (let x = w - (narrow ? 24 : 30); x > top + (narrow ? 30 : 110); x -= COL) right.push([x, 1]);
+    // On narrow screens the right side keeps the lift away from the text.
+    candidates.push(...(narrow ? [...right, ...left] : [...left, ...right]));
     for (const [x, dir] of candidates) {
-      if (floorY > R.ridge[colAt(x)] + 40 && !inAvoid(x, floorY) && !inAvoid(x, floorY - 40)) {
+      if (floorY > R.ridge[colAt(x)] + 40 && !inAvoid(x, floorY) && (narrow || !inAvoid(x, floorY - 40))) {
         return { li: 2, dir, top, bottom: x, baseY: floorY, cable: { ax: 0, ay: 0, bx: 0, by: 0 }, towers: [] };
       }
     }
@@ -309,10 +347,8 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
 
   /** Pick the highest summit with a clean, visible descent that stays clear of the text. */
   function findRun(): Run | null {
-    if (w >= 900) {
-      const designed = designedRun();
-      if (designed) return designed;
-    }
+    const designed = designedRun();
+    if (designed) return designed;
     let best: (Omit<Run, 'cable' | 'towers' | 'baseY'> & { score: number }) | null = null;
     // Smaller windows have shorter slopes, so the minimums scale with the scene.
     const minLen = Math.max(70, Math.min(120, w * 0.09));
@@ -508,8 +544,9 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
   }
   /** Starting position: standing on the summit, beside the top station. */
   function startPoint(): Point {
+    // Just left of the summit (toward the name), on every screen size.
     const R = ranges[run!.li];
-    const x = run!.top + run!.dir * 8;
+    const x = run!.top - 8;
     return { x, y: surfaceY(R, x) };
   }
   function resetSkier() {
@@ -521,7 +558,7 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
       skier.px = skier.tx = skier.x = p.x;
       skier.py = skier.ty = p.y;
     } else skier.x = -100;
-    skier.facing = run ? run.dir : 1;
+    skier.facing = -1; // at the summit the skier faces the name, on the left
     // Start at the resting lean for this spot to avoid a visible tilt on page load.
     skier.angle = run ? Math.atan(slopeAt(ranges[run.li], skier.x)) * 0.35 : 0;
     setState('ready');
@@ -573,16 +610,28 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
         let nx = skier.px;
         let ny = skier.py;
         if (leaving) {
-          // Heading to the climb: target the valley floor near the gondola base.
-          skier.tx = run.cable.ax;
-          skier.ty = floorY + 4;
-        }
-        if (skier.dragging || leaving) {
+          // Scripted run to the gondola base: eased along the line from the start, with wide S-turns
+          // across it.
+          // Follows the scroll position, never slower than the auto pace or faster than the minimum run time.
+          const want = Math.min(1, Math.max(leave.target, (now - leave.t0) / LEAVE_AUTO_MS));
+          leave.p += Math.max(0, Math.min(want - leave.p, (k * 16.7) / LEAVE_MIN_MS));
+          const t = leave.p;
+          const e = t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
+          const ex = run.cable.ax;
+          const ey = floorY;
+          const dx = ex - leave.fromX;
+          const dy = ey - leave.fromY;
+          const len = Math.hypot(dx, dy) || 1;
+          const amp = Math.min(26, len * 0.09) * Math.sin(Math.PI * t);
+          const swing = Math.sin(t * Math.PI * 4) * amp;
+          nx = leave.fromX + dx * e + (-dy / len) * swing;
+          ny = leave.fromY + dy * e + (dx / len) * swing;
+        } else if (skier.dragging) {
           // Follow the cursor anywhere across the slope, easing toward it.
           const dx = skier.tx - skier.px;
           const dy = skier.ty - skier.py;
           const dist = Math.hypot(dx, dy);
-          const step = Math.min(dist * 0.38, leaving ? 10 : 14) * k;
+          const step = Math.min(dist * 0.38, 14) * k;
           nx += dist ? (dx / dist) * step : 0;
           ny += dist ? (dy / dist) * step : 0;
         } else {
@@ -625,14 +674,15 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
         }
         skier.x = skier.px;
         if (Math.abs(skier.vx) > 0.2) skier.facing = Math.sign(skier.vx);
-        if (leaving && reachedFloor()) {
-          // At the bottom, continue over the edge and out of view toward the climbing section.
+        if (leaving && leave.p >= 1) {
+          // At the base, keep sliding down out of the scene toward the climbing section.
           dropping = true;
           dropT0 = now;
-          skier.vy = 2.4;
+          skier.vx = skier.facing * 0.6;
+          skier.vy = 1.7;
           break;
         }
-        if (reachedFloor()) {
+        if (!leaving && reachedFloor()) {
           // Reached the bottom: skid to a stop with a spray of snow, then head for the gondola.
           skier.dragging = false;
           host.style.cursor = '';
@@ -991,7 +1041,7 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
    * pants, a light helmet, poles, and a soft shadow. Poses: ski (crouched), stop (hockey stop),
    * stand, and sit (on the lift).
    */
-  function drawFigure(x: number, y: number, angle: number, pose: 'ski' | 'stop' | 'stand' | 'sit', facing = run?.dir ?? 1) {
+  function drawFigure(x: number, y: number, angle: number, pose: 'ski' | 'stop' | 'stand' | 'sit' | 'wave', facing = run?.dir ?? 1) {
     const s = figureScale();
     const JACKET = '#962a3d';
     const PANTS = '#262b40';
@@ -1040,6 +1090,17 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
         line(JACKET, 3.8, [-2.6, -7.8, -2.4, -12.6]);
         line(JACKET, 1.6, [-2.4, -11.6, 0.2, -9]);
         helmet(-2, -15.2);
+      } else if (pose === 'wave') {
+        // Standing, one arm up waving a pole
+        const wob = Math.sin(now / 95) * 1.8;
+        line(DARK, 1.3, [-8, 0, 8, 0]);
+        ctx.quadraticCurveTo(10, 0, 10.5, -1.6);
+        ctx.stroke();
+        line(PANTS, 2.3, [-0.6, -0.8, 0, -7.4, 1.6, -0.8]);
+        line(JACKET, 3.8, [0, -7.6, 0.6, -12.8]);
+        line(JACKET, 1.6, [0.8, -11.8, 2.8, -14.6, 3.6 + wob * 0.5, -17.4]);
+        line('#8a93ad', 0.8, [3.6 + wob * 0.5, -17.4, 5 + wob * 1.6, -25]);
+        helmet(1, -15.3);
       } else if (pose === 'stand') {
         // Standing tall, poles planted
         line(DARK, 1.3, [-8, 0, 8, 0]);
@@ -1097,17 +1158,28 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
       const t = ease(Math.min(1, (now - skier.since) / 600));
       const y = skier.fromY + (ground(skier.x) - skier.fromY) * t;
       ctx.globalAlpha = Math.min(1, t * 1.6);
-      drawFigure(skier.x, y, skier.angle * t, 'stand');
+      // Faces the way the skier walks: from the top station to the spot left of the summit.
+      drawFigure(skier.x, y, skier.angle * t, 'stand', Math.sign(startPoint().x - skier.fromX) || -1);
       ctx.globalAlpha = 1;
       return;
     }
-    const pose = skier.state === 'skiing' ? 'ski' : skier.state === 'stopping' ? 'stop' : 'stand';
+    let pose: 'ski' | 'stop' | 'stand' | 'wave' = skier.state === 'skiing' ? 'ski' : skier.state === 'stopping' ? 'stop' : 'stand';
     const pos = skierPos();
+    let hop = 0;
+    // Idle attention cycle until the first interaction: a hop, then a wave.
+    if (skier.state === 'ready' && !grabbed && !leaving && !reduced && loadedAt) {
+      const c = (now - loadedAt) % ATTENTION_EVERY;
+      if (now - loadedAt > 0 && c < 560) hop = Math.sin((Math.PI * c) / 560) * 9;
+      else if (c > 640 && c < 2100) pose = 'wave';
+    }
     let facing: number = run.dir;
     if (skier.state === 'toLift') facing = Math.sign(run.cable.ax - skier.x) || run.dir;
     if (skier.state === 'stopping') facing = Math.sign(skier.vx) || skier.facing;
     if (skier.state === 'skiing' || skier.state === 'ready') facing = skier.facing;
-    drawFigure(pos.x, pos.y + 0.5, skier.angle, pose, facing);
+    // Until the first interaction the skier faces the name, on the left, for the whole hop and wave cycle.
+    // Faces the name while waiting; on the left side of the summit the slope lean also tilts toward it.
+    if (skier.state === 'ready' && !grabbed && !leaving) facing = -1;
+    drawFigure(pos.x, pos.y + 0.5 - hop, skier.angle * (hop ? 0.5 : 1), pose, facing);
     ctx.globalAlpha = 1;
   }
 
@@ -1293,6 +1365,7 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
       skier.tx = p.x;
       skier.ty = p.y;
       if (skier.state === 'ready') setState('skiing');
+      markGrabbed();
       host.setPointerCapture(e.pointerId);
       host.style.cursor = 'grabbing';
       e.preventDefault();
@@ -1328,6 +1401,7 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
     // Left and right push the skier across the slope; gravity pulls it downhill while moving.
     const push = e.key === 'ArrowRight' ? 1 : -1;
     if (skier.state === 'ready') setState('skiing');
+    markGrabbed();
     skier.vx = Math.max(-6, Math.min(6, skier.vx + push * 1.8));
     skier.vy = Math.max(skier.vy, 0.9);
     skier.facing = push;
@@ -1366,6 +1440,8 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
 
   build();
   start();
+  // The first hop waits until the name has risen into place.
+  setTimeout(() => (loadedAt = performance.now()), 1300);
 
   return {
     /** Re-run layout-dependent setup, e.g. once fonts load and the entrance finishes. */
@@ -1374,10 +1450,15 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
      * Send the skier on a quick run down the mountain and out of view, toward the climb below.
      * Returns 'none' on screens without a skier, 'busy' while riding or being dragged (retry
      * later), and otherwise 'leaving' or 'away'. Fires `skier:away` once the skier is gone.
+     * `immediate` skips the run (or cuts one short), for when the hero is nearly off screen.
      */
-    skiAway(): 'none' | 'busy' | 'leaving' | 'away' {
+    skiAway(immediate = false): 'none' | 'busy' | 'leaving' | 'away' {
       if (!run) return 'none';
       if (gone) return 'away';
+      if (immediate) {
+        finishAway();
+        return 'away';
+      }
       if (leaving || dropping) return 'leaving';
       // While the user is dragging the skier, wait for release (unless the hero is already off screen).
       if (skier.dragging && visible && running) return 'busy';
@@ -1393,8 +1474,16 @@ export function initMountains(canvas: HTMLCanvasElement, hubEl: HTMLElement, opt
       }
       leaving = true;
       skier.vx = skier.vy = 0;
+      leave.fromX = skier.px;
+      leave.fromY = skier.py;
+      leave.t0 = now;
+      leave.p = 0;
       setState('skiing');
       return 'leaving';
+    },
+    /** Scroll-driven progress (0..1) for the run down to the gondola base. */
+    followScroll(v: number) {
+      leave.target = Math.max(0, Math.min(1, v));
     },
     /** Put the skier back on the summit, fading in, when the user scrolls back up to the hero. */
     comeBack() {

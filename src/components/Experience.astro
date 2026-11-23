@@ -68,22 +68,27 @@ import { experience, origins } from '../data/site';
   .timeline :global(.climb-layer.pose-right .pose-r) { display: inline; }
   .timeline :global(.climb-layer.ascending .arms-up) { display: inline; }
   .timeline :global(.climb-layer.ascending .arms-down) { display: none; }
-  /* Flashlight glow on the active entry */
-  .item::after {
+  /* The flashlight glow targets the active entry's title, not the year. */
+  .item h3 { position: relative; isolation: isolate; transition: color 400ms ease, text-shadow 400ms ease; }
+  .item h3::before {
     content: '';
     position: absolute;
-    inset: -0.9rem -0.5rem 1.6rem 1rem;
-    border-radius: 1.1rem;
-    background: radial-gradient(ellipse 55% 70% at 0% 28%, rgba(255, 233, 186, 0.1), transparent 62%);
+    z-index: -1;
+    inset: -0.45em -1.2em -0.45em -0.9em;
+    border-radius: 999px;
+    background: radial-gradient(closest-side at 22% 50%, rgba(255, 233, 186, 0.16), transparent);
     opacity: 0;
     transition: opacity 500ms ease;
     pointer-events: none;
   }
-  .item.lit::after { opacity: 1; }
+  .item.lit h3::before { opacity: 1; }
+  .item.lit h3 { color: #fff; text-shadow: 0 0 22px rgba(255, 233, 186, 0.35); }
   .item .body { transition: border-color 500ms ease, box-shadow 500ms ease; }
-  .item.lit.current .body { border-color: rgba(255, 233, 186, 0.28); box-shadow: 0 0 40px -18px rgba(255, 233, 186, 0.35); }
-  .item.lit h3 { color: #fff; }
-  .item h3 { transition: color 400ms ease; }
+  .item.lit.current .body {
+    border-color: rgba(255, 233, 186, 0.28);
+    box-shadow: 0 0 40px -18px rgba(255, 233, 186, 0.35);
+    background: radial-gradient(90% 60% at 12% 18%, rgba(255, 233, 186, 0.07), transparent 70%), linear-gradient(180deg, #172039, #121a30);
+  }
   .timeline::before {
     content: '';
     position: absolute;
@@ -99,8 +104,8 @@ import { experience, origins } from '../data/site';
     content: '';
     position: absolute;
     left: 0;
-    /* Centered on the year line so the dot, year, and climber's flashlight align. */
-    top: 4.5px;
+    /* Set per entry by the climber script (--dot-y) to align the flashlight with the title. */
+    top: var(--dot-y, 34px);
     width: 11px;
     height: 11px;
     border-radius: 50%;
@@ -115,7 +120,7 @@ import { experience, origins } from '../data/site';
     border: 1px solid var(--color-line);
     background: linear-gradient(180deg, #172039, #121a30);
   }
-  .item.current::before { top: 19.1px; }
+  .item.current::before { top: var(--dot-y, 48px); }
   .item.current::before {
     background: var(--color-wine);
     border-color: var(--color-wine);

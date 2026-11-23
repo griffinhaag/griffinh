@@ -11,7 +11,7 @@ import { facts, links } from '../data/site';
     <div class="panel panel-sm mt-6 sm:mt-0 lg:mt-6">
       <p class="meta text-sm">Lately</p>
       <ul class="mt-3 space-y-2 text-muted">
-        <li>Building .NET services and Terraform modules at KorTerra</li>
+        <li>Developing .NET services with <span class="whitespace-nowrap">spec-driven</span> development at KorTerra</li>
         <li>Taking computer science classes at the U&nbsp;of&nbsp;M</li>
         <li>Working on the next game for <a class="link" href={links.games} target="_blank" rel="noopener">GriffinGames</a></li>
       </ul>
@@ -22,11 +22,11 @@ import { facts, links } from '../data/site';
       <div class="max-w-[62ch] space-y-5 text-lg text-muted">
         <p>
           <span class="text-text">I’ve always loved building websites.</span> I wrote my first code at an iD Tech camp when I was nine, ran my Boy Scout
-          troop’s website as a kid, and went back to iD Tech in 2024 to teach Python.
+          troop’s website while in high school, and went back to iD Tech in 2024 to teach Python.
         </p>
         <p>
-          These days I build backend systems at KorTerra and study computer science at the University of Minnesota. On my own time I make things for
-          people I know, like client sites and the game night platform my friends and I play.
+          Currently I build backend systems at KorTerra and study computer science at the University of Minnesota. I do work for clients such as
+          creating websites, and I enjoy developing games to play with my friends.
         </p>
       </div>
 
@@ -131,7 +131,15 @@ import { facts, links } from '../data/site';
     .hobby:hover .ic-pad .btn-a, .hobby.active .ic-pad .btn-a { animation: blink 500ms steps(1) infinite; }
     .hobby:hover .ic-pad .btn-b, .hobby.active .ic-pad .btn-b { animation: blink 500ms steps(1) 250ms infinite; }
     .hobby:hover .ic-chat .dots2, .hobby.active .ic-chat .dots2 { animation: blink 900ms steps(1) infinite; }
-    .ic-die.roll { animation: roll 500ms var(--ease-out-quint); transform-origin: center; transform-box: fill-box; }
+    /* Plays on hover like the other tiles: tumbles and lands on a new face each time. */
+    .ic-die { transform-origin: center; transform-box: fill-box; }
+    .hobby:hover .ic-die, .hobby.active .ic-die { animation: tumble 900ms var(--ease-out-quint) infinite; }
+    .hobby .ic-die.roll { animation: roll 500ms var(--ease-out-quint); }
+  }
+  @keyframes tumble {
+    0% { transform: rotate(0deg) translateY(0); }
+    30% { transform: rotate(-90deg) translateY(-5px) scale(0.92); }
+    55%, 100% { transform: rotate(-90deg) translateY(0); }
   }
   @keyframes bounce { to { transform: translateY(-6px); } }
   @keyframes carve { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-6px, 3px); } }
@@ -156,6 +164,13 @@ import { facts, links } from '../data/site';
     g.innerHTML = PIPS[n].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.9"></circle>`).join('');
   };
   setFace(5);
+  // Each tumble on hover lands on a new face.
+  let face = 5;
+  die?.addEventListener('animationiteration', () => {
+    let n = face;
+    while (n === face) n = 1 + Math.floor(Math.random() * 6);
+    setFace((face = n));
+  });
   document.querySelector('[data-hobby="dice"]')?.addEventListener('click', () => {
     setFace(1 + Math.floor(Math.random() * 6));
     die?.classList.remove('roll');

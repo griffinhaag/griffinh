@@ -6,6 +6,7 @@ const JACKET = '#962a3d';
 const PANTS = '#262b40';
 const DARK = '#151a29';
 const HELMET = '#dfe5f1';
+const LAMP = '#ffe7a8';
 const S = 1.75; // figure scale
 const LIP = 68; // where the ledge's lip sits, from the top of the section
 const REST = 40; // distance below the anchor before the timeline starts
@@ -29,10 +30,11 @@ const stroke = (g: Element, color: string, width: number, d: string) =>
 function figure(defs: Element) {
   const g = el('g', { class: 'climber' });
   const grad = el('linearGradient', { id: 'climb-beam', x1: 0, y1: 0, x2: 1, y2: 0 }, defs);
-  el('stop', { offset: 0, 'stop-color': '#fff1c9', 'stop-opacity': 0.55 }, grad);
+  el('stop', { offset: 0, 'stop-color': '#fff1c9', 'stop-opacity': 0.5 }, grad);
+  el('stop', { offset: 0.75, 'stop-color': '#fff1c9', 'stop-opacity': 0.22 }, grad);
   el('stop', { offset: 1, 'stop-color': '#fff1c9', 'stop-opacity': 0 }, grad);
 
-  const beam = el('polygon', { class: 'beam', points: `0,0 ${34 * S},${-12.5 * S} ${34 * S},${12.5 * S}`, fill: 'url(#climb-beam)' }, g);
+  const beam = el('polygon', { class: 'beam', points: '0,0 0,0 0,0', fill: 'url(#climb-beam)' }, g);
   const body = el('g', { transform: `scale(${S})` }, g);
 
   // Left of the line: legs braced, leaning back on the rope
@@ -52,30 +54,34 @@ function figure(defs: Element) {
   stroke(up, JACKET, 1.6, 'M-10.2 -13.6 L-8.6 -16 L-8.4 -18.2');
   el('circle', { cx: -11.8, cy: -17.8, r: 2.3, fill: HELMET }, left);
   el('rect', { x: -11.2, y: -18.4, width: 1.8, height: 0.9, fill: DARK }, left);
+  el('circle', { cx: -10.2, cy: -19.7, r: 0.65, fill: LAMP }, left); // headlamp
 
-  // Right of the line: seated on the dot's right edge, body clear of the line, legs toward the entry,
-  // leaning back on the rope like the left pose, flashlight held low and forward
+  // Right of the line: seated on top of the dot with the back against the line, legs over the dot's
+  // right side, one hand on the rope and the flashlight held forward. This pose's origin is the seat;
+  // render() lifts the group by the dot's radius so the seat rests on the dot.
   const right = el('g', { class: 'pose-r' }, body);
-  stroke(right, PANTS, 2.3, 'M5.4 -2.4 L9.6 -2.8 L11.4 1.4');
-  stroke(right, PANTS, 2.3, 'M5 -1.8 L9 -1.4 L9.8 2.6');
-  stroke(right, DARK, 1.6, 'M11.4 1.6 L12.6 1.8 M9.8 2.8 L11 3');
-  stroke(right, JACKET, 3.8, 'M5 -2.6 L3.2 -9.6');
-  stroke(right, DARK, 1.3, 'M3.8 -3.2 L6.6 -2.8');
-  stroke(right, JACKET, 1.6, 'M3.4 -8.8 L4 -11.8 L4.6 -14.2');
-  stroke(right, JACKET, 1.6, 'M3.8 -8.4 L5.8 -5.4 L8.6 -4.4');
-  stroke(right, DARK, 2, 'M8.4 -4.4 L11.2 -4.4');
-  el('circle', { cx: 11.5, cy: -4.4, r: 0.9, fill: '#fff2cc', class: 'lens' }, right);
-  el('circle', { cx: 2.6, cy: -12.6, r: 2.3, fill: HELMET }, right);
-  el('rect', { x: 3.2, y: -13.2, width: 1.8, height: 0.9, fill: DARK }, right);
-  return { g, beam };
+  stroke(right, PANTS, 2.3, 'M2.4 -0.6 L7.4 -0.8 L8.2 3.6');
+  stroke(right, PANTS, 2.3, 'M2.2 -0.2 L6.6 0 L6.8 4.2');
+  stroke(right, DARK, 1.6, 'M8.2 3.6 L9.6 3.8 M6.8 4.2 L8.2 4.4');
+  stroke(right, JACKET, 3.8, 'M2.4 -1 L2.1 -8');
+  stroke(right, DARK, 1.3, 'M1 -1.4 L3.8 -1.2');
+  stroke(right, JACKET, 1.6, 'M2.4 -7.2 L3.6 -9.8 L3 -12.2');
+  stroke(right, JACKET, 1.6, 'M2.6 -6.8 L5 -4.4 L7.6 -4.2');
+  stroke(right, DARK, 2, 'M7.4 -4.2 L10.2 -4.2');
+  el('circle', { cx: 10.5, cy: -4.2, r: 0.9, fill: '#fff2cc', class: 'lens' }, right);
+  el('circle', { cx: 2.2, cy: -10.6, r: 2.3, fill: HELMET }, right);
+  el('rect', { x: 2.8, y: -11.2, width: 1.8, height: 0.9, fill: DARK }, right);
+  el('circle', { cx: 3.8, cy: -12.5, r: 0.65, fill: LAMP }, right);
+  return { g, beam, right };
 }
 
-// Where the flashlight lens and harness sit in each pose, in figure units (boots at 0,0).
+// Flashlight lens and harness positions per pose, in figure units. Left pose: origin at the boots.
+// Right pose: origin at the seat, before the lift onto the dot.
 const POSE = {
   l: { lens: [-0.9, -5.4], harness: [-8.2, -7.8] },
-  r: { lens: [11.5, -4.4], harness: [4.4, -2.8] },
+  r: { lens: [10.5, -4.2], harness: [2.6, -1.2] },
 } as const;
-
+const DOT_R = 5.5; // timeline dot radius in px
 export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: SVGSVGElement, next: HTMLElement | null) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const items = [...timeline.querySelectorAll<HTMLElement>(':scope > .item')];
@@ -100,7 +106,7 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
   el('rect', { x: -4, y: -4, width: 8, height: 8, rx: 2, fill: '#1b2338', stroke: '#8a93ad', 'stroke-width': 1 }, anchor);
   el('circle', { r: 1.2, fill: '#8a93ad' }, anchor);
   el('ellipse', { cx: 0, cy: 6.5, rx: 2.4, ry: 3.6, fill: 'none', stroke: '#c7cfe0', 'stroke-width': 1.2 }, anchor);
-  const { g: guy, beam } = figure(defs);
+  const { g: guy, beam, right: rightPose } = figure(defs);
   svg.appendChild(guy);
 
   // The line and dots sit 5.5px in from the timeline's left edge.
@@ -134,23 +140,41 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
     ledge.querySelector('.lip')!.setAttribute('d', lip);
   }
 
+  // Entries alternate sides of the line, starting on the left; the figure always faces the entries.
+  const sideFor = (idx: number) => (idx < 0 || idx % 2 === 0 ? -1 : 1);
+  // Phones have less room left of the timeline, so the figure is smaller there.
+  const scaleFor = () => (innerWidth < 640 ? 0.72 : 1);
+
   function measure() {
     const t = timeline.getBoundingClientRect();
     const sec = section.getBoundingClientRect();
     anchorY = sec.top - t.top + LIP;
-    // On narrow screens the section title sits above the timeline, so the rope would cut through it.
-    // There, anchor just above the first entry.
+    // On narrow screens the section title and intro sit above the timeline, so the rope would cut
+    // through them. There, anchor in the gap between the intro and the first entry: slightly below the
+    // intro's last line, and no lower than just above the first dot.
     const head = section.querySelector('.split > header');
-    if (head && head.getBoundingClientRect().bottom <= t.top + 2) anchorY = -52;
-    dots = items.map((li) => li.getBoundingClientRect().top - t.top + (parseFloat(getComputedStyle(li, '::before').top) || 4.5) + 5.5);
+    const hb = head?.getBoundingClientRect().bottom ?? Infinity;
+    if (hb <= t.top + 2) anchorY = Math.min(hb - t.top + 10, -14);
     bottoms = items.map((li) => li.getBoundingClientRect().bottom - t.top);
-    // Position of each entry's year, used to aim the flashlight.
-    years = items.map((li) => {
-      const r = (li.querySelector('.when') ?? li).getBoundingClientRect();
-      return { x: r.left - t.left + 40, y: r.top + r.height / 2 - t.top };
+    // Beam target for each entry: the start of the title's first line (e.g. "Python Instructor").
+    titles = items.map((li) => {
+      const h = li.querySelector('h3') ?? li;
+      const r = h.getBoundingClientRect();
+      const line = parseFloat(getComputedStyle(h).lineHeight) || 30;
+      return { x: r.left - t.left + 10, y: r.top + Math.min(r.height, line) / 2 - t.top };
+    });
+    // Each dot sits where the flashlight lens, in that entry's pose, is level with the title, so the
+    // beam runs horizontally. The dot's CSS position is driven by --dot-y.
+    const z = scaleFor();
+    dots = items.map((li, i) => {
+      const top = li.getBoundingClientRect().top - t.top;
+      const lens = sideFor(i) === 1 ? POSE.r.lens[1] * S * z - DOT_R : POSE.l.lens[1] * S * z;
+      const center = titles[i].y - top - lens;
+      li.style.setProperty('--dot-y', `${(center - DOT_R).toFixed(2)}px`);
+      return top + center;
     });
   }
-  let years: { x: number; y: number }[] = [];
+  let titles: { x: number; y: number }[] = [];
 
   // Current position, and the hop in progress (if any).
   let y = 0;
@@ -171,9 +195,6 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
   let last = 0;
 
   const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
-  // The figure lands on alternating sides of the line going down, starting on the left, and always
-  // faces right toward the entries. On the right side it hangs just clear of the line.
-  const sideFor = (idx: number) => (idx < 0 || idx % 2 === 0 ? -1 : 1);
 
   function targets() {
     const vh = innerHeight;
@@ -181,7 +202,7 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
     const focus = vh * 0.5 - t.top; // the middle of the screen, in timeline coordinates
     let idx = -1;
     for (let i = 0; i < dots.length; i++) if (dots[i] <= focus) idx = i;
-    const rest = anchorY + REST;
+    const rest = Math.min(anchorY + REST, (dots[0] ?? Infinity) - 4);
     // While scrolling into the next section, the figure climbs back up in proportion to scroll distance.
     const nt = next ? next.getBoundingClientRect().top : Infinity;
     const p = Math.min(1, Math.max(0, (vh * 0.55 - nt) / (vh * 0.4)));
@@ -191,8 +212,7 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
 
   function render(now: number) {
     raf = 0;
-    // Phones have less room left of the timeline, so the figure is smaller there.
-    const z = innerWidth < 640 ? 0.72 : 1;
+    const z = scaleFor();
     const dt = Math.min(0.05, (now - (last || now)) / 1000);
     last = now;
     const { idx, rest, p, light } = targets();
@@ -250,17 +270,22 @@ export function initClimber(section: HTMLElement, timeline: HTMLElement, ledge: 
     const fx = lineX + x;
     guy.setAttribute('transform', `translate(${fx.toFixed(2)} ${y.toFixed(2)}) rotate(${tilt.toFixed(2)}) scale(${z})`);
     svg.classList.toggle('pose-right', pose === 'r');
+    // Seated pose: lift the seat onto the top of the dot.
+    const lift = -DOT_R / (S * z);
+    rightPose.setAttribute('transform', `translate(0 ${lift.toFixed(3)})`);
+    const off = pose === 'r' ? lift : 0;
     const lx = POSE[pose].lens[0] * S;
-    const ly = POSE[pose].lens[1] * S;
-    // Aim the beam at the year of the active entry (in the figure's unscaled coordinates).
-    let aim = 0;
-    const yr = years[light >= 0 ? light : Math.max(0, idx)];
-    if (yr) aim = (Math.atan2((yr.y - y) / z - ly, (yr.x - fx) / z - lx) * 180) / Math.PI;
-    beam.setAttribute('transform', `translate(${lx.toFixed(2)} ${ly.toFixed(2)}) rotate(${aim.toFixed(2)})`);
+    const ly = (POSE[pose].lens[1] + off) * S;
+    // The beam shines horizontally and extends slightly onto the title.
+    const tt = titles[light >= 0 ? light : Math.max(0, idx)];
+    const reach = tt ? Math.max(20, (tt.x - fx) / z - lx + 28) : 34 * S;
+    const spread = Math.min(reach * 0.2, 16);
+    beam.setAttribute('points', `0,0 ${reach.toFixed(1)},${(-spread).toFixed(1)} ${reach.toFixed(1)},${spread.toFixed(1)}`);
+    beam.setAttribute('transform', `translate(${lx.toFixed(2)} ${ly.toFixed(2)})`);
 
     // The rope runs from the anchor to the harness, with the loose end hanging below the figure.
     const hx = fx + POSE[pose].harness[0] * S * z;
-    const hy = y + POSE[pose].harness[1] * S * z;
+    const hy = y + (POSE[pose].harness[1] + off) * S * z;
     const main = `M${lineX} ${anchorY + 9} L${hx.toFixed(2)} ${hy.toFixed(2)}`;
     ropeParts.forEach((r) => r.setAttribute('d', main));
     const sway = Math.sin(now / 700) * 2.5;

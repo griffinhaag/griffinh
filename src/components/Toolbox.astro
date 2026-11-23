@@ -60,8 +60,10 @@ import { toolbox } from '../data/site';
     tools.forEach((btn) => {
       btn.addEventListener('click', () => select(btn));
       btn.addEventListener('focus', () => select(btn));
-      btn.addEventListener('pointerenter', (e) => {
-        if (e.pointerType === 'mouse') select(btn);
+      // Hover preview on real mouse movement only. pointerenter also fires when the layout shifts a chip
+      // under a still cursor (the panel above resizes on select), which would pick the wrong tool.
+      btn.addEventListener('pointermove', (e) => {
+        if (e.pointerType === 'mouse' && btn.getAttribute('aria-pressed') !== 'true') select(btn);
       });
     });
   }

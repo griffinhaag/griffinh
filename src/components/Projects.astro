@@ -2,67 +2,45 @@
 import Section from './Section.astro';
 import GamesPreview from './GamesPreview.astro';
 import DayOneDemo from './DayOneDemo.astro';
+import Peeker from './Peeker.astro';
 import { builds, clients, links } from '../data/site';
+
+type Card = { name: string; blurb: string; stack: string[]; href?: string; badge?: string; linkText?: string };
+// Client sites are full stack web work, so they sit in that group with a badge.
+const clientCards: Card[] = clients.map((c) => ({
+  name: c.name,
+  blurb: `A website I designed and built for a ${c.what.toLowerCase()}.`,
+  stack: ['Client site'],
+  href: c.href,
+  badge: 'Client',
+  linkText: 'Visit',
+}));
+const groups: { id: string; title: string; blurb: string; items: Card[] }[] = [
+  {
+    id: 'full-stack',
+    title: 'Full stack',
+    blurb: 'More apps with a front end, a server, and a database, plus the sites I’ve built for clients since 2023.',
+    items: [...builds.filter((b) => b.kind === 'full'), ...clientCards],
+  },
+  {
+    id: 'backend',
+    title: 'Backend & infrastructure',
+    blurb: 'Production services and cloud infrastructure at KorTerra, plus the APIs, pipelines, and data tools I’ve built on my own.',
+    items: builds.filter((b) => b.kind === 'backend'),
+  },
+];
 ---
 
 <Section id="projects" title="Things I’ve built" sticky={false} band>
   <p class="max-w-[38rem] text-lg text-muted lg:pt-3 lg:text-xl">
-    <span class="text-text">The two I’m proudest of come first, and both are playable right on this page.</span> After those are smaller
-    projects from school and teaching, and the websites I’ve built for clients.
+    <span class="text-text">The two I’m proudest of come first, and both are playable right on this page.</span> After those, the rest
+    are sorted by the kind of work: full stack apps and client sites, then backend and infrastructure.
   </p>
 
   <Fragment slot="after">
-    <!-- Featured projects: one card each, description on the left and working preview on the right. -->
+    <!-- Featured projects, both playable on the page: story on the left, live preview on the right. -->
     <article class="feature panel mt-14" data-peek>
-      <span class="peek" aria-hidden="true">
-        <span class="peek-back"><svg viewBox="0 0 56 30" width="56" height="30"><g class="peek-face">
-          <circle cx="28" cy="27" r="8.5" fill="#dfe5f1" />
-          <path d="M19.2 27a8.8 8.8 0 0 1 17.6 0" fill="none" stroke="#962a3d" stroke-width="1.8" />
-          <rect x="17.4" y="23.4" width="3.4" height="6.6" rx="1.5" fill="#962a3d" />
-          <rect x="35.2" y="23.4" width="3.4" height="6.6" rx="1.5" fill="#962a3d" />
-          <g class="peek-eyes" fill="#151a29"><circle cx="25" cy="25" r="1" /><circle cx="31" cy="25" r="1" /></g></g>
-        </svg></span>
-        <span class="peek-front"><svg viewBox="0 0 56 34" width="56" height="34"><g fill="#dfe5f1"><rect class="hand-l" x="14" y="26" width="7.5" height="6" rx="2.6" /><rect class="hand-r" x="34.5" y="26" width="7.5" height="6" rx="2.6" /></g></svg></span>
-      </span>
-      <div class="feature-grid">
-        <div>
-          <p class="meta text-sm">Side project, 2025 – present</p>
-          <h3 class="mt-2 font-display text-4xl font-semibold tracking-tight">GriffinGames</h3>
-          <p class="mt-4 text-lg">
-            Party games I made for game nights with my friends. One person puts it on the TV, and everyone else joins from their phone with a room code.
-          </p>
-          <ul class="mt-6 space-y-3 text-muted">
-            <li class="fact">LOCKED IN is a buzzer trivia game with about 6,500 questions across 11 categories.</li>
-            <li class="fact">A Node and Socket.IO server keeps every screen in sync, decides who buzzed first, and lets people rejoin when their phone drops off Wi‑Fi.</li>
-            <li class="fact">Typed answers are graded by an LLM, so a typo or a last name alone still counts.</li>
-          </ul>
-          <div class="feature-foot">
-            <p class="flex flex-wrap gap-2">
-              {['JavaScript', 'Node.js', 'Socket.IO', 'Express', 'Groq', 'Render', 'Netlify'].map((t) => <span class="tag">{t}</span>)}
-            </p>
-            <div class="flex flex-wrap gap-3">
-              <a href={links.games} class="btn btn-primary" target="_blank" rel="noopener">Play my live game</a>
-              <a href="/projects/griffingames" class="btn btn-ghost" target="_blank" rel="noopener">How I built it</a>
-            </div>
-          </div>
-        </div>
-        <div>
-          <GamesPreview />
-        </div>
-      </div>
-    </article>
-
-    <article class="feature panel mt-8" data-peek>
-      <span class="peek" aria-hidden="true">
-        <span class="peek-back"><svg viewBox="0 0 56 30" width="56" height="30"><g class="peek-face">
-          <circle cx="28" cy="27" r="8.5" fill="#dfe5f1" />
-          <path d="M17.5 19.6 28 15.4l10.5 4.2L28 23.8Z" fill="#151a29" />
-          <path d="M36.4 19.8v5.4" stroke="#f0b03a" stroke-width="1" stroke-linecap="round" />
-          <circle cx="36.4" cy="25.8" r="1" fill="#f0b03a" />
-          <g class="peek-eyes" fill="#151a29"><circle cx="25" cy="26" r="1" /><circle cx="31" cy="26" r="1" /></g></g>
-        </svg></span>
-        <span class="peek-front"><svg viewBox="0 0 56 34" width="56" height="34"><g fill="#dfe5f1"><rect class="hand-l" x="14" y="26" width="7.5" height="6" rx="2.6" /><rect class="hand-r" x="34.5" y="26" width="7.5" height="6" rx="2.6" /></g></svg></span>
-      </span>
+      <Peeker hat="cap" />
       <div class="feature-grid">
         <div>
           <p class="meta text-sm">Dunwoody capstone, 2025</p>
@@ -91,25 +69,56 @@ import { builds, clients, links } from '../data/site';
         </div>
       </div>
     </article>
-
-    <!-- Everything else: short cards, with details behind a click. -->
-    <div class="row plain mt-24">
-      <div>
-        <h3 class="font-display text-3xl font-semibold tracking-tight">More projects</h3>
-        <p class="mt-4 max-w-sm text-muted">Smaller things I’ve built, mostly for classes and while teaching.</p>
-        <a href={links.github} class="btn btn-ghost mt-6" target="_blank" rel="noopener">All my code on GitHub</a>
+    <article class="feature panel mt-8" data-peek>
+      <Peeker hat="snapback" />
+      <div class="feature-grid">
+        <div>
+          <p class="meta text-sm">Side project, 2025 – present</p>
+          <h3 class="mt-2 font-display text-4xl font-semibold tracking-tight">GriffinGames</h3>
+          <p class="mt-4 text-lg">
+            Party games I made for game nights with my friends. One person puts it on the TV, and everyone else joins from their phone with a room code.
+          </p>
+          <ul class="mt-6 space-y-3 text-muted">
+            <li class="fact">LOCKED IN is a buzzer trivia game with about 6,500 questions across 11 categories.</li>
+            <li class="fact">A Node and Socket.IO server keeps every screen in sync, decides who buzzed first, and lets people rejoin when their phone drops off Wi‑Fi.</li>
+            <li class="fact">Typed answers are graded by an LLM, so a typo or a last name alone still counts.</li>
+          </ul>
+          <div class="feature-foot">
+            <p class="flex flex-wrap gap-2">
+              {['JavaScript', 'Node.js', 'Socket.IO', 'Express', 'Groq', 'Render', 'Netlify'].map((t) => <span class="tag">{t}</span>)}
+            </p>
+            <div class="flex flex-wrap gap-3">
+              <a href={links.games} class="btn btn-primary" target="_blank" rel="noopener">Play my live game</a>
+              <a href="/projects/griffingames" class="btn btn-ghost" target="_blank" rel="noopener">How I built it</a>
+            </div>
+          </div>
+        </div>
+        <div>
+          <GamesPreview />
+        </div>
       </div>
-      <div>
-        <ul class="grid gap-3 sm:grid-cols-2" data-builds>
-          {builds.map((b, i) => (
-            <li class={`build-card ${i >= 4 ? 'extra' : ''}`} hidden={i >= 4}>
-              <p class="font-display text-lg font-medium tracking-tight">{b.name}</p>
+    </article>
+
+    {groups.map((g, gi) => (
+      <div class={`group ${gi ? 'mt-24' : 'mt-20'}`} id={g.id}>
+        <header class="group-head">
+          <p class="meta text-sm">{String(gi + 1).padStart(2, '0')}</p>
+          <h3 class="font-display text-3xl font-semibold tracking-tight">{g.title}</h3>
+          <p class="max-w-md text-muted">{g.blurb}</p>
+        </header>
+        <ul class="build-grid mt-8" data-builds>
+          {g.items.map((b, i) => (
+            <li class={`build-card ${i >= 4 ? 'extra' : ''}`}>
+              <p class="flex flex-wrap items-center gap-x-2 gap-y-1 font-display text-lg font-medium tracking-tight">
+                {b.name}
+                {b.badge && <span class="badge">{b.badge}</span>}
+              </p>
               <p class="mt-1 text-[0.95rem] leading-snug text-muted">{b.blurb}</p>
               <div class="mt-auto flex items-end justify-between gap-3 pt-4">
                 <p class="text-xs text-muted">{b.stack.join(', ')}</p>
                 {b.href && (
-                  <a href={b.href} class="code-link" target="_blank" rel="noopener" aria-label={`View the code for ${b.name} on GitHub`}>
-                    Code
+                  <a href={b.href} class="code-link" target="_blank" rel="noopener" aria-label={`${b.linkText === 'Visit' ? 'Visit' : 'View the code for'} ${b.name}`}>
+                    {b.linkText ?? 'Code'}
                     <svg width="12" height="12" viewBox="0 0 14 14" aria-hidden="true"><path d="M4 10 10 4M5 4h5v5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
                   </a>
                 )}
@@ -117,80 +126,24 @@ import { builds, clients, links } from '../data/site';
             </li>
           ))}
         </ul>
-        {builds.length > 4 && (
-          <button type="button" class="btn btn-ghost mt-4" data-builds-toggle aria-expanded="false">Show {builds.length - 4} more</button>
+        {(g.items.length > 4 || g.id === 'backend') && (
+          <div class={`mt-5 flex flex-wrap gap-3 ${g.id === 'backend' ? '' : 'sm:hidden'}`}>
+            {g.items.length > 4 && (
+              <button type="button" class="btn btn-ghost sm:hidden" data-builds-toggle aria-expanded="false">Show {g.items.length - 4} more</button>
+            )}
+            {g.id === 'backend' && (
+              <a href={links.github} class="btn btn-ghost" target="_blank" rel="noopener">All my code on GitHub</a>
+            )}
+          </div>
         )}
       </div>
-    </div>
-
-    <div class="row plain mt-20">
-      <div>
-        <h3 class="font-display text-3xl font-semibold tracking-tight">Client work</h3>
-        <p class="mt-4 max-w-sm text-muted">Sites I’ve designed and built for local businesses since 2023.</p>
-      </div>
-      <ul class="grid gap-4 sm:grid-cols-2">
-        {clients.map((c) => (
-          <li class="rounded-xl border border-line p-5">
-            <p class="font-display text-xl font-medium tracking-tight">
-              {c.href ? <a href={c.href} class="link !text-text" target="_blank" rel="noopener">{c.name}</a> : c.name}
-            </p>
-            <p class="mt-1 text-muted">{c.what}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
+    ))}
   </Fragment>
 </Section>
 
 <style>
   .feature { position: relative; padding: 1.5rem; transition: box-shadow 500ms ease; }
-  /* A figure peeks over the top-left edge of the active project card. The clip box ends a few
-     pixels into the card, so the hands overlap the border and the rest is hidden below it. */
-  /* The head layer is clipped exactly at the card's top border (behind the card); the hands
-     layer extends 3px past it to overlap the edge. Both are hidden below their clip line
-     until the card is active. top is -31px: 30px of drawing plus the 1px border. */
-  .peek { position: absolute; left: 2.5rem; top: -31px; width: 56px; height: 34px; pointer-events: none; z-index: 1; }
-  .peek-back, .peek-front { position: absolute; left: 0; top: 0; width: 56px; overflow: hidden; }
-  .peek-back { height: 30px; }
-  .peek-front { height: 34px; }
-  .peek svg { display: block; transform: translateY(105%); transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1); will-change: transform; }
-  .feature.peeking .peek-front svg { transform: translateY(0); }
-  .feature.peeking .peek-back svg { transform: translateY(0); transition-delay: 140ms; transition-duration: 560ms; transition-timing-function: cubic-bezier(0.34, 1.35, 0.64, 1); }
-  /* Scaled up from the grip line (31px down) so the hands stay on the card's edge. */
-  .peek { transform: scale(1.25); transform-origin: 0 31px; }
-  .peek-face, .hand-r, .hand-l { transform-box: fill-box; }
-  .peek-face { transform-origin: 50% 100%; }
-  .hand-r, .hand-l { transform-origin: 50% 100%; }
-  .peek-eyes { transform-box: fill-box; transform-origin: center; }
-  @media (prefers-reduced-motion: no-preference) {
-    .feature.peeking .peek-eyes { animation: peek-blink 3.8s 1.2s infinite; }
-    /* Once raised, the figure periodically looks around and waves. */
-    .feature.peeking .peek-face { animation: peek-look 5.2s 0.9s ease-in-out infinite; }
-    .feature.peeking .hand-r { animation: peek-wave 5.2s 1.1s ease-in-out infinite; }
-    .feature.peeking .hand-l { animation: peek-grip 5.2s 1.1s ease-in-out infinite; }
-  }
-  @keyframes peek-look {
-    0%, 30% { transform: rotate(0deg); }
-    38%, 50% { transform: rotate(-10deg); }
-    58%, 70% { transform: rotate(8deg); }
-    78%, 100% { transform: rotate(0deg); }
-  }
-  @keyframes peek-wave {
-    0%, 76% { transform: translateY(0) rotate(0deg); }
-    80% { transform: translateY(-6px) rotate(-14deg); }
-    84% { transform: translateY(-6px) rotate(12deg); }
-    88% { transform: translateY(-6px) rotate(-14deg); }
-    92% { transform: translateY(-6px) rotate(10deg); }
-    97%, 100% { transform: translateY(0) rotate(0deg); }
-  }
-  @keyframes peek-grip { 0%, 78%, 96%, 100% { transform: translateY(0); } 86% { transform: translateY(0.6px); } }
-  @keyframes peek-blink { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(0.15); } }
   .feature.peeking { box-shadow: 0 0 0 1px rgba(169, 184, 255, 0.22), 0 30px 60px -40px rgba(0, 0, 0, 0.9), 0 0 50px -20px rgba(169, 184, 255, 0.25); }
-  @media (prefers-reduced-motion: reduce) {
-    .peek svg { transition: opacity 300ms; transform: none; opacity: 0; }
-    .feature.peeking .peek svg { opacity: 1; transform: none; }
-    .feature.peeking .peek-eyes { animation: none; }
-  }
   @media (min-width: 768px) { .feature { padding: 2.25rem; } }
   .feature-grid { display: grid; gap: 2rem; }
   .feature-grid > * { min-width: 0; }
@@ -221,7 +174,31 @@ import { builds, clients, links } from '../data/site';
     padding: 1rem 1.1rem;
     background: color-mix(in oklab, var(--color-slate) 55%, transparent);
   }
-  .build-card[hidden] { display: none; }
+  .group-head { display: grid; gap: 0.5rem; }
+  @media (min-width: 1024px) {
+    /* Number and title on the left, one-line summary on the right, matching the section frame. */
+    .group-head { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); column-gap: 4rem; align-items: end; }
+    .group-head > .meta { grid-column: 1; }
+    .group-head > h3 { grid-column: 1; }
+    .group-head > p:last-child { grid-column: 2; grid-row: 1 / span 2; align-self: end; max-width: 36rem; }
+  }
+  .build-grid { display: grid; gap: 0.75rem; }
+  /* Phones show four cards per group; the rest open with "Show more". */
+  @media (max-width: 639px) { .build-grid:not(.open) .extra { display: none; } }
+  @media (min-width: 640px) { .build-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .build-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .badge {
+    font-family: var(--font-sans, inherit);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    padding: 0.3rem 0.5rem;
+    border-radius: 999px;
+    color: #f2c9d0;
+    background: color-mix(in oklab, var(--color-wine) 35%, transparent);
+    border: 1px solid color-mix(in oklab, var(--color-wine) 70%, transparent);
+  }
   .code-link {
     flex: none;
     display: inline-flex;
@@ -241,18 +218,15 @@ import { builds, clients, links } from '../data/site';
 </style>
 
 <script>
-  const toggle = document.querySelector<HTMLButtonElement>('[data-builds-toggle]');
-  if (toggle) {
-    const extras = document.querySelectorAll<HTMLElement>('[data-builds] .extra');
-    const more = toggle.textContent!.trim();
-    toggle.addEventListener('click', () => {
-      const open = toggle.getAttribute('aria-expanded') !== 'true';
-      extras.forEach((el) => (el.hidden = !open));
-      toggle.setAttribute('aria-expanded', String(open));
-      toggle.textContent = open ? 'Show fewer' : more;
-      if (open) extras[0]?.querySelector<HTMLElement>('a, p')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  document.querySelectorAll<HTMLButtonElement>('[data-builds-toggle]').forEach((btn) => {
+    const grid = btn.closest('.group')!.querySelector<HTMLElement>('[data-builds]')!;
+    const more = btn.textContent!.trim();
+    btn.addEventListener('click', () => {
+      const open = grid.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(open));
+      btn.textContent = open ? 'Show fewer' : more;
     });
-  }
+  });
 </script>
 
 <script>
