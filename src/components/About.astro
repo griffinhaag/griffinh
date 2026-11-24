@@ -156,14 +156,16 @@ import { facts, links } from '../data/site';
     overflow: visible;
     transition: stroke 200ms;
   }
-  .ic .skier, .ic .btn-a, .ic .btn-b, .ic .ski-trail, .ic .steak { stroke: var(--color-wine); }
+  .ic .steak { stroke: var(--color-wine); }
   .ic .skier { stroke-width: 1.25; }
-  .ic .skier-head { fill: var(--color-wine); stroke: none; }
-  .ic-ski .ski-trail { stroke-width: 0.8; stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0.85; fill: none; }
+  .ic .skier-head { fill: var(--color-muted); stroke: none; transition: fill 200ms; }
+  .hobby:hover .ic .skier-head, .hobby.active .ic .skier-head { fill: var(--color-text); }
+  .ic-ski .ski-trail { stroke-width: 0.8; stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0.7; fill: none; }
   .ic-pan .steak { stroke-width: 1.3; opacity: 0; }
   .ic-tv .wr-up { opacity: 0; }
   .ic-board .bg-spaces { stroke-width: 0.8; stroke-opacity: 0.6; }
-  .ic-board .bg-hero path, .ic-board .bg-hero circle { fill: var(--color-wine); stroke: none; }
+  .ic-board .bg-hero path, .ic-board .bg-hero circle { fill: var(--color-muted); stroke: none; transition: fill 200ms; }
+  .hobby:hover .ic-board .bg-hero path, .hobby:hover .ic-board .bg-hero circle, .hobby.active .ic-board .bg-hero path, .hobby.active .ic-board .bg-hero circle { fill: var(--color-text); }
   .ic-board .bg-foe path, .ic-board .bg-foe circle { fill: none; stroke-width: 1.1; }
   .ic-chat .hola { font: 600 6.4px var(--font-display, sans-serif); fill: var(--color-text); stroke: none; opacity: 0; }
   .ic-chat .d { fill: var(--color-muted); stroke: none; transition: fill 200ms; }
